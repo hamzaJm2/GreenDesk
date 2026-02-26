@@ -1,1 +1,31 @@
-<p>product-gallery works!</p>
+<div class="product-gallery">
+  <!-- Image principale - on utilise images[selectedImageIndex] -->
+  <div class="relative mb-4 bg-beige rounded-xl overflow-hidden" style="background-color: var(--c-beige); aspect-ratio: 4/3;">
+    <img [src]="images[selectedImageIndex]"
+         [alt]="'Image produit ' + (selectedImageIndex + 1)"
+         class="w-full h-full object-cover transition-opacity duration-300">
+
+    <!-- Flèches de navigation -->
+    <button *ngIf="images.length > 1" class="absolute left-4 top-1/2 ..." (click)="prevImage()">...</button>
+    <button *ngIf="images.length > 1" class="absolute right-4 top-1/2 ..." (click)="nextImage()">...</button>
+
+    <!-- Indicateur -->
+    <div *ngIf="images.length > 1" class="absolute bottom-4 right-4 ...">
+      {{ selectedImageIndex + 1 }} / {{ images.length }}
+    </div>
+  </div>
+
+  <!-- Miniatures - on boucle sur images -->
+  <div *ngIf="images.length > 1" class="grid grid-cols-4 gap-3">
+    <div *ngFor="let image of images; let i = index"
+         class="aspect-square rounded-lg overflow-hidden cursor-pointer ..."
+         [class.opacity-100]="selectedImageIndex === i"
+         [class.opacity-60]="selectedImageIndex !== i"
+         [style.border]="selectedImageIndex === i ? '3px solid var(--c-green-teal)' : '3px solid transparent'"
+         (click)="selectImage(i)">
+      <img [src]="image"
+           [alt]="'Miniature ' + (i + 1)"
+           class="w-full h-full object-cover hover:scale-110 transition-transform duration-300">
+    </div>
+  </div>
+</div>
