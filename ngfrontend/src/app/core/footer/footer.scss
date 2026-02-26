@@ -1,0 +1,45 @@
+/* Footer responsive */
+@media (max-width: 768px) {
+  footer {
+    padding: 3rem 1rem !important;
+  }
+
+  .grid {
+    gap: 2rem !important;
+  }
+
+  .text-2xl {
+    font-size: 1.25rem !important;
+  }
+
+  /* Centrer le texte sur mobile */
+  [class*="col-"] {
+    text-align: center;
+  }
+
+  /* Centrer les icônes sociales */
+  .flex.space-x-4 {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 640px) {
+  footer .grid {
+    grid-template-columns: 1fr !important; /* Une seule colonne sur mobile */
+  }
+
+  .pt-16 {
+    padding-top: 2rem !important;
+  }
+
+  .mb-12 {
+    margin-bottom: 1.5rem !important;
+  }
+}
+
+/* Ajustements pour tablette */
+@media (min-width: 769px) and (max-width: 1024px) {
+  footer .grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}

@@ -1,0 +1,43 @@
+/* Product Gallery responsive */
+@media (max-width: 768px) {
+  .aspect-square {
+    border-radius: 0.75rem !important;
+  }
+
+  /* Miniatures plus petites sur mobile */
+  .grid-cols-4 {
+    gap: 0.5rem !important;
+  }
+
+  .grid-cols-4 > div {
+    border-radius: 0.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Une seule ligne de miniatures sur très petit écran */
+  .grid-cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.25rem !important;
+  }
+
+  .w-20.h-20 {
+    width: 4rem !important;
+    height: 4rem !important;
+  }
+}
+
+/* Swipe sur mobile (optionnel) */
+@media (max-width: 768px) {
+  .gallery-container {
+    touch-action: pan-y pinch-zoom;
+  }
+
+  .main-image {
+    cursor: grab;
+  }
+
+  .main-image:active {
+    cursor: grabbing;
+  }
+}

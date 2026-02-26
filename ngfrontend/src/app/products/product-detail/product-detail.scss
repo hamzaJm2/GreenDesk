@@ -1,0 +1,102 @@
+/* Product Detail responsive */
+@media (max-width: 768px) {
+  .py-12 {
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+  }
+
+  .px-6 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* Grille passe en colonne */
+  .lg\\:grid-cols-2 {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+
+  /* Titre produit */
+  h1.font-dosis {
+    font-size: 2rem !important;
+  }
+
+  /* Prix */
+  .text-3xl {
+    font-size: 1.75rem !important;
+  }
+
+  /* Bloc configuration */
+  .grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Onglets */
+  .border-b {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.5rem;
+  }
+
+  .border-b button {
+    display: inline-block;
+    float: none;
+    padding: 0.75rem 1rem !important;
+  }
+
+  /* Galerie des réalisations */
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .text-4xl {
+    font-size: 1.75rem !important;
+  }
+
+  .flex.items-center.space-x-6 {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+  }
+
+  .w-px.h-10 {
+    display: none; /* Cacher les séparateurs */
+  }
+
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .p-8 {
+    padding: 1.25rem !important;
+  }
+}
+
+/* Tablette */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .lg\\:grid-cols-2 {
+    gap: 2rem !important;
+  }
+
+  .text-5xl {
+    font-size: 3rem !important;
+  }
+}
+
+/* Améliorations tactiles */
+@media (max-width: 768px) {
+  button,
+  [routerLink],
+  .cursor-pointer {
+    min-height: 44px; /* Taille minimale pour le touch */
+    min-width: 44px;
+  }
+
+  input, select, textarea {
+    font-size: 16px !important; /* Évite le zoom sur iOS */
+  }
+}

@@ -1,0 +1,65 @@
+<header class="fixed top-0 left-0 right-0 z-50 py-4 px-6 md:px-12 lg:px-20"
+        [style.backgroundColor]="'var(--c-white)'"
+        style="box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+  <div class="flex justify-between items-center max-w-7xl mx-auto">
+    <!-- Logo -->
+    <!-- Logo -->
+    <div class="flex items-center cursor-pointer transition-transform duration-300 hover:scale-105"
+         [routerLink]="['/']">
+      <img
+        src="/assets/images/logo-greendesk.svg"
+        alt="GreenDesk Logo"
+        class="h-10 md:h-12 w-auto object-contain -mt-2"
+      />
+    </div>
+    <!-- Navigation principale -->
+    <nav class="hidden md:flex space-x-8">
+      <a [routerLink]="['/boutique']"
+         class="font-poppins transition-colors duration-300 hover:font-semibold"
+         [style.color]="'var(--c-gray-dark)'"
+         [style.hover.color]="'var(--c-green-teal)'">
+        Boutique
+      </a>
+      <a [routerLink]="['/professionnels']"
+         class="font-poppins transition-colors duration-300 hover:font-semibold"
+         [style.color]="'var(--c-gray-dark)'"
+         [style.hover.color]="'var(--c-green-teal)'">
+        Espace pro
+      </a>
+      <a [routerLink]="['/contact']"
+         class="font-poppins transition-colors duration-300 hover:font-semibold"
+         [style.color]="'var(--c-gray-dark)'"
+         [style.hover.color]="'var(--c-green-teal)'">
+        Contact
+      </a>
+    </nav>
+
+    <!-- Actions -->
+    <div class="flex items-center space-x-4">
+      <button class="p-2 rounded-full hover:bg-beige transition-colors duration-300"
+              [style.color]="'var(--c-green-dark)'">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linecap="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </button>
+      <button class="p-2 rounded-full hover:bg-beige transition-colors duration-300 relative"
+              [style.color]="'var(--c-green-dark)'">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linecap="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+        </svg>
+        <span class="absolute -top-1 -right-1 w-4 h-4 rounded-full text-xs flex items-center justify-center"
+              style="background-color: var(--c-gold); color: var(--c-white);">3</span>
+      </button>
+    </div>
+
+    <!-- Mobile menu button -->
+    <button class="md:hidden p-2 rounded-lg" [style.color]="'var(--c-green-dark)'">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linecap="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- Spacer for fixed header -->
+<div class="h-20"></div>

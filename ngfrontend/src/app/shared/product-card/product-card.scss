@@ -1,0 +1,47 @@
+/* Product Card responsive */
+@media (max-width: 768px) {
+  .aspect-square {
+    border-radius: 1rem !important;
+  }
+
+  .text-xl {
+    font-size: 1.1rem !important;
+  }
+
+  .text-sm {
+    font-size: 0.8rem !important;
+  }
+
+  .absolute.top-4.right-4 {
+    top: 0.5rem !important;
+    right: 0.5rem !important;
+    padding: 0.25rem 0.75rem !important;
+    font-size: 0.7rem !important;
+  }
+}
+
+/* Grille responsive pour les cards */
+@media (max-width: 640px) {
+  .grid-cols-2 {
+    gap: 1rem !important;
+  }
+}
+
+/* Effet hover uniquement sur desktop */
+@media (min-width: 769px) {
+  .group:hover .group-hover\\:scale-110 {
+    transform: scale(1.1);
+  }
+}
+
+/* Touch friendly pour mobile */
+@media (max-width: 768px) {
+  .cursor-pointer {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .cursor-pointer:active {
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+}

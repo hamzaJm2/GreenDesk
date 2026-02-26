@@ -1,0 +1,33 @@
+<div class="group cursor-pointer" [routerLink]="[route]">
+  <div class="relative overflow-hidden rounded-2xl mb-4 aspect-square">
+    <img [src]="image" [alt]="title"
+         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+    <div class="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+         [style.background-color]="'var(--c-green-teal)'"></div>
+
+    <!-- Badge count -->
+    <div class="absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold"
+         [style.background-color]="'var(--c-gold)'"
+         [style.color]="'var(--c-green-dark)'">
+      {{ count }} produits
+    </div>
+  </div>
+
+  <h3 class="font-dosis text-xl font-semibold mb-2 transition-colors duration-300 group-hover:pl-2"
+      [style.color]="'var(--c-green-dark)'"
+      [style.hover.color]="'var(--c-green-teal)'">
+    {{ title }}
+  </h3>
+
+  <p class="font-poppins text-sm" [style.color]="'var(--c-gray-dark)'">
+    {{ description }}
+  </p>
+
+  <div class="mt-4 flex items-center space-x-2 font-poppins text-sm font-semibold"
+       [style.color]="'var(--c-green-teal)'">
+    <span>Découvrir la gamme</span>
+    <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-2" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+    </svg>
+  </div>
+</div>

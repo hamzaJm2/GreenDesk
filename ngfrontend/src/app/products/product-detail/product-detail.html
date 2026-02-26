@@ -1,0 +1,123 @@
+<div class="min-h-screen py-12 px-6 md:px-12 lg:px-20">
+  <div class="max-w-7xl mx-auto">
+
+    <!-- Fil d'Ariane -->
+    <div class="flex items-center space-x-2 font-poppins text-sm mb-8" style="color: var(--c-gray-dark);">
+      <a [routerLink]="['/boutique']" class="hover:underline" [style.hover.color]="'var(--c-green-teal)'">Boutique</a>
+      <span>/</span>
+      <a [routerLink]="['/boutique/electronique']" class="hover:underline" [style.hover.color]="'var(--c-green-teal)'">Gamme électronique</a>
+      <span>/</span>
+      <span style="color: var(--c-green-dark);">Enceinte connectée</span>
+    </div>
+
+    <!-- BLOC 1: Galerie + Infos produit -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+      <!-- Galerie d'images -->
+      <div>
+        <app-product-gallery ></app-product-gallery>
+      </div>
+
+      <!-- Infos produit -->
+      <div>
+        <h1 class="font-dosis text-4xl md:text-5xl font-bold mb-4" style="color: var(--c-green-dark);">
+          Enceinte connectée
+        </h1>
+
+        <div class="flex items-center space-x-6 mb-6">
+          <div>
+            <span class="font-poppins text-sm block" style="color: var(--c-gray-dark);">À partir de</span>
+            <span class="font-dosis text-3xl font-bold" style="color: var(--c-green-teal);">149 €</span>
+          </div>
+          <div class="w-px h-10" style="background-color: var(--c-gold);"></div>
+          <div>
+            <span class="font-poppins text-sm block" style="color: var(--c-gray-dark);">Livraison à partir de</span>
+            <span class="font-dosis text-xl font-semibold" style="color: var(--c-green-dark);">5,90 €</span>
+          </div>
+        </div>
+
+        <!-- Points forts -->
+        <div class="mb-8 p-6 rounded-xl" style="background-color: var(--c-beige);">
+          <h3 class="font-dosis font-semibold mb-3" style="color: var(--c-green-dark);">Points forts :</h3>
+          <ul class="space-y-2">
+            <li class="flex items-start space-x-2">
+              <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: var(--c-green-teal);" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+              </svg>
+              <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">Son haute définition 360°</span>
+            </li>
+            <li class="flex items-start space-x-2">
+              <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: var(--c-green-teal);" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+              </svg>
+              <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">Autonomie 20 heures</span>
+            </li>
+            <li class="flex items-start space-x-2">
+              <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: var(--c-green-teal);" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+              </svg>
+              <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">Bluetooth 5.0 et Wi-Fi</span>
+            </li>
+            <li class="flex items-start space-x-2">
+              <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: var(--c-green-teal);" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+              </svg>
+              <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">Compatible avec tous les assistants vocaux</span>
+            </li>
+          </ul>
+        </div>
+
+        <button class="w-full py-4 rounded-lg font-poppins font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+                style="background-color: var(--c-green-dark); color: var(--c-white);"
+                [style.hover.background-color]="'var(--c-green-teal)'">
+          Configurer et demander un devis
+        </button>
+      </div>
+    </div>
+
+    <!-- BLOC 2: Configuration à la KickFlip -->
+    <div class="mb-16">
+      <app-product-config></app-product-config>
+    </div>
+
+    <!-- BLOC 3: Description détaillée en onglets -->
+    <div class="mb-16">
+      <div class="border-b flex space-x-8" style="border-color: var(--c-beige);">
+        <button class="py-4 px-2 font-dosis font-semibold border-b-2 transition-colors"
+                style="color: var(--c-green-dark); border-color: var(--c-green-teal);">
+          Description
+        </button>
+        <button class="py-4 px-2 font-dosis font-semibold border-b-2 transition-colors"
+                style="color: var(--c-gray-dark); border-color: transparent;"
+                [style.hover.color]="'var(--c-green-teal)'">
+          Caractéristiques
+        </button>
+        <button class="py-4 px-2 font-dosis font-semibold border-b-2 transition-colors"
+                style="color: var(--c-gray-dark); border-color: transparent;"
+                [style.hover.color]="'var(--c-green-teal)'">
+          Avis clients
+        </button>
+      </div>
+
+      <div class="py-8">
+        <div class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
+          <p>Découvrez notre enceinte connectée nouvelle génération. Conçue pour offrir une expérience audio exceptionnelle, elle s'intègre parfaitement dans votre quotidien grâce à son design élégant et ses fonctionnalités innovantes.</p>
+          <p class="mt-4">La technologie audio haute définition vous garantit un son clair et puissant, tandis que sa connectivité multiple vous permet de l'utiliser avec tous vos appareils. Son autonomie de 20 heures vous accompagne tout au long de la journée.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOC 4: Galerie des réalisations -->
+    <div>
+      <h2 class="font-dosis text-2xl font-bold mb-6" style="color: var(--c-green-dark);">
+        Nos précédentes réalisations
+      </h2>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div *ngFor="let image of achievements" class="aspect-square overflow-hidden rounded-lg">
+          <img [src]="image" alt="Réalisation" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500">
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

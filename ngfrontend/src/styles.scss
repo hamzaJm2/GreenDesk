@@ -1,0 +1,131 @@
+/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+
+
+/* ===============================
+   Palette – variables SCSS
+   =============================== */
+$color-gray-dark:    #3A3A3A; // Gris foncé
+$color-gold:         #D8B671; // Doré (remplacer par #DBB671 si c'est celui confirmé)
+$color-beige:        #FDF6F3; // Beige très clair
+$color-green-dark:   #005E3A; // Vert foncé
+$color-green-teal:   #00B073; // Vert turquoise
+$color-white:        #FFFFFF; // Blanc
+
+/* Variantes utiles */
+$color-gray-800:     $color-gray-dark;
+$color-primary:      $color-green-dark;   // primaire (branding)
+$color-secondary:    $color-green-teal;   // secondaire (accents)
+$color-accent:       $color-gold;         // accent (mise en valeur)
+$color-bg-soft:      $color-beige;        // fonds doux
+
+/* ===============================
+   Palette – CSS custom properties
+   (pratique pour Tailwind ou styles inline)
+   =============================== */
+:root {
+  --c-gray-dark:   #3A3A3A;
+  --c-gold:        #D8B671;
+  --c-beige:       #FDF6F3;
+  --c-green-dark:  #005E3A;
+  --c-green-teal:  #00B073;
+  --c-white:       #FFFFFF;
+
+  /* Aliases */
+  --c-primary:     var(--c-green-dark);
+  --c-secondary:   var(--c-green-teal);
+  --c-accent:      var(--c-gold);
+  --c-bg-soft:     var(--c-beige);
+}
+
+
+/* ===============================
+   Font Families
+   =============================== */
+$font-dosis: 'Dosis', sans-serif;
+$font-poppins: 'Poppins', sans-serif;
+
+/* ===============================
+   CSS Custom Properties
+   (pour usage avec Tailwind ou inline)
+   =============================== */
+:root {
+  --font-dosis: 'Dosis', sans-serif;
+  --font-poppins: 'Poppins', sans-serif;
+}
+
+/* ===============================
+   Classes utilitaires SCSS
+   =============================== */
+.font-dosis {
+  font-family: $font-dosis;
+}
+
+.font-poppins {
+  font-family: $font-poppins;
+}
+
+
+/* Styles responsive globaux */
+@media (max-width: 768px) {
+  /* Ajuster les espacements */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Police plus petite */
+  body {
+    font-size: 14px;
+  }
+
+  /* Masquer certains éléments sur mobile */
+  .hide-mobile {
+    display: none !important;
+  }
+
+  /* Afficher éléments mobile */
+  .show-mobile {
+    display: block !important;
+  }
+
+  /* Améliorer le touch */
+  button, a, [routerLink] {
+    touch-action: manipulation;
+  }
+}
+
+/* Pour tablette */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    max-width: 960px;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+/* Classes utilitaires responsive */
+.text-responsive {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+}
+
+.padding-responsive {
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Améliorations performance mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Loading states */
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}

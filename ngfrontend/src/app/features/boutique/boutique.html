@@ -1,0 +1,91 @@
+<div class="min-h-screen">
+  <!-- Hero section de la boutique -->
+  <section class="relative py-20 px-6 md:px-12 lg:px-20 overflow-hidden">
+    <div class="absolute inset-0 z-0">
+      <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80"
+           alt="Boutique"
+           class="w-full h-full object-cover">
+      <div class="absolute inset-0" style="background-color: var(--c-beige); opacity: 0.9;"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto text-center">
+      <h1 class="font-dosis text-5xl md:text-6xl font-bold mb-6" style="color: var(--c-green-dark);">
+        Notre Boutique
+      </h1>
+      <p class="font-poppins text-xl max-w-3xl mx-auto" style="color: var(--c-gray-dark);">
+        Découvrez nos 4 gammes de produits conçus pour répondre à tous vos besoins
+      </p>
+    </div>
+  </section>
+
+  <!-- Grille des catégories -->
+  <section class="py-16 px-6 md:px-12 lg:px-20">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+        <app-product-card *ngFor="let category of categories"
+                          [category]="category.id"
+                          [title]="category.title"
+                          [description]="category.description"
+                          [image]="category.image"
+                          [count]="category.count"
+                          [route]="category.route">
+        </app-product-card>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section confiance -->
+  <section class="py-16 px-6 md:px-12 lg:px-20" style="background-color: var(--c-beige);">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="font-dosis text-3xl text-center mb-12" style="color: var(--c-green-dark);">
+        Pourquoi choisir GreenDesk ?
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
+               style="background-color: var(--c-green-teal); color: var(--c-white);">
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+          </div>
+          <h3 class="font-dosis font-semibold mb-2" style="color: var(--c-green-dark);">Qualité garantie</h3>
+          <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">Produits testés et certifiés</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
+               style="background-color: var(--c-green-teal); color: var(--c-white);">
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+            </svg>
+          </div>
+          <h3 class="font-dosis font-semibold mb-2" style="color: var(--c-green-dark);">Livraison rapide</h3>
+          <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">Expédition sous 24h</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
+               style="background-color: var(--c-green-teal); color: var(--c-white);">
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+            </svg>
+          </div>
+          <h3 class="font-dosis font-semibold mb-2" style="color: var(--c-green-dark);">Service client</h3>
+          <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">À votre écoute 7j/7</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
+               style="background-color: var(--c-green-teal); color: var(--c-white);">
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+            </svg>
+          </div>
+          <h3 class="font-dosis font-semibold mb-2" style="color: var(--c-green-dark);">Paiement sécurisé</h3>
+          <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">CB, PayPal, virement</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,32 @@
+/* Header responsive */
+@media (max-width: 768px) {
+  header {
+    padding: 0.75rem 1rem !important;
+  }
+
+  .text-2xl {
+    font-size: 1.25rem !important;
+  }
+
+  .md\\:flex {
+    display: none; /* Cacher la navigation desktop sur mobile */
+  }
+
+  /* Menu mobile (à ajouter si besoin) */
+  .mobile-menu-button {
+    display: block;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-menu-button {
+    display: none;
+  }
+}
+
+/* Animation pour le header au scroll */
+.header-scrolled {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  backdrop-filter: blur(10px);
+  background-color: rgba(255,255,255,0.95) !important;
+}
