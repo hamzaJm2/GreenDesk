@@ -17,6 +17,7 @@ export class ProductCard {
   @Input() image!: string;
   @Input() count!: number;
   @Input() route!: string;
+  @Input() queryParams?: { [key: string]: string };
 
 
 }

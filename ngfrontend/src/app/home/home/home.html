@@ -1,27 +1,22 @@
 <div class="min-h-screen flex flex-col">
   <!-- Hero Section avec image forêt -->
   <div class="relative h-screen overflow-hidden">
-
     <!-- Image de fond forêt -->
     <div class="absolute inset-0 z-0">
       <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80"
            alt="Forêt verdoyante"
            class="w-full h-full object-cover">
-      <!-- Overlay vert foncé -->
       <div class="absolute inset-0" style="background-color: var(--c-green-dark); opacity: 0.7;"></div>
     </div>
 
     <!-- Contenu centré -->
     <div class="relative z-10 flex items-center justify-center h-full px-6 md:px-12">
       <div class="text-center max-w-4xl mx-auto">
-
-        <!-- Titre -->
         <h1 class="font-dosis text-5xl md:text-7xl font-bold mb-8" style="color: var(--c-white);">
           Bienvenue sur notre<br>
           <span style="color: var(--c-white);">boutique en ligne !</span>
         </h1>
 
-        <!-- Description complète -->
         <p class="font-poppins text-lg md:text-xl mb-6 leading-relaxed" style="color: var(--c-beige);">
           Découvrez une plateforme professionnelle conçue pour faciliter la gestion complète de vos commandes,
           de la personnalisation de vos produits jusqu'à la livraison.
@@ -36,7 +31,6 @@
           Votre satisfaction est notre priorité.
         </p>
 
-        <!-- Bouton -->
         <button class="font-poppins font-semibold py-4 px-12 rounded-full text-lg transform hover:scale-105 transition-all duration-300 shadow-xl"
                 style="background-color: var(--c-white); color: var(--c-green-dark);"
                 [style.hover.background-color]="'var(--c-green-teal)'"
@@ -48,67 +42,138 @@
     </div>
   </div>
 
-  <!-- Aperçu des gammes (comme avant) -->
-  <div class="py-20 px-6 md:px-12" style="background-color: var(--c-white);">
+  <!-- GAMMES DE PRODUITS SUR UNE SEULE LIGNE -->
+  <div class="py-16 px-6 md:px-12" style="background-color: var(--c-white);">
     <div class="max-w-7xl mx-auto">
       <h2 class="font-dosis text-4xl text-center mb-4" style="color: var(--c-green-dark);">
         Nos gammes de produits
       </h2>
-      <p class="font-poppins text-center text-lg mb-12" style="color: var(--c-gray-dark);">
+      <p class="font-poppins text-center text-lg mb-10" style="color: var(--c-gray-dark);">
         Découvrez nos 4 univers conçus pour répondre à tous vos besoins
       </p>
 
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <!-- Grid 4 colonnes sur desktop -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+
         <!-- Box échantillons -->
-        <div class="text-center p-6 rounded-xl transition-all duration-300 hover:shadow-xl cursor-pointer group"
-             style="background-color: var(--c-beige);"
-             [routerLink]="['/boutique/box']">
-          <div class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-               style="background-color: var(--c-green-teal);">
-            <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/>
-            </svg>
+        <div class="group cursor-pointer bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
+             [routerLink]="['/boutique']" [queryParams]="{category: 'box'}">
+
+          <div class="relative aspect-square overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1513885535751-8b9238bd345a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                 alt="Box échantillons"
+                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+            <!-- Badge count -->
+            <div class="absolute top-3 right-3 px-3 py-1 rounded-full text-sm font-semibold"
+                 style="background-color: var(--c-gold); color: var(--c-green-dark);">
+              12 produits
+            </div>
           </div>
-          <h3 class="font-dosis font-semibold text-lg" style="color: var(--c-green-dark);">Box échantillons</h3>
+
+          <div class="p-4">
+            <h3 class="font-dosis font-semibold text-lg mb-1" style="color: var(--c-green-dark);">Box échantillons</h3>
+            <p class="font-poppins text-sm mb-3 line-clamp-2" style="color: var(--c-gray-dark);">
+              Découvrez nos coffrets découverte pour tester nos produits
+            </p>
+            <div class="flex items-center space-x-1 text-sm font-semibold" style="color: var(--c-green-teal);">
+              <span>Découvrir</span>
+              <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+              </svg>
+            </div>
+          </div>
         </div>
 
         <!-- Gamme plastique -->
-        <div class="text-center p-6 rounded-xl transition-all duration-300 hover:shadow-xl cursor-pointer group"
-             style="background-color: var(--c-beige);"
-             [routerLink]="['/boutique/plastique']">
-          <div class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-               style="background-color: var(--c-green-dark);">
-            <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M20 8h-2.81c-.45-.78-1.07-1.45-1.82-1.96L17 4.41 15.59 3l-2.17 2.17C12.96 5.06 12.49 5 12 5s-.96.06-1.41.17L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.79 2.59 5.01 4 8.19 4s6.4-1.41 8.19-4H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20V8z"/>
-            </svg>
+        <div class="group cursor-pointer bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
+             [routerLink]="['/boutique']" [queryParams]="{category: 'plastique'}">
+
+          <div class="relative aspect-square overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1563206767-5b18f218e8de?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                 alt="Gamme plastique"
+                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+            <div class="absolute top-3 right-3 px-3 py-1 rounded-full text-sm font-semibold"
+                 style="background-color: var(--c-gold); color: var(--c-green-dark);">
+              24 produits
+            </div>
           </div>
-          <h3 class="font-dosis font-semibold text-lg" style="color: var(--c-green-dark);">Gamme plastique</h3>
+
+          <div class="p-4">
+            <h3 class="font-dosis font-semibold text-lg mb-1" style="color: var(--c-green-dark);">Gamme plastique</h3>
+            <p class="font-poppins text-sm mb-3 line-clamp-2" style="color: var(--c-gray-dark);">
+              Produits durables et innovants en plastique recyclé
+            </p>
+            <div class="flex items-center space-x-1 text-sm font-semibold" style="color: var(--c-green-teal);">
+              <span>Découvrir</span>
+              <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+              </svg>
+            </div>
+          </div>
         </div>
 
         <!-- Gamme électronique -->
-        <div class="text-center p-6 rounded-xl transition-all duration-300 hover:shadow-xl cursor-pointer group"
-             style="background-color: var(--c-beige);"
-             [routerLink]="['/boutique/electronique']">
-          <div class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-               style="background-color: var(--c-green-teal);">
-            <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14zM9 8h2v8H9zm4 0h2v8h-2z"/>
-            </svg>
+        <div class="group cursor-pointer bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
+             [routerLink]="['/boutique']" [queryParams]="{category: 'electronique'}">
+
+          <div class="relative aspect-square overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                 alt="Gamme électronique"
+                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+            <div class="absolute top-3 right-3 px-3 py-1 rounded-full text-sm font-semibold"
+                 style="background-color: var(--c-gold); color: var(--c-green-dark);">
+              18 produits
+            </div>
           </div>
-          <h3 class="font-dosis font-semibold text-lg" style="color: var(--c-green-dark);">Gamme électronique</h3>
+
+          <div class="p-4">
+            <h3 class="font-dosis font-semibold text-lg mb-1" style="color: var(--c-green-dark);">Gamme électronique</h3>
+            <p class="font-poppins text-sm mb-3 line-clamp-2" style="color: var(--c-gray-dark);">
+              Objets connectés et accessoires high-tech
+            </p>
+            <div class="flex items-center space-x-1 text-sm font-semibold" style="color: var(--c-green-teal);">
+              <span>Découvrir</span>
+              <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+              </svg>
+            </div>
+          </div>
         </div>
 
         <!-- Gamme tissus -->
-        <div class="text-center p-6 rounded-xl transition-all duration-300 hover:shadow-xl cursor-pointer group"
-             style="background-color: var(--c-beige);"
-             [routerLink]="['/boutique/tissus']">
-          <div class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-               style="background-color: var(--c-green-teal);">
-            <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M19.66 3.99c-2.64-1.8-5.9-.96-7.66 1.1-1.76-2.06-5.02-2.91-7.66-1.1-1.4.96-2.28 2.58-2.34 4.29-.14 3.88 3.3 6.99 8.55 11.76l.1.09c.76.69 1.93.69 2.69-.01l.11-.1c5.25-4.76 8.68-7.87 8.55-11.75-.06-1.7-.94-3.32-2.34-4.28z"/>
-            </svg>
+        <div class="group cursor-pointer bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
+             [routerLink]="['/boutique']" [queryParams]="{category: 'tissus'}">
+
+          <div class="relative aspect-square overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                 alt="Gamme tissus"
+                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+            <div class="absolute top-3 right-3 px-3 py-1 rounded-full text-sm font-semibold"
+                 style="background-color: var(--c-gold); color: var(--c-green-dark);">
+              15 produits
+            </div>
           </div>
-          <h3 class="font-dosis font-semibold text-lg" style="color: var(--c-green-dark);">Gamme tissus</h3>
+
+          <div class="p-4">
+            <h3 class="font-dosis font-semibold text-lg mb-1" style="color: var(--c-green-dark);">Gamme tissus</h3>
+            <p class="font-poppins text-sm mb-3 line-clamp-2" style="color: var(--c-gray-dark);">
+              Accessoires textiles éco-responsables
+            </p>
+            <div class="flex items-center space-x-1 text-sm font-semibold" style="color: var(--c-green-teal);">
+              <span>Découvrir</span>
+              <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
     </div>

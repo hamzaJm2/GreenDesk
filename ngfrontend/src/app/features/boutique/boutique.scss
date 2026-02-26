@@ -1,3 +1,61 @@
+/* Animations pour les cartes produits */
+.group {
+  transition: all 0.3s ease;
+}
+
+.group:hover {
+  transform: translateY(-5px);
+}
+
+/* Grille responsive */
+@media (max-width: 640px) {
+  .grid-cols-1 {
+    gap: 1.5rem;
+  }
+
+  .px-6 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Filtres scrollables sur mobile */
+@media (max-width: 768px) {
+  .flex-wrap {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 1rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .flex-wrap button {
+    flex-shrink: 0;
+  }
+}
+
+/* Badge catégorie */
+.absolute.bottom-3.right-3 {
+  backdrop-filter: blur(5px);
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* État de chargement (optionnel) */
+.skeleton {
+  background: linear-gradient(90deg, var(--c-beige) 25%, #e0e0e0 50%, var(--c-beige) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+
 /* Boutique page responsive */
 @media (max-width: 768px) {
   /* Hero section */

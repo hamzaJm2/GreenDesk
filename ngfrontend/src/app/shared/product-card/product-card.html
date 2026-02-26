@@ -1,4 +1,7 @@
-<div class="group cursor-pointer" [routerLink]="[route]">
+<div class="group cursor-pointer"
+     [routerLink]="[route]"
+     [queryParams]="queryParams">
+
   <div class="relative overflow-hidden rounded-2xl mb-4 aspect-square">
     <img [src]="image" [alt]="title"
          class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">

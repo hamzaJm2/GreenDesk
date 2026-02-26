@@ -11,7 +11,9 @@ export interface Product {
   features: string[];
   configurations?: ProductConfig[];
   achievements?: string[];
+  isNew: boolean;
 }
+
 
 export interface ProductConfig {
   id: number;
