@@ -25,6 +25,8 @@ export class ProductDetail {
     'https://images.unsplash.com/photo-1558537348-c0f8e733ba6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
   ]
 
+  productId = 0;
+
   activeTab: string = 'description';
 
   // Méthode pour changer d'onglet
@@ -45,4 +47,5 @@ export class ProductDetail {
     { id: 'certifications', label: 'Certifications' },
     { id: 'telechargements', label: 'Téléchargements' }
   ];
+
 }
