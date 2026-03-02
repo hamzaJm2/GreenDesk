@@ -31,7 +31,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found: " + id));
 
-        return productMapper.toDto(product);
+        return productMapper.ProductToProductDto(product);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductDTO> findAllProducts() {
         return productRepository.findAll()
                 .stream()
-                .map(productMapper::toDto)
+                .map(productMapper::ProductToProductDto)
                 .toList();
     }
 }
