@@ -80,7 +80,7 @@
       <app-product-config></app-product-config>
     </div>
 
-    <!-- BLOC 3: Description détaillée en onglets -->
+
     <!-- BLOC 3: Description détaillée en onglets -->
     <div class="mb-16">
       <!-- Navigation des onglets (scrollable si nécessaire) -->
@@ -257,17 +257,66 @@
     </div>
 
     <!-- BLOC 4: Galerie des réalisations -->
-    <div>
-      <h2 class="font-dosis text-2xl font-bold mb-6" style="color: var(--c-green-dark);">
-        Nos précédentes réalisations
-      </h2>
+    <div class="mt-20">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="font-dosis text-3xl font-bold" style="color: var(--c-green-dark);">
+          Nos précédentes réalisations
+        </h2>
+        <button class="font-poppins text-sm font-semibold flex items-center space-x-2 transition-all duration-300 hover:translate-x-2"
+                style="color: var(--c-green-teal);">
+          <span>Voir tout</span>
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+          </svg>
+        </button>
+      </div>
 
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-<!--        <div *ngFor="let image of achievements" class="aspect-square overflow-hidden rounded-lg">-->
-<!--          <img [src]="image" alt="Réalisation" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500">-->
-<!--        </div>-->
+      <!-- Grille masonry avec différentes hauteurs -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px]">
+        <!-- Grande image (occupe 2 colonnes) -->
+        <div class="col-span-2 row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer">
+          <img src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+               alt="Réalisation"
+               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div class="absolute bottom-4 left-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <p class="font-dosis font-semibold">Studio d'enregistrement</p>
+            <p class="font-poppins text-sm">Client: Studio XYZ</p>
+          </div>
+        </div>
+
+        <!-- Image moyenne -->
+        <div class="col-span-1 row-span-1 relative overflow-hidden rounded-2xl group cursor-pointer">
+          <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+               alt="Réalisation"
+               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        </div>
+
+        <!-- Image moyenne -->
+        <div class="col-span-1 row-span-1 relative overflow-hidden rounded-2xl group cursor-pointer">
+          <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+               alt="Réalisation"
+               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        </div>
+
+        <!-- Image haute -->
+        <div class="col-span-1 row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer">
+          <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+               alt="Réalisation"
+               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        </div>
+
+        <!-- Image large -->
+        <div class="col-span-2 row-span-1 relative overflow-hidden rounded-2xl group cursor-pointer">
+          <img src="https://images.unsplash.com/photo-1543512214-318c7553f230?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+               alt="Réalisation"
+               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        </div>
       </div>
     </div>
-
   </div>
 </div>

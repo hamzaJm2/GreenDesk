@@ -45,4 +45,34 @@ export class ProductDetail {
     { id: 'certifications', label: 'Certifications' },
     { id: 'telechargements', label: 'Téléchargements' }
   ];
+
+  achievements: string[] = [
+    'https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1543512214-318c7553f230?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1558537348-c0f8e733ba6f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1484704849700-f032a568e944?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+  ];
+
+  selectedAchievement: number = 0;
+
+  // Méthodes pour naviguer dans les réalisations
+  prevAchievement(): void {
+    if (this.selectedAchievement > 0) {
+      this.selectedAchievement--;
+    } else {
+      this.selectedAchievement = this.achievements.length - 1;
+    }
+  }
+
+  nextAchievement(): void {
+    if (this.selectedAchievement < this.achievements.length - 1) {
+      this.selectedAchievement++;
+    } else {
+      this.selectedAchievement = 0;
+    }
+  }
 }
