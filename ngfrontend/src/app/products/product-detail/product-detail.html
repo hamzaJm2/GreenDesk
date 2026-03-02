@@ -67,18 +67,23 @@
           </ul>
         </div>
 
-        <button class="w-full py-4 rounded-lg font-poppins font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+
+        <button class="w-full py-4 rounded-lg font-poppins font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
                 style="background-color: var(--c-green-dark); color: var(--c-white);"
-                [style.hover.background-color]="'var(--c-green-teal)'">
-          Configurer et demander un devis
+                [style.hover.background-color]="'var(--c-green-teal)'"
+                [routerLink]="['/produit', productId, 'configurer']">
+          <span>Configurer et demander un devis</span>
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+          </svg>
         </button>
       </div>
     </div>
 
-    <!-- BLOC 2: Configuration à la KickFlip -->
-    <div class="mb-16">
-      <app-product-config></app-product-config>
-    </div>
+<!--    &lt;!&ndash; BLOC 2: Configuration à la KickFlip &ndash;&gt;-->
+<!--    <div class="mb-16">-->
+<!--      <app-product-config></app-product-config>-->
+<!--    </div>-->
 
 
     <!-- BLOC 3: Description détaillée en onglets -->
@@ -109,14 +114,14 @@
 
         <!-- Lieu de fabrication -->
         <div *ngIf="activeTab === 'lieuFabrication'" class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
-          <p><strong>🇫🇷 Fabriqué en France</strong></p>
+          <p>🇫🇷 Fabriqué en France</p>
           <p>Notre enceinte est assemblée dans notre atelier à Lyon, dans la région Auvergne-Rhône-Alpes. Nous collaborons avec des fournisseurs européens pour garantir une qualité optimale et réduire notre empreinte carbone.</p>
           <p class="mt-2">📍 Adresse de l'atelier : 45 rue de la République, 69002 Lyon</p>
         </div>
 
         <!-- Matériau -->
         <div *ngIf="activeTab === 'materiau'" class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
-          <p><strong>Composition :</strong></p>
+          <p>Composition :</p>
           <ul class="list-disc pl-5 mt-2 space-y-1">
             <li>Bois de hêtre certifié FSC pour la caisse de résonance</li>
             <li>Aluminium recyclé pour la grille</li>
@@ -130,21 +135,21 @@
         <div *ngIf="activeTab === 'dimensions'" class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <p><strong>Hauteur :</strong> 18.5 cm</p>
-              <p><strong>Largeur :</strong> 12.3 cm</p>
-              <p><strong>Profondeur :</strong> 10.2 cm</p>
+              <p>Hauteur : 18.5 cm</p>
+              <p>Largeur : 12.3 cm</p>
+              <p>Profondeur : 10.2 cm</p>
             </div>
             <div>
-              <p><strong>Diamètre du haut-parleur :</strong> 8 cm</p>
-              <p><strong>Longueur du câble :</strong> 1.5 m</p>
+              <p>Diamètre du haut-parleur : 8 cm</p>
+              <p>Longueur du câble : 1.5 m</p>
             </div>
           </div>
         </div>
 
         <!-- Poids -->
         <div *ngIf="activeTab === 'poids'" class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
-          <p><strong>Poids net :</strong> 1.2 kg</p>
-          <p><strong>Poids avec emballage :</strong> 1.8 kg</p>
+          <p>Poids net : 1.2 kg</p>
+          <p>Poids avec emballage : 1.8 kg</p>
           <p>Légère et facile à transporter, elle se glisse dans un sac à dos sans problème.</p>
         </div>
 
@@ -173,19 +178,19 @@
 
         <!-- Marquage -->
         <div *ngIf="activeTab === 'marquage'" class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
-          <p><strong>Personnalisation possible :</strong></p>
+          <p>Personnalisation possible :</p>
           <ul class="list-disc pl-5 mt-2 space-y-1">
             <li>Marquage à chaud sur le boîtier bois</li>
             <li>Gravure laser sur la face avant</li>
             <li>Sérigraphie sur l'emballage</li>
             <li>Logo personnalisé (fichier vectoriel requis)</li>
           </ul>
-          <p class="mt-3"><strong>Quantité minimum :</strong> 50 pièces pour marquage personnalisé</p>
+          <p class="mt-3">Quantité minimum : 50 pièces pour marquage personnalisé</p>
         </div>
 
         <!-- Emballage -->
         <div *ngIf="activeTab === 'emballage'" class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
-          <p><strong>Emballage éco-responsable :</strong></p>
+          <p>Emballage éco-responsable :</p>
           <ul class="list-disc pl-5 mt-2 space-y-1">
             <li>Boîte en carton recyclé (100% recyclable)</li>
             <li>Cales en carton (pas de plastique)</li>
@@ -200,23 +205,23 @@
           <div class="space-y-3">
             <div class="flex items-start space-x-3">
               <span class="text-green-600 font-bold">✓</span>
-              <span><strong>CE</strong> - Conforme aux normes européennes</span>
+              <span>CE - Conforme aux normes européennes</span>
             </div>
             <div class="flex items-start space-x-3">
               <span class="text-green-600 font-bold">✓</span>
-              <span><strong>RoHS</strong> - Sans substances dangereuses</span>
+              <span>RoHS - Sans substances dangereuses</span>
             </div>
             <div class="flex items-start space-x-3">
               <span class="text-green-600 font-bold">✓</span>
-              <span><strong>FSC</strong> - Bois issu de forêts gérées durablement</span>
+              <span>FSC - Bois issu de forêts gérées durablement</span>
             </div>
             <div class="flex items-start space-x-3">
               <span class="text-green-600 font-bold">✓</span>
-              <span><strong>Origine France Garantie</strong></span>
+              <span>Origine France Garantie</span>
             </div>
             <div class="flex items-start space-x-3">
               <span class="text-green-600 font-bold">✓</span>
-              <span><strong>Bluetooth SIG</strong> - Certification Bluetooth</span>
+              <span>Bluetooth SIG - Certification Bluetooth</span>
             </div>
           </div>
         </div>

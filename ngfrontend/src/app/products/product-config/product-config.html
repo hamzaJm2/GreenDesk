@@ -1,1 +1,248 @@
-<p>product-config works!</p>
+<div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+  <div class="grid grid-cols-1 lg:grid-cols-2 min-h-[600px]">
+
+    <!-- PARTIE GAUCHE : PRÉVISUALISATION -->
+    <div class="p-8 flex flex-col" style="background-color: var(--c-beige);">
+
+      <!-- En-tête prévisualisation -->
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="font-dosis text-2xl font-bold" style="color: var(--c-green-dark);">
+          Prévisualisation
+        </h3>
+        <span class="px-4 py-2 rounded-full text-sm font-semibold"
+              style="background-color: var(--c-green-teal); color: var(--c-white);">
+          Étape {{ currentStep }}/{{ totalSteps }}
+        </span>
+      </div>
+
+      <!-- Image produit unique -->
+      <div class="flex-1 flex items-center justify-center">
+        <div class="relative w-full max-w-md aspect-square rounded-2xl overflow-hidden shadow-2xl">
+          <img [src]="productImage"
+               alt="Prévisualisation produit"
+               class="w-full h-full object-cover">
+
+          <!-- Badge prix -->
+          <div class="absolute top-4 left-4 px-4 py-2 rounded-full text-lg font-bold shadow-lg"
+               style="background-color: var(--c-gold); color: var(--c-green-dark);">
+            {{ totalPrice }} €
+          </div>
+
+          <!-- Indicateurs de configuration -->
+          <div class="absolute bottom-4 left-4 right-4 flex flex-wrap gap-2">
+            <span *ngFor="let section of configSections"
+                  class="px-3 py-1 rounded-full text-xs font-medium"
+                  [style.background-color]="isSectionConfigured(section.id) ? 'var(--c-green-teal)' : 'var(--c-gray-dark)'"
+                  [style.color]="'var(--c-white)'">
+              {{ section.title }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Résumé prix -->
+      <div class="mt-6 p-4 rounded-xl" style="background-color: var(--c-white);">
+        <div class="flex justify-between mb-2">
+          <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">Prix de base</span>
+          <span class="font-dosis font-semibold" style="color: var(--c-green-dark);">{{ basePrice }} €</span>
+        </div>
+        <div class="flex justify-between mb-2">
+          <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">Options</span>
+          <span class="font-dosis font-semibold" style="color: var(--c-green-dark);">+ {{ additionalPrice }} €</span>
+        </div>
+        <div class="flex justify-between pt-2 border-t" style="border-color: var(--c-beige);">
+          <span class="font-dosis font-bold" style="color: var(--c-green-dark);">Total TTC</span>
+          <span class="font-dosis text-2xl font-bold" style="color: var(--c-green-teal);">{{ totalPrice }} €</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARTIE DROITE : CONFIGURATION (inchangée) -->
+    <div class="p-8 flex flex-col h-full overflow-y-auto" style="max-height: 700px;">
+
+      <!-- Indicateur de progression (inchangé) -->
+      <div class="flex justify-between mb-8">
+        <div *ngFor="let step of [1,2,3,4]" class="flex items-center">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300"
+               [style.background-color]="step <= currentStep ? 'var(--c-green-teal)' : 'var(--c-beige)'"
+               [style.color]="step <= currentStep ? 'var(--c-white)' : 'var(--c-gray-dark)'">
+            {{ step }}
+          </div>
+          <div *ngIf="step < 4" class="w-12 h-1 mx-2"
+               [style.background-color]="step < currentStep ? 'var(--c-green-teal)' : 'var(--c-beige)'"></div>
+        </div>
+      </div>
+
+      <!-- Sections de configuration par étape (inchangées) -->
+      <div class="flex-1">
+        <!-- Étape 1 : Couleur -->
+        <div *ngIf="currentStep === 1" class="space-y-6">
+          <h4 class="font-dosis text-xl font-bold mb-4" style="color: var(--c-green-dark);">
+            Choisissez votre couleur
+          </h4>
+          <div class="grid grid-cols-2 gap-4">
+            <div *ngFor="let option of configSections[0].options"
+                 class="p-4 rounded-xl cursor-pointer transition-all duration-300 text-center"
+                 [style.background-color]="isSelected('color', option.id) ? 'var(--c-green-teal)' : 'var(--c-beige)'"
+                 [style.opacity]="option.available ? '1' : '0.5'"
+                 [style.cursor]="option.available ? 'pointer' : 'not-allowed'"
+                 (click)="option.available && selectOption('color', option.id)">
+              <p class="font-dosis font-semibold mb-1"
+                 [style.color]="isSelected('color', option.id) ? 'var(--c-white)' : 'var(--c-green-dark)'">
+                {{ option.name }}
+              </p>
+              <p class="font-poppins text-sm"
+                 [style.color]="isSelected('color', option.id) ? 'var(--c-white)' : 'var(--c-gray-dark)'">
+                {{ option.price > 0 ? '+' + option.price + '€' : 'Inclus' }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Étape 2 : Taille (inchangée) -->
+        <div *ngIf="currentStep === 2" class="space-y-6">
+          <h4 class="font-dosis text-xl font-bold mb-4" style="color: var(--c-green-dark);">
+            Choisissez votre taille
+          </h4>
+          <div class="grid grid-cols-2 gap-4">
+            <div *ngFor="let option of configSections[1].options"
+                 class="p-4 rounded-xl cursor-pointer transition-all duration-300 text-center"
+                 [style.background-color]="isSelected('size', option.id) ? 'var(--c-green-teal)' : 'var(--c-beige)'"
+                 [style.opacity]="option.available ? '1' : '0.5'"
+                 [style.cursor]="option.available ? 'pointer' : 'not-allowed'"
+                 (click)="option.available && selectOption('size', option.id)">
+              <p class="font-dosis font-semibold mb-1"
+                 [style.color]="isSelected('size', option.id) ? 'var(--c-white)' : 'var(--c-green-dark)'">
+                {{ option.name }}
+              </p>
+              <p class="font-poppins text-sm"
+                 [style.color]="isSelected('size', option.id) ? 'var(--c-white)' : 'var(--c-gray-dark)'">
+                {{ option.price > 0 ? '+' + option.price + '€' : 'Inclus' }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Étape 3 : Options supplémentaires (inchangée) -->
+        <div *ngIf="currentStep === 3" class="space-y-6">
+          <h4 class="font-dosis text-xl font-bold mb-4" style="color: var(--c-green-dark);">
+            Options supplémentaires
+          </h4>
+          <div class="space-y-3">
+            <div *ngFor="let option of configSections[2].options"
+                 class="flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-300"
+                 [style.background-color]="isSelected('options', option.id) ? 'var(--c-green-teal)' : 'var(--c-beige)'"
+                 [style.opacity]="option.available ? '1' : '0.5'"
+                 (click)="option.available && selectOption('options', option.id)">
+
+              <div class="flex items-center space-x-3">
+                <div class="w-5 h-5 rounded border-2 flex items-center justify-center"
+                     [style.border-color]="isSelected('options', option.id) ? 'var(--c-white)' : 'var(--c-green-dark)'">
+                  <div *ngIf="isSelected('options', option.id)"
+                       class="w-3 h-3 rounded-sm"
+                       style="background-color: var(--c-white);"></div>
+                </div>
+                <span class="font-poppins"
+                      [style.color]="isSelected('options', option.id) ? 'var(--c-white)' : 'var(--c-green-dark)'">
+                  {{ option.name }}
+                </span>
+              </div>
+
+              <span class="font-dosis font-semibold"
+                    [style.color]="isSelected('options', option.id) ? 'var(--c-white)' : 'var(--c-green-teal)'">
+                +{{ option.price }}€
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Étape 4 : Personnalisation (inchangée) -->
+        <div *ngIf="currentStep === 4" class="space-y-6">
+          <h4 class="font-dosis text-xl font-bold mb-4" style="color: var(--c-green-dark);">
+            Personnalisation
+          </h4>
+
+          <!-- Gravure -->
+          <div class="p-6 rounded-xl" style="background-color: var(--c-beige);">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h5 class="font-dosis font-semibold" style="color: var(--c-green-dark);">Gravure laser</h5>
+                <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">30 caractères max</p>
+              </div>
+              <span class="font-dosis font-semibold" style="color: var(--c-green-teal);">+15€</span>
+            </div>
+            <input type="text"
+                   placeholder="Votre texte ici..."
+                   class="w-full p-3 rounded-lg border focus:outline-none focus:ring-2 font-poppins"
+                   style="border-color: var(--c-beige); focus:ring-color: var(--c-green-teal);"
+                   [disabled]="!isSelected('personnalisation', 'gravure')"
+                   (input)="onGravureChange($event)">
+            <div class="flex items-center mt-3">
+              <input type="checkbox"
+                     id="gravure"
+                     class="w-4 h-4 rounded mr-2"
+                     [checked]="isSelected('personnalisation', 'gravure')"
+                     (change)="selectOption('personnalisation', 'gravure')">
+              <label for="gravure" class="font-poppins text-sm" style="color: var(--c-gray-dark);">
+                Ajouter une gravure
+              </label>
+            </div>
+          </div>
+
+          <!-- Emballage cadeau -->
+          <div class="p-6 rounded-xl flex items-center justify-between" style="background-color: var(--c-beige);">
+            <div>
+              <h5 class="font-dosis font-semibold" style="color: var(--c-green-dark);">Emballage cadeau</h5>
+              <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">Papier cadeau inclus</p>
+            </div>
+            <div class="flex items-center space-x-4">
+              <span class="font-dosis font-semibold" style="color: var(--c-green-teal);">+5€</span>
+              <input type="checkbox"
+                     class="w-5 h-5 rounded"
+                     [checked]="isSelected('personnalisation', 'emballage')"
+                     (change)="selectOption('personnalisation', 'emballage')">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boutons de navigation (inchangés) -->
+      <div class="flex justify-between mt-8 pt-6 border-t" style="border-color: var(--c-beige);">
+        <button *ngIf="currentStep > 1"
+                class="px-6 py-3 rounded-lg font-poppins font-semibold transition-all duration-300"
+                style="border: 2px solid var(--c-green-teal); color: var(--c-green-teal);"
+                [style.hover.background-color]="'var(--c-green-teal)'"
+                [style.hover.color]="'var(--c-white)'"
+                (click)="prevStep()">
+          Étape précédente
+        </button>
+
+        <button *ngIf="currentStep < totalSteps"
+                class="px-6 py-3 rounded-lg font-poppins font-semibold transition-all duration-300 ml-auto"
+                style="background-color: var(--c-green-teal); color: var(--c-white);"
+                [style.hover.background-color]="'var(--c-green-dark)'"
+                [disabled]="!validateStep(currentStep)"
+                (click)="nextStep()">
+          Étape suivante
+        </button>
+
+        <button *ngIf="currentStep === totalSteps"
+                class="px-8 py-3 rounded-lg font-poppins font-semibold transition-all duration-300 ml-auto"
+                style="background-color: var(--c-gold); color: var(--c-green-dark);"
+                [style.hover.background-color]="'var(--c-green-teal)'"
+                [style.hover.color]="'var(--c-white)'"
+                (click)="submitConfiguration()">
+          Obtenir mon devis
+        </button>
+      </div>
+
+      <!-- Prix récapitulatif mobile (inchangé) -->
+      <div class="lg:hidden mt-6 p-4 rounded-xl" style="background-color: var(--c-beige);">
+        <div class="flex justify-between items-center">
+          <span class="font-poppins" style="color: var(--c-gray-dark);">Total</span>
+          <span class="font-dosis text-2xl font-bold" style="color: var(--c-green-teal);">{{ totalPrice }} €</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
