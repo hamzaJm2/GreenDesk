@@ -1,17 +1,16 @@
 export interface Product {
   id: number;
   name: string;
-  category: 'box' | 'plastique' | 'electronique' | 'tissus';
-  categoryName: string;
-  price: number;
+  category: string;
+  categoryTitle: string;
   deliveryPrice: number;
   image: string;
-  gallery: string[];
   description: string;
-  features: string[];
-  configurations?: ProductConfig[];
-  achievements?: string[];
-  isNew: boolean;
+  gallery: string[];
+  achievements: string[];
+  categoryId: number;
+  new: boolean;
+  price?: number;
 }
 
 

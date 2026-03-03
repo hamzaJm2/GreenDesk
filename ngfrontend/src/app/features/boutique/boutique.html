@@ -62,8 +62,7 @@
         </button>
       </div>
 
-      <!-- Grille des produits -->
-      <div *ngIf="filteredProducts.length > 0; else noProducts">
+      <div *ngIf="!isLoading && !errorMessage && filteredProducts.length > 0; else noProducts">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           <div *ngFor="let product of filteredProducts"
                class="group cursor-pointer"
@@ -71,21 +70,19 @@
 
             <!-- Image produit -->
             <div class="relative overflow-hidden rounded-xl mb-4 aspect-square">
-              <img [src]="product.image"
-                   [alt]="product.name"
-                   class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+              <img [src]="getFullImageUrl(product.image)">
 
-              <!-- Badge Nouveauté -->
-              <div *ngIf="product.isNew"
+              <!-- Badge Nouveauté (utilise 'new' au lieu de 'isNew') -->
+              <div *ngIf="product.new"
                    class="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold"
                    style="background-color: var(--c-gold); color: var(--c-green-dark);">
                 Nouveau
               </div>
 
-              <!-- Catégorie badge -->
+              <!-- Catégorie badge (utilise categoryTitle) -->
               <div class="absolute bottom-3 right-3 px-3 py-1 rounded-full text-xs"
                    style="background-color: var(--c-white); color: var(--c-green-dark);">
-                {{ product.categoryName }}
+                {{ product.categoryTitle }}
               </div>
             </div>
 
@@ -99,13 +96,13 @@
               {{ product.description }}
             </p>
 
+            <!-- Prix si disponible, sinon afficher "Sur devis" -->
             <p class="font-dosis text-xl font-bold" style="color: var(--c-green-teal);">
-              {{ product.price.toFixed(2) }} €
+              {{ product.price ? (product.price | currency:'EUR') : 'Sur devis' }}
             </p>
           </div>
         </div>
       </div>
-
       <!-- Template aucun produit -->
       <ng-template #noProducts>
         <div class="text-center py-20">

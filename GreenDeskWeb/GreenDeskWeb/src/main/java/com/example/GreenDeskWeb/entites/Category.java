@@ -1,5 +1,6 @@
 package com.example.GreenDeskWeb.entites;
 
+import com.example.GreenDeskWeb.enums.ProductCategory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +19,8 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
+    private String categoryTitle;
+
     private String description;
     private String image;
     private String route;

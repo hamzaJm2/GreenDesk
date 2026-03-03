@@ -1,5 +1,6 @@
 package com.example.GreenDeskWeb.entites;
 
+import com.example.GreenDeskWeb.enums.ProductCategory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +18,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
 
     private String name;
     private double price;
@@ -37,6 +39,8 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+    @Enumerated(EnumType.STRING)
+    private ProductCategory productCategory;
 
     private boolean isNew;
 
