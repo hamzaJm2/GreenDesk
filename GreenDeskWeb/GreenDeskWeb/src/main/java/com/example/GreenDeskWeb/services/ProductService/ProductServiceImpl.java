@@ -1,8 +1,10 @@
 package com.example.GreenDeskWeb.services.ProductService;
 
+import com.example.GreenDeskWeb.entites.Category;
 import com.example.GreenDeskWeb.mappers.ProductMapper;
 import com.example.GreenDeskWeb.dto.ProductDTO;
 import com.example.GreenDeskWeb.entites.Product;
+import com.example.GreenDeskWeb.repositories.CategoryRepository;
 import com.example.GreenDeskWeb.repositories.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +19,14 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final CategoryRepository categoryRepository;
 
     @Autowired
     public ProductServiceImpl(ProductRepository productRepository,
-                              ProductMapper productMapper) {
+                              ProductMapper productMapper, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -42,4 +46,18 @@ public class ProductServiceImpl implements ProductService {
                 .map(productMapper::ProductToProductDto)
                 .toList();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductDTO> findProductsByCategoryId(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found: " + categoryId));
+        return productRepository.findByCategory(category)
+                .stream()
+                .map(productMapper::ProductToProductDto)
+                .toList();
+    }
+
+
+
 }
