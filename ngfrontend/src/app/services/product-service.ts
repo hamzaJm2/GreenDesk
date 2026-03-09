@@ -8,14 +8,22 @@ import {environment} from '../environments/environment';
   providedIn: 'root'
 })
 export class ProductService {
-  // Remplacez cette URL par votre endpoint réel
+
   private apiUrl =  `${environment.apiUrl}/products`;
 
   constructor(private http: HttpClient) { }
 
   // Récupérer tous les produits
   getAllProducts(): Observable<any[]> {
-    return this.http.get<Product[]>(this.apiUrl);
+    return this.http.get<any[]>(this.apiUrl);
+  }
+
+  getProductById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
+  getProductTabs(productId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/tabs/${productId}`);
   }
 
 }

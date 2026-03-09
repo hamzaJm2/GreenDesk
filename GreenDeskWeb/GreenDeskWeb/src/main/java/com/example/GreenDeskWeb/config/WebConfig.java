@@ -5,12 +5,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+
+
+        registry.addResourceHandler("/downloads/**")
+                .addResourceLocations("file:/home/hamzajomaa/GreenDeskProject/GreenDeskWeb/GreenDeskWeb/uploads/downloads/");
+
 
         registry.addResourceHandler("/products/**")
                 .addResourceLocations("file:/home/hamzajomaa/GreenDeskProject/GreenDeskWeb/GreenDeskWeb/uploads/products/");
@@ -22,5 +26,3 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:/home/hamzajomaa/GreenDeskProject/GreenDeskWeb/GreenDeskWeb/uploads/categories/");
     }
 }
-
-

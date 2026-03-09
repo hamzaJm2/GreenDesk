@@ -24,5 +24,6 @@ public class ProductDTO {
     private List<String> achievements;
     private boolean isNew;
     private Long categoryId;
+    private double price;
 }
 

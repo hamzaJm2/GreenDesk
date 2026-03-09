@@ -1,0 +1,142 @@
+/* Animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s ease-out;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Style pour les inputs */
+input, select, textarea {
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(0, 176, 115, 0.1);
+  }
+}
+
+/* Style pour les radios personnalisés */
+input[type="radio"] + div {
+  transition: all 0.3s ease;
+}
+
+/* Style pour le switch de nouveauté */
+input[type="checkbox"] + div {
+  transition: background-color 0.3s ease;
+
+  div {
+    transition: transform 0.3s ease;
+  }
+}
+
+/* Style pour les zones de drop */
+.border-dashed {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+}
+
+/* Style pour les boutons */
+button {
+  transition: all 0.3s ease;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* Style pour les aperçus d'images */
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .p-8 {
+    padding: 1.5rem;
+  }
+
+  .p-12 {
+    padding: 2rem;
+  }
+
+  .text-5xl {
+    font-size: 2.5rem;
+  }
+}
+
+/* Scrollbar personnalisée */
+.overflow-x-auto {
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-green-teal) var(--c-beige);
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--c-beige);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--c-green-teal);
+    border-radius: 10px;
+  }
+}
+
+/* Effet de glassmorphisme pour certains éléments */
+.glass-effect {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* Style pour les étapes de progression */
+.step-circle {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Animation de pulsation pour le bouton de création */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+button[type="submit"]:not(:disabled) {
+  animation: pulse 2s infinite;
+
+  &:hover {
+    animation: none;
+  }
+}
