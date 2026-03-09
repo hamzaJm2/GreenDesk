@@ -1,326 +1,172 @@
 <div class="min-h-screen py-12 px-6 md:px-12 lg:px-20">
   <div class="max-w-7xl mx-auto">
 
-    <!-- Fil d'Ariane -->
-    <div class="flex items-center space-x-2 font-poppins text-sm mb-8" style="color: var(--c-gray-dark);">
-      <a [routerLink]="['/boutique']" class="hover:underline" [style.hover.color]="'var(--c-green-teal)'">Boutique</a>
-      <span>/</span>
-      <a [routerLink]="['/boutique/electronique']" class="hover:underline" [style.hover.color]="'var(--c-green-teal)'">Gamme électronique</a>
-      <span>/</span>
-      <span style="color: var(--c-green-dark);">Enceinte connectée</span>
+    <!-- État de chargement -->
+    <div *ngIf="isLoading" class="text-center py-20">
+      <div class="inline-block w-16 h-16 border-4 border-t-green-teal border-beige rounded-full animate-spin"
+           style="border-top-color: var(--c-green-teal); border-left-color: var(--c-beige); border-right-color: var(--c-beige); border-bottom-color: var(--c-beige);"></div>
+      <p class="font-poppins mt-4" style="color: var(--c-gray-dark);">Chargement du produit...</p>
     </div>
 
-    <!-- Bloc 1: Galerie + Infos produit -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-      <!-- Galerie d'images - VÉRIFIEZ CE BINDING -->
-      <div>
-        <app-product-gallery [images]="productImages"></app-product-gallery>
+    <!-- Message d'erreur -->
+    <div *ngIf="errorMessage && !isLoading" class="text-center py-20">
+      <div class="w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center"
+           style="background-color: var(--c-beige);">
+        <svg class="w-12 h-12" style="color: var(--c-gray-dark);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linecap="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
       </div>
-
-      <!-- Infos produit -->
-      <div>
-        <h1 class="font-dosis text-4xl md:text-5xl font-bold mb-4" style="color: var(--c-green-dark);">
-          Enceinte connectée
-        </h1>
-
-        <!-- Prix et livraison -->
-        <div class="flex items-center space-x-6 mb-6">
-          <div>
-            <span class="font-poppins text-sm block" style="color: var(--c-gray-dark);">À partir de</span>
-            <span class="font-dosis text-3xl font-bold" style="color: var(--c-green-teal);">149 €</span>
-          </div>
-          <div class="w-px h-10" style="background-color: var(--c-gold);"></div>
-          <div>
-            <span class="font-poppins text-sm block" style="color: var(--c-gray-dark);">Livraison à partir de</span>
-            <span class="font-dosis text-xl font-semibold" style="color: var(--c-green-dark);">5,90 €</span>
-          </div>
-        </div>
-
-        <!-- Points forts -->
-        <div class="mb-8 p-6 rounded-xl" style="background-color: var(--c-beige);">
-          <h3 class="font-dosis font-semibold mb-3" style="color: var(--c-green-dark);">Points forts :</h3>
-          <ul class="space-y-2">
-            <li class="flex items-start space-x-2">
-              <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: var(--c-green-teal);" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-              </svg>
-              <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">Son haute définition 360°</span>
-            </li>
-            <li class="flex items-start space-x-2">
-              <svg class="w-5 h-5" style="color: var(--c-green-teal);" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-              </svg>
-              <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">Autonomie 20 heures</span>
-            </li>
-            <li class="flex items-start space-x-2">
-              <svg class="w-5 h-5" style="color: var(--c-green-teal);" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-              </svg>
-              <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">Bluetooth 5.0 et Wi-Fi</span>
-            </li>
-            <li class="flex items-start space-x-2">
-              <svg class="w-5 h-5" style="color: var(--c-green-teal);" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-              </svg>
-              <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">Compatible avec tous les assistants vocaux</span>
-            </li>
-          </ul>
-        </div>
-
-
-        <button class="w-full py-4 rounded-lg font-poppins font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
-                style="background-color: var(--c-green-dark); color: var(--c-white);"
-                [style.hover.background-color]="'var(--c-green-teal)'"
-                [routerLink]="['/produit', productId, 'configurer']">
-          <span>Configurer et demander un devis</span>
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
-          </svg>
-        </button>
-      </div>
+      <h3 class="font-dosis text-2xl font-bold mb-2" style="color: var(--c-green-dark);">
+        Oups ! Une erreur est survenue
+      </h3>
+      <p class="font-poppins mb-6" style="color: var(--c-gray-dark);">
+        {{ errorMessage }}
+      </p>
+      <button class="px-6 py-3 rounded-lg font-poppins font-semibold transition-all duration-300"
+              style="background-color: var(--c-green-teal); color: var(--c-white);"
+              [routerLink]="['/boutique']">
+        Retour à la boutique
+      </button>
     </div>
 
-<!--    &lt;!&ndash; BLOC 2: Configuration à la KickFlip &ndash;&gt;-->
-<!--    <div class="mb-16">-->
-<!--      <app-product-config></app-product-config>-->
-<!--    </div>-->
+    <!-- Contenu produit - UNIQUEMENT quand product existe -->
+    <div *ngIf="!isLoading && !errorMessage && product">
 
+      <!-- Fil d'Ariane -->
+      <div class="flex items-center space-x-2 font-poppins text-sm mb-8" style="color: var(--c-gray-dark);">
+        <a [routerLink]="['/boutique']" class="hover:underline" [style.hover.color]="'var(--c-green-teal)'">Boutique</a>
+        <span>/</span>
+        <a [routerLink]="['/boutique']" [queryParams]="{category: product.category}" class="hover:underline" [style.hover.color]="'var(--c-green-teal)'">{{ product.categoryTitle }}</a>
+        <span>/</span>
+        <span style="color: var(--c-green-dark);">{{ product.name }}</span>
+      </div>
 
-    <!-- BLOC 3: Description détaillée en onglets -->
-    <div class="mb-16">
-      <!-- Navigation des onglets (scrollable si nécessaire) -->
-      <div class="border-b overflow-x-auto whitespace-nowrap pb-1" style="border-color: var(--c-beige);">
-        <div class="flex space-x-6 md:space-x-8">
-          <button *ngFor="let tab of tabs"
-                  class="py-4 px-1 font-dosis font-semibold border-b-2 transition-colors whitespace-nowrap"
-                  [ngStyle]="{
-                'color': activeTab === tab.id ? 'var(--c-green-dark)' : 'var(--c-gray-dark)',
-                'border-color': activeTab === tab.id ? 'var(--c-green-teal)' : 'transparent'
-              }"
-                  [style.hover.color]="'var(--c-green-teal)'"
-                  (click)="setActiveTab(tab.id)">
-            {{ tab.label }}
+      <!-- Bloc 1: Galerie + Infos produit -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+
+        <!-- Galerie d'images -->
+        <div *ngIf="allImages.length > 0">
+          <app-product-gallery [images]="allImages"></app-product-gallery>
+        </div>
+        <div *ngIf="allImages.length === 0" class="bg-beige rounded-xl aspect-square flex items-center justify-center" style="background-color: var(--c-beige);">
+          <p class="font-poppins" style="color: var(--c-gray-dark);">Aucune image disponible</p>
+        </div>
+
+        <!-- Infos produit -->
+        <div>
+          <!-- Badge Nouveauté -->
+          <div *ngIf="product.new"
+               class="inline-block px-4 py-2 rounded-full text-sm font-semibold mb-4"
+               style="background-color: var(--c-gold); color: var(--c-green-dark);">
+            Nouveau produit
+          </div>
+
+          <h1 class="font-dosis text-4xl md:text-5xl font-bold mb-4" style="color: var(--c-green-dark);">
+            {{ product.name }}
+          </h1>
+
+          <!-- Prix et livraison -->
+          <div class="flex items-center space-x-6 mb-6">
+            <div>
+              <span class="font-poppins text-sm block" style="color: var(--c-gray-dark);">Prix</span>
+              <span class="font-dosis text-3xl font-bold" style="color: var(--c-green-teal);">
+                {{ formattedPrice }}
+              </span>
+            </div>
+            <div class="w-px h-10" style="background-color: var(--c-gold);"></div>
+            <div>
+              <span class="font-poppins text-sm block" style="color: var(--c-gray-dark);">Livraison</span>
+              <span class="font-dosis text-xl font-semibold" style="color: var(--c-green-dark);">
+                {{ product.deliveryPrice ? (product.deliveryPrice + ' €') : 'Offerte' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="mb-8 p-6 rounded-xl" style="background-color: var(--c-beige);">
+            <h3 class="font-dosis font-semibold mb-3" style="color: var(--c-green-dark);">Description :</h3>
+            <p class="font-poppins" style="color: var(--c-gray-dark);">{{ product.description }}</p>
+          </div>
+
+          <!-- Bouton configuration -->
+          <button class="w-full py-4 rounded-lg font-poppins font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
+                  style="background-color: var(--c-green-dark); color: var(--c-white);"
+                  [style.hover.background-color]="'var(--c-green-teal)'"
+                  [routerLink]="['/produit', product.id, 'configurer']">
+            <span>Configurer et demander un devis</span>
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+            </svg>
           </button>
         </div>
       </div>
 
-      <!-- Contenu de l'onglet actif -->
-      <div class="py-8">
-        <!-- Description -->
-        <div *ngIf="activeTab === 'description'" class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
-          <p>Découvrez notre enceinte connectée nouvelle génération. Conçue pour offrir une expérience audio exceptionnelle, elle s'intègre parfaitement dans votre quotidien grâce à son design élégant et ses fonctionnalités innovantes.</p>
-          <p class="mt-4">La technologie audio haute définition vous garantit un son clair et puissant, tandis que sa connectivité multiple vous permet de l'utiliser avec tous vos appareils. Son autonomie de 20 heures vous accompagne tout au long de la journée.</p>
-        </div>
+      <!-- BLOC 2: Configuration (optionnel) -->
+      <!-- <div class="mb-16">
+        <app-product-config [productId]="product.id.toString()" [basePrice]="product.price || 0"></app-product-config>
+      </div> -->
 
-        <!-- Lieu de fabrication -->
-        <div *ngIf="activeTab === 'lieuFabrication'" class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
-          <p>🇫🇷 Fabriqué en France</p>
-          <p>Notre enceinte est assemblée dans notre atelier à Lyon, dans la région Auvergne-Rhône-Alpes. Nous collaborons avec des fournisseurs européens pour garantir une qualité optimale et réduire notre empreinte carbone.</p>
-          <p class="mt-2">📍 Adresse de l'atelier : 45 rue de la République, 69002 Lyon</p>
-        </div>
-
-        <!-- Matériau -->
-        <div *ngIf="activeTab === 'materiau'" class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
-          <p>Composition :</p>
-          <ul class="list-disc pl-5 mt-2 space-y-1">
-            <li>Bois de hêtre certifié FSC pour la caisse de résonance</li>
-            <li>Aluminium recyclé pour la grille</li>
-            <li>Tissu acoustique en polyester recyclé</li>
-            <li>Plastique ABS recyclé pour les boutons</li>
-            <li>Sans PVC ni substances nocives</li>
-          </ul>
-        </div>
-
-        <!-- Dimensions -->
-        <div *ngIf="activeTab === 'dimensions'" class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <p>Hauteur : 18.5 cm</p>
-              <p>Largeur : 12.3 cm</p>
-              <p>Profondeur : 10.2 cm</p>
-            </div>
-            <div>
-              <p>Diamètre du haut-parleur : 8 cm</p>
-              <p>Longueur du câble : 1.5 m</p>
-            </div>
+      <!-- BLOC 3: Onglets du produit (depuis votre API) -->
+      <div class="mb-16" *ngIf="productTabs.length > 0">
+        <!-- Navigation des onglets -->
+        <div class="border-b overflow-x-auto whitespace-nowrap pb-1" style="border-color: var(--c-beige);">
+          <div class="flex space-x-6 md:space-x-8">
+            <button *ngFor="let tab of productTabs"
+                    class="py-4 px-1 font-dosis font-semibold border-b-2 transition-colors whitespace-nowrap"
+                    [ngStyle]="{
+                'color': activeTab === tab.tabKey ? 'var(--c-green-dark)' : 'var(--c-gray-dark)',
+                'border-color': activeTab === tab.tabKey ? 'var(--c-green-teal)' : 'transparent'
+              }"
+                    [style.hover.color]="'var(--c-green-teal)'"
+                    (click)="setActiveTab(tab.tabKey)">
+              {{ tab.tabLabel }}
+            </button>
           </div>
         </div>
 
-        <!-- Poids -->
-        <div *ngIf="activeTab === 'poids'" class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
-          <p>Poids net : 1.2 kg</p>
-          <p>Poids avec emballage : 1.8 kg</p>
-          <p>Légère et facile à transporter, elle se glisse dans un sac à dos sans problème.</p>
-        </div>
+        <!-- Contenu de l'onglet actif -->
+        <div class="py-8">
+          <div *ngFor="let tab of productTabs" class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
+            <div *ngIf="activeTab === tab.tabKey">
+              <!-- Si le contenu contient du HTML (comme des liens) -->
+              <div *ngIf="tab.content.includes('<')" [innerHTML]="tab.content"></div>
 
-        <!-- Coloris disponibles -->
-        <div *ngIf="activeTab === 'coloris'" class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
-          <div class="flex space-x-4 mb-4">
-            <div class="flex flex-col items-center">
-              <div class="w-12 h-12 rounded-full bg-black border-2 border-gray-300 mb-2"></div>
-              <span>Noir</span>
-            </div>
-            <div class="flex flex-col items-center">
-              <div class="w-12 h-12 rounded-full bg-gray-400 border-2 border-gray-300 mb-2"></div>
-              <span>Gris</span>
-            </div>
-            <div class="flex flex-col items-center">
-              <div class="w-12 h-12 rounded-full bg-green-800 border-2 border-gray-300 mb-2"></div>
-              <span>Vert</span>
-            </div>
-            <div class="flex flex-col items-center">
-              <div class="w-12 h-12 rounded-full border-2 border-gray-300 mb-2" style="background-color: var(--c-beige);"></div>
-              <span>Beige</span>
-            </div>
-          </div>
-          <p>D'autres coloris disponibles sur demande (délai de 2 semaines).</p>
-        </div>
-
-        <!-- Marquage -->
-        <div *ngIf="activeTab === 'marquage'" class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
-          <p>Personnalisation possible :</p>
-          <ul class="list-disc pl-5 mt-2 space-y-1">
-            <li>Marquage à chaud sur le boîtier bois</li>
-            <li>Gravure laser sur la face avant</li>
-            <li>Sérigraphie sur l'emballage</li>
-            <li>Logo personnalisé (fichier vectoriel requis)</li>
-          </ul>
-          <p class="mt-3">Quantité minimum : 50 pièces pour marquage personnalisé</p>
-        </div>
-
-        <!-- Emballage -->
-        <div *ngIf="activeTab === 'emballage'" class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
-          <p>Emballage éco-responsable :</p>
-          <ul class="list-disc pl-5 mt-2 space-y-1">
-            <li>Boîte en carton recyclé (100% recyclable)</li>
-            <li>Cales en carton (pas de plastique)</li>
-            <li>Notice imprimée sur papier recyclé</li>
-            <li>Dimensions du carton : 22 x 16 x 14 cm</li>
-          </ul>
-          <p class="mt-3">L'emballage peut être personnalisé pour les professionnels (marquage, couleurs, etc.)</p>
-        </div>
-
-        <!-- Certifications -->
-        <div *ngIf="activeTab === 'certifications'" class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
-          <div class="space-y-3">
-            <div class="flex items-start space-x-3">
-              <span class="text-green-600 font-bold">✓</span>
-              <span>CE - Conforme aux normes européennes</span>
-            </div>
-            <div class="flex items-start space-x-3">
-              <span class="text-green-600 font-bold">✓</span>
-              <span>RoHS - Sans substances dangereuses</span>
-            </div>
-            <div class="flex items-start space-x-3">
-              <span class="text-green-600 font-bold">✓</span>
-              <span>FSC - Bois issu de forêts gérées durablement</span>
-            </div>
-            <div class="flex items-start space-x-3">
-              <span class="text-green-600 font-bold">✓</span>
-              <span>Origine France Garantie</span>
-            </div>
-            <div class="flex items-start space-x-3">
-              <span class="text-green-600 font-bold">✓</span>
-              <span>Bluetooth SIG - Certification Bluetooth</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Téléchargements -->
-        <div *ngIf="activeTab === 'telechargements'" class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
-          <div class="space-y-3">
-            <div class="flex items-center justify-between p-3 rounded-lg" style="background-color: var(--c-beige);">
-              <div class="flex items-center space-x-3">
-                <svg class="w-6 h-6" style="color: var(--c-green-dark);" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-                </svg>
-                <span>Fiche technique PDF</span>
+              <!-- Si le contenu est du texte simple avec des retours à la ligne -->
+              <div *ngIf="!tab.content.includes('<')">
+                <p *ngFor="let line of formatContent(tab.content)" class="mb-2">{{ line }}</p>
               </div>
-              <button class="px-4 py-2 rounded-lg text-sm font-semibold" style="background-color: var(--c-green-teal); color: white;">Télécharger</button>
-            </div>
-            <div class="flex items-center justify-between p-3 rounded-lg" style="background-color: var(--c-beige);">
-              <div class="flex items-center space-x-3">
-                <svg class="w-6 h-6" style="color: var(--c-green-dark);" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-                </svg>
-                <span>Manuel d'utilisation</span>
-              </div>
-              <button class="px-4 py-2 rounded-lg text-sm font-semibold" style="background-color: var(--c-green-teal); color: white;">Télécharger</button>
-            </div>
-            <div class="flex items-center justify-between p-3 rounded-lg" style="background-color: var(--c-beige);">
-              <div class="flex items-center space-x-3">
-                <svg class="w-6 h-6" style="color: var(--c-green-dark);" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-                </svg>
-                <span>Certificat de conformité</span>
-              </div>
-              <button class="px-4 py-2 rounded-lg text-sm font-semibold" style="background-color: var(--c-green-teal); color: white;">Télécharger</button>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- BLOC 4: Galerie des réalisations -->
-    <div class="mt-20">
-      <div class="flex items-center justify-between mb-8">
-        <h2 class="font-dosis text-3xl font-bold" style="color: var(--c-green-dark);">
+      <!-- Message si aucun onglet -->
+      <div *ngIf="productTabs.length === 0 && !isLoading && product"
+           class="mb-16 text-center py-12"
+           style="background-color: var(--c-beige); border-radius: 1rem;">
+        <p class="font-poppins" style="color: var(--c-gray-dark);">Aucune information détaillée disponible pour ce produit.</p>
+      </div>
+
+      <!-- BLOC 4: Galerie des réalisations -->
+      <div *ngIf="product.achievements && product.achievements.length > 0" class="mt-20">
+        <h2 class="font-dosis text-3xl font-bold mb-8" style="color: var(--c-green-dark);">
           Nos précédentes réalisations
         </h2>
-        <button class="font-poppins text-sm font-semibold flex items-center space-x-2 transition-all duration-300 hover:translate-x-2"
-                style="color: var(--c-green-teal);">
-          <span>Voir tout</span>
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
-          </svg>
-        </button>
-      </div>
 
-      <!-- Grille masonry avec différentes hauteurs -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px]">
-        <!-- Grande image (occupe 2 colonnes) -->
-        <div class="col-span-2 row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer">
-          <img src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-               alt="Réalisation"
-               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <div class="absolute bottom-4 left-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <p class="font-dosis font-semibold">Studio d'enregistrement</p>
-            <p class="font-poppins text-sm">Client: Studio XYZ</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div *ngFor="let achievement of product.achievements"
+               class="aspect-square overflow-hidden rounded-lg cursor-pointer">
+            <img [src]="getImageUrl(achievement)"
+                 alt="Réalisation"
+                 class="w-full h-full object-cover hover:scale-110 transition-transform duration-500">
+
           </div>
         </div>
+      </div>
 
-        <!-- Image moyenne -->
-        <div class="col-span-1 row-span-1 relative overflow-hidden rounded-2xl group cursor-pointer">
-          <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-               alt="Réalisation"
-               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        </div>
-
-        <!-- Image moyenne -->
-        <div class="col-span-1 row-span-1 relative overflow-hidden rounded-2xl group cursor-pointer">
-          <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-               alt="Réalisation"
-               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        </div>
-
-        <!-- Image haute -->
-        <div class="col-span-1 row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer">
-          <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-               alt="Réalisation"
-               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        </div>
-
-        <!-- Image large -->
-        <div class="col-span-2 row-span-1 relative overflow-hidden rounded-2xl group cursor-pointer">
-          <img src="https://images.unsplash.com/photo-1543512214-318c7553f230?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-               alt="Réalisation"
-               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        </div>
+      <!-- Message si pas de réalisations -->
+      <div *ngIf="!product.achievements || product.achievements.length === 0" class="mt-20 text-center py-12" style="background-color: var(--c-beige); border-radius: 1rem;">
+        <p class="font-poppins" style="color: var(--c-gray-dark);">Aucune réalisation disponible pour le moment.</p>
       </div>
     </div>
   </div>

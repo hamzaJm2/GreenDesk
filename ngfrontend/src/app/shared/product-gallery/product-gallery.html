@@ -1,24 +1,39 @@
-<div class="product-gallery">
-  <!-- Image principale - on utilise images[selectedImageIndex] -->
+<div class="product-gallery" *ngIf="images && images.length > 0; else noImages">
+  <!-- Image principale -->
   <div class="relative mb-4 bg-beige rounded-xl overflow-hidden" style="background-color: var(--c-beige); aspect-ratio: 4/3;">
     <img [src]="images[selectedImageIndex]"
          [alt]="'Image produit ' + (selectedImageIndex + 1)"
-         class="w-full h-full object-cover transition-opacity duration-300">
+         class="w-full h-full object-cover transition-opacity duration-300"
+        >
 
     <!-- Flèches de navigation -->
-    <button *ngIf="images.length > 1" class="absolute left-4 top-1/2 ..." (click)="prevImage()">...</button>
-    <button *ngIf="images.length > 1" class="absolute right-4 top-1/2 ..." (click)="nextImage()">...</button>
+    <button *ngIf="images.length > 1"
+            class="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 hover:bg-white flex items-center justify-center shadow-lg transition-all duration-300"
+            (click)="prevImage()">
+      <svg class="w-6 h-6" style="color: var(--c-green-dark);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linecap="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      </svg>
+    </button>
+
+    <button *ngIf="images.length > 1"
+            class="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 hover:bg-white flex items-center justify-center shadow-lg transition-all duration-300"
+            (click)="nextImage()">
+      <svg class="w-6 h-6" style="color: var(--c-green-dark);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linecap="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+    </button>
 
     <!-- Indicateur -->
-    <div *ngIf="images.length > 1" class="absolute bottom-4 right-4 ...">
+    <div *ngIf="images.length > 1"
+         class="absolute bottom-4 right-4 px-3 py-1 rounded-full text-sm font-semibold bg-black/50 text-white">
       {{ selectedImageIndex + 1 }} / {{ images.length }}
     </div>
   </div>
 
-  <!-- Miniatures - on boucle sur images -->
+  <!-- Miniatures -->
   <div *ngIf="images.length > 1" class="grid grid-cols-4 gap-3">
     <div *ngFor="let image of images; let i = index"
-         class="aspect-square rounded-lg overflow-hidden cursor-pointer ..."
+         class="aspect-square rounded-lg overflow-hidden cursor-pointer transition-all duration-300"
          [class.opacity-100]="selectedImageIndex === i"
          [class.opacity-60]="selectedImageIndex !== i"
          [style.border]="selectedImageIndex === i ? '3px solid var(--c-green-teal)' : '3px solid transparent'"
@@ -29,3 +44,10 @@
     </div>
   </div>
 </div>
+
+<!-- Template quand il n'y a pas d'images -->
+<ng-template #noImages>
+  <div class="bg-beige rounded-xl aspect-square flex items-center justify-center" style="background-color: var(--c-beige);">
+    <p class="font-poppins text-gray-500">Aucune image disponible</p>
+  </div>
+</ng-template>

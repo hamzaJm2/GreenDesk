@@ -26,5 +26,6 @@ public class ProductDTO {
     @JsonProperty("new")
     private boolean isNew;
     private Long categoryId;
+    private double price;
 }
 
