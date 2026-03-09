@@ -2,6 +2,7 @@ package com.example.GreenDeskWeb.dto;
 
 
 import com.example.GreenDeskWeb.enums.ProductCategory;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class ProductDTO {
     private String description;
     private List<String> gallery;
     private List<String> achievements;
+    @JsonProperty("new")
     private boolean isNew;
     private Long categoryId;
 }

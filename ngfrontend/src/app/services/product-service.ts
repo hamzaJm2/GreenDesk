@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 import { Product } from '../models/product';
 import {environment} from '../environments/environment';
 
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -15,7 +17,11 @@ export class ProductService {
 
   // Récupérer tous les produits
   getAllProducts(): Observable<any[]> {
-    return this.http.get<Product[]>(this.apiUrl);
+    return this.http.get<any[]>(this.apiUrl);
+  }
+
+  createProduct(product: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl, product);
   }
 
 }

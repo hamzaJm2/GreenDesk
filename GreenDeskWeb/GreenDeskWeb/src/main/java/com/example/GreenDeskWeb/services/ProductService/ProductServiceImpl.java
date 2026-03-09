@@ -1,5 +1,6 @@
 package com.example.GreenDeskWeb.services.ProductService;
 
+import com.example.GreenDeskWeb.dto.CategoryDTO;
 import com.example.GreenDeskWeb.entites.Category;
 import com.example.GreenDeskWeb.mappers.ProductMapper;
 import com.example.GreenDeskWeb.dto.ProductDTO;
@@ -59,5 +60,39 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
+    @Override
+    public ProductDTO createProduct(ProductDTO productDTO) {
+
+        Category category = categoryRepository.findById(productDTO.getCategoryId())
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Category not found: " + productDTO.getCategoryId())
+                );
+
+        Product product = productMapper.ProductDtoToProduct(productDTO);
+        product.setCategory(category);
+        Product saved = productRepository.save(product);
+        return productMapper.ProductToProductDto(saved);
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CategoryDTO> findAllCategories() {
+        return categoryRepository.findAll()
+                .stream()
+                .map(category -> {
+                    CategoryDTO dto = new CategoryDTO();
+                    dto.setId(category.getId());
+                    dto.setTitle(category.getCategoryTitle());
+                    dto.setDescription(category.getDescription());
+                    dto.setImage(category.getImage());
+                    dto.setRoute(category.getRoute());
+                    dto.setColor(category.getColor());
+                    dto.setCount(category.getProducts() != null ? category.getProducts().size() : 0);
+
+                    return dto;
+                })
+                .toList();
+    }
 
 }

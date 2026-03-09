@@ -1,10 +1,11 @@
 
 export  interface Category {
-  id: string;
+  id: number;
   title: string;
   description: string;
   image: string;
-  count: number;
+  count?: number;
   route: string;
   color: string;
+
 }

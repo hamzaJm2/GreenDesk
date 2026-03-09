@@ -1,5 +1,6 @@
 package com.example.GreenDeskWeb.controllers;
 
+import com.example.GreenDeskWeb.dto.CategoryDTO;
 import com.example.GreenDeskWeb.dto.ProductDTO;
 import com.example.GreenDeskWeb.services.ProductService.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +32,21 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    @GetMapping("/categories")
+    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
+        return ResponseEntity.ok(productService.findAllCategories());
+    }
 
     @GetMapping("/by-category/{categoryId}")
     public ResponseEntity<List<ProductDTO>> getByCategory(@PathVariable Long categoryId) {
         return ResponseEntity.ok(productService.findProductsByCategoryId(categoryId));
     }
+
+
+    @PostMapping
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) {
+        return ResponseEntity.ok(productService.createProduct(productDTO));
+    }
+
 
 }

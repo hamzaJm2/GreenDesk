@@ -15,4 +15,5 @@ public class CategoryDTO {
     private String image;
     private String route;
     private String color;
+    private  int count;
 }
