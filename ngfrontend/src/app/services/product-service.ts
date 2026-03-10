@@ -24,5 +24,12 @@ export class ProductService {
     return this.http.post<any>(this.apiUrl, product);
   }
 
+  getProductById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
+  getProductTabs(productId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/tabs/${productId}`);
+  }
 }
 

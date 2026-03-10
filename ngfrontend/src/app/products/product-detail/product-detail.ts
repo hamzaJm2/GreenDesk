@@ -7,6 +7,7 @@ import {ProductService} from '../../services/product-service';
 import {Product} from '../../models/product';
 import {ProductTab} from '../../models/ProductTab';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
+import {CartService} from '../../services/cart-service';
 
 @Component({
   selector: 'app-product-detail',
@@ -15,7 +16,7 @@ import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
     CommonModule,
     RouterModule,
     ProductGallery,
-    ProductConfig
+
   ],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
@@ -29,6 +30,9 @@ export class ProductDetail implements OnInit {
   // État de chargement
   isLoading: boolean = true;
   errorMessage: string = '';
+
+  isAddingToCart = false;
+  cartSuccess = false;
 
   // Onglets disponibles
   tabs = [
@@ -52,6 +56,7 @@ export class ProductDetail implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private productService: ProductService,
+    private cartService: CartService,
     private cdr: ChangeDetectorRef ,
     private sanitizer: DomSanitizer
 
@@ -161,6 +166,26 @@ export class ProductDetail implements OnInit {
     console.error('Erreur de chargement d\'image:', event.target.src);
     event.target.src = 'https://via.placeholder.com/400x400?text=Image+non+disponible';
     this.cdr.detectChanges();
+  }
+
+  addToCart(): void {
+    if (!this.product) return;
+    this.isAddingToCart = true;
+    this.cartService.addItem(this.product.id, 1).subscribe({
+      next: () => {
+        this.isAddingToCart = false;
+        this.cartSuccess = true;
+        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.cartSuccess = false;
+          this.cdr.detectChanges();
+        }, 2000);
+      },
+      error: () => {
+        this.isAddingToCart = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
 }
