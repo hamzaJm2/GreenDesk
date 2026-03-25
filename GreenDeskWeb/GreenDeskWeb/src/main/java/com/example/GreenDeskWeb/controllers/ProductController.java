@@ -2,6 +2,8 @@ package com.example.GreenDeskWeb.controllers;
 
 import com.example.GreenDeskWeb.dto.CategoryDTO;
 import com.example.GreenDeskWeb.dto.ProductDTO;
+import com.example.GreenDeskWeb.dto.ProductTabDefinitionDTO;
+import com.example.GreenDeskWeb.dto.ProductVariantDTO;
 import com.example.GreenDeskWeb.services.ProductService.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -48,5 +50,21 @@ public class ProductController {
         return ResponseEntity.ok(productService.createProduct(productDTO));
     }
 
+    @GetMapping("/tab-definitions")
+    public ResponseEntity<List<ProductTabDefinitionDTO>> getTabDefinitions() {
+        return ResponseEntity.ok(productService.findAllTabDefinitions());
+    }
 
+    @PutMapping("/{productId}/variants/{variantId}/toggle")
+    public ResponseEntity<ProductVariantDTO> toggleVariant(
+            @PathVariable Long productId,
+            @PathVariable Long variantId) {
+        return ResponseEntity.ok(productService.toggleVariant(productId, variantId));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -16,83 +16,60 @@
     </div>
 
     <!-- Barre de progression -->
-    <div class="flex justify-between items-center mb-16 max-w-2xl mx-auto">
-      <div class="flex flex-col items-center">
-        <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-all duration-300"
-             [style.background-color]="currentStep >= 1 ? 'var(--c-green-teal)' : 'var(--c-white)'"
-             [style.color]="currentStep >= 1 ? 'var(--c-white)' : 'var(--c-gray-dark)'"
-             [style.box-shadow]="currentStep >= 1 ? '0 10px 20px -5px var(--c-green-teal)' : 'none'">
-          1
+    <div class="flex justify-between items-center mb-16 max-w-4xl mx-auto">
+      <ng-container *ngFor="let step of [
+        {n: 1, label: 'Informations'},
+        {n: 2, label: 'Images'},
+        {n: 3, label: 'Onglets'},
+        {n: 4, label: 'Attributs'},
+        {n: 5, label: 'Variantes'},
+        {n: 6, label: 'Réalisations'}
+      ]; let last = last">
+        <div class="flex flex-col items-center">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300"
+               [style.backgroundColor]="currentStep >= step.n ? 'var(--c-green-teal)' : '#e5e7eb'"
+               [style.color]="currentStep >= step.n ? 'white' : 'var(--c-gray-dark)'">
+            {{ step.n }}
+          </div>
+          <span class="font-poppins text-xs mt-2 font-medium hidden md:block"
+                [style.color]="currentStep >= step.n ? 'var(--c-green-dark)' : 'var(--c-gray-dark)'">
+            {{ step.label }}
+          </span>
         </div>
-        <span class="font-poppins text-sm mt-2 font-medium"
-              [style.color]="currentStep >= 1 ? 'var(--c-green-dark)' : 'var(--c-gray-dark)'">
-          Informations
-        </span>
-      </div>
-
-      <div class="flex-1 h-1 mx-4"
-           [style.background-color]="currentStep > 1 ? 'var(--c-green-teal)' : 'var(--c-beige)'"></div>
-
-      <div class="flex flex-col items-center">
-        <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-all duration-300"
-             [style.background-color]="currentStep >= 2 ? 'var(--c-green-teal)' : 'var(--c-white)'"
-             [style.color]="currentStep >= 2 ? 'var(--c-white)' : 'var(--c-gray-dark)'"
-             [style.box-shadow]="currentStep >= 2 ? '0 10px 20px -5px var(--c-green-teal)' : 'none'">
-          2
-        </div>
-        <span class="font-poppins text-sm mt-2 font-medium"
-              [style.color]="currentStep >= 2 ? 'var(--c-green-dark)' : 'var(--c-gray-dark)'">
-          Images
-        </span>
-      </div>
-
-      <div class="flex-1 h-1 mx-4"
-           [style.background-color]="currentStep > 2 ? 'var(--c-green-teal)' : 'var(--c-beige)'"></div>
-
-      <div class="flex flex-col items-center">
-        <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-all duration-300"
-             [style.background-color]="currentStep >= 3 ? 'var(--c-green-teal)' : 'var(--c-white)'"
-             [style.color]="currentStep >= 3 ? 'var(--c-white)' : 'var(--c-gray-dark)'"
-             [style.box-shadow]="currentStep >= 3 ? '0 10px 20px -5px var(--c-green-teal)' : 'none'">
-          3
-        </div>
-        <span class="font-poppins text-sm mt-2 font-medium"
-              [style.color]="currentStep >= 3 ? 'var(--c-green-dark)' : 'var(--c-gray-dark)'">
-          Réalisations
-        </span>
-      </div>
+        <div *ngIf="!last" class="flex-1 h-1 mx-2"
+             [style.backgroundColor]="currentStep > step.n ? 'var(--c-green-teal)' : '#e5e7eb'"></div>
+      </ng-container>
     </div>
 
     <!-- Messages -->
     <div *ngIf="successMessage"
-         class="mb-8 p-6 rounded-2xl bg-green-50 border-l-8 flex items-center justify-between"
-         [style.border-color]="'var(--c-green-teal)'">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: var(--c-green-teal);">
-          <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-          </svg>
-        </div>
-        <p class="font-poppins text-lg" style="color: var(--c-green-dark);">{{ successMessage }}</p>
+         class="mb-8 p-6 rounded-2xl bg-green-50 border-l-8 flex items-center"
+         style="border-left-color: var(--c-green-teal);">
+      <div class="w-10 h-10 rounded-full flex items-center justify-center mr-4"
+           style="background-color: var(--c-green-teal);">
+        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+        </svg>
       </div>
+      <p class="font-poppins text-lg" style="color: var(--c-green-dark);">{{ successMessage }}</p>
     </div>
 
     <div *ngIf="errorMessage"
          class="mb-8 p-6 rounded-2xl bg-red-50 border-l-8 border-red-500 flex items-center">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center">
-          <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-          </svg>
-        </div>
-        <p class="font-poppins text-lg text-red-700">{{ errorMessage }}</p>
+      <div class="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center mr-4">
+        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        </svg>
       </div>
+      <p class="font-poppins text-lg text-red-700">{{ errorMessage }}</p>
     </div>
 
     <!-- Formulaire -->
     <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="bg-white rounded-3xl shadow-2xl overflow-hidden">
 
-      <!-- ÉTAPE 1 : Informations -->
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <!-- ÉTAPE 1 : Informations générales                                  -->
+      <!-- ══════════════════════════════════════════════════════════════════ -->
       <div *ngIf="currentStep === 1" class="p-8 md:p-12">
         <h2 class="font-dosis text-3xl font-bold mb-8 flex items-center" style="color: var(--c-green-dark);">
           <span class="w-10 h-10 rounded-full flex items-center justify-center text-white text-lg mr-4"
@@ -106,58 +83,39 @@
           <div class="space-y-6">
 
             <!-- Nom -->
-            <div class="group">
+            <div>
               <label class="block font-poppins font-medium mb-2 text-sm" style="color: var(--c-green-dark);">
                 Nom du produit <span class="text-red-400">*</span>
               </label>
-              <div class="relative">
-                <input type="text"
-                       formControlName="name"
-                       placeholder="Ex: Enceinte connectée Flexy"
-                       class="w-full px-4 py-4 rounded-xl border-2 transition-all duration-300 font-poppins bg-gray-50 focus:bg-white"
-                       [ngClass]="{
-                         'border-red-300 bg-red-50': productForm.get('name')?.invalid && productForm.get('name')?.touched,
-                         'border-gray-200': !(productForm.get('name')?.invalid && productForm.get('name')?.touched)
-                       }">
-                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                  <svg *ngIf="productForm.get('name')?.valid && productForm.get('name')?.touched"
-                       class="w-5 h-5" style="color: var(--c-green-teal);" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                  </svg>
-                </div>
-              </div>
+              <input type="text" formControlName="name"
+                     placeholder="Ex: Enceinte connectée Flexy"
+                     class="w-full px-4 py-4 rounded-xl border-2 transition-all duration-300 font-poppins bg-gray-50 focus:bg-white"
+                     [ngClass]="{
+                       'border-red-300 bg-red-50': productForm.get('name')?.invalid && productForm.get('name')?.touched,
+                       'border-gray-200': !(productForm.get('name')?.invalid && productForm.get('name')?.touched)
+                     }">
               <p *ngIf="productForm.get('name')?.invalid && productForm.get('name')?.touched"
-                 class="mt-2 text-sm text-red-500">
-                Le nom doit contenir au moins 3 caractères
-              </p>
+                 class="mt-2 text-sm text-red-500">Le nom doit contenir au moins 3 caractères</p>
             </div>
 
+            <!-- Catégorie -->
             <div>
               <label class="block font-poppins font-medium mb-2 text-sm" style="color: var(--c-green-dark);">
                 Catégorie <span class="text-red-400">*</span>
               </label>
-
-              <!-- Loader -->
               <div *ngIf="isLoadingCategories" class="flex items-center gap-2 py-4">
                 <svg class="w-5 h-5 animate-spin" style="color: var(--c-green-teal);"
                      fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                 </svg>
-                <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">
-      Chargement des catégories...
-    </span>
+                <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">Chargement...</span>
               </div>
-
-
-              <!-- Grille des catégories -->
               <div *ngIf="!isLoadingCategories" class="grid grid-cols-2 gap-3">
-                <div *ngFor="let cat of categories"
-                     class="cursor-pointer"
-                     (click)="onCategorySelect(cat)">
+                <div *ngFor="let cat of categories" class="cursor-pointer" (click)="onCategorySelect(cat)">
                   <div class="p-4 rounded-xl border-2 text-center transition-all duration-300"
-                       [style.border-color]="productForm.get('categoryId')?.value === cat.id ? 'var(--c-green-teal)' : '#e5e7eb'"
-                       [style.background-color]="productForm.get('categoryId')?.value === cat.id ? '#f0fdf4' : 'transparent'">
+                       [style.borderColor]="productForm.get('categoryId')?.value === cat.id ? 'var(--c-green-teal)' : '#e5e7eb'"
+                       [style.backgroundColor]="productForm.get('categoryId')?.value === cat.id ? '#f0fdf4' : 'transparent'">
                     <p class="font-poppins font-medium text-sm"
                        [style.color]="productForm.get('categoryId')?.value === cat.id ? 'var(--c-green-teal)' : 'var(--c-gray-dark)'">
                       {{ cat.title }}
@@ -168,11 +126,6 @@
                   </div>
                 </div>
               </div>
-
-              <p *ngIf="!isLoadingCategories && productForm.get('categoryId')?.invalid && productForm.get('categoryId')?.touched"
-                 class="mt-2 text-sm text-red-500">
-                Veuillez sélectionner une catégorie
-              </p>
             </div>
 
             <!-- Prix -->
@@ -182,14 +135,11 @@
                   Prix (€) <span class="text-red-400">*</span>
                 </label>
                 <div class="relative">
-                  <span class="absolute left-4 top-4 text-gray-400 font-poppins">€</span>
-                  <input type="number"
-                         formControlName="price"
-                         placeholder="0.00"
-                         step="0.01"
-                         class="w-full pl-10 pr-4 py-4 rounded-xl border-2 transition-all duration-300 font-poppins bg-gray-50 focus:bg-white"
+                  <span class="absolute left-4 top-4 text-gray-400">€</span>
+                  <input type="number" formControlName="price" placeholder="0.00" step="0.01"
+                         class="w-full pl-10 pr-4 py-4 rounded-xl border-2 transition-all duration-300 font-poppins bg-gray-50"
                          [ngClass]="{
-                           'border-red-300 bg-red-50': productForm.get('price')?.invalid && productForm.get('price')?.touched,
+                           'border-red-300': productForm.get('price')?.invalid && productForm.get('price')?.touched,
                            'border-gray-200': !(productForm.get('price')?.invalid && productForm.get('price')?.touched)
                          }">
                 </div>
@@ -199,14 +149,11 @@
                   Livraison (€) <span class="text-red-400">*</span>
                 </label>
                 <div class="relative">
-                  <span class="absolute left-4 top-4 text-gray-400 font-poppins">€</span>
-                  <input type="number"
-                         formControlName="deliveryPrice"
-                         placeholder="0.00"
-                         step="0.01"
-                         class="w-full pl-10 pr-4 py-4 rounded-xl border-2 transition-all duration-300 font-poppins bg-gray-50 focus:bg-white"
+                  <span class="absolute left-4 top-4 text-gray-400">€</span>
+                  <input type="number" formControlName="deliveryPrice" placeholder="0.00" step="0.01"
+                         class="w-full pl-10 pr-4 py-4 rounded-xl border-2 transition-all duration-300 font-poppins bg-gray-50"
                          [ngClass]="{
-                           'border-red-300 bg-red-50': productForm.get('deliveryPrice')?.invalid && productForm.get('deliveryPrice')?.touched,
+                           'border-red-300': productForm.get('deliveryPrice')?.invalid && productForm.get('deliveryPrice')?.touched,
                            'border-gray-200': !(productForm.get('deliveryPrice')?.invalid && productForm.get('deliveryPrice')?.touched)
                          }">
                 </div>
@@ -222,19 +169,14 @@
               <label class="block font-poppins font-medium mb-2 text-sm" style="color: var(--c-green-dark);">
                 Description <span class="text-red-400">*</span>
               </label>
-              <textarea formControlName="description"
-                        rows="5"
+              <textarea formControlName="description" rows="5"
                         placeholder="Décrivez le produit en quelques lignes..."
-                        class="w-full px-4 py-4 rounded-xl border-2 transition-all duration-300 font-poppins bg-gray-50 focus:bg-white resize-none"
+                        class="w-full px-4 py-4 rounded-xl border-2 transition-all duration-300 font-poppins bg-gray-50 resize-none"
                         [ngClass]="{
-                          'border-red-300 bg-red-50': productForm.get('description')?.invalid && productForm.get('description')?.touched,
+                          'border-red-300': productForm.get('description')?.invalid && productForm.get('description')?.touched,
                           'border-gray-200': !(productForm.get('description')?.invalid && productForm.get('description')?.touched)
                         }">
               </textarea>
-              <p *ngIf="productForm.get('description')?.invalid && productForm.get('description')?.touched"
-                 class="mt-2 text-sm text-red-500">
-                La description doit contenir au moins 10 caractères
-              </p>
             </div>
 
             <!-- Points forts -->
@@ -245,23 +187,19 @@
               <div class="space-y-3" formArrayName="features">
                 <div *ngFor="let feature of features.controls; let i = index"
                      class="flex items-center gap-2 group">
-                  <input [formControlName]="i"
-                         type="text"
-                         placeholder="Ex: Son haute définition"
-                         class="flex-1 px-4 py-3 rounded-xl border-2 transition-all duration-300 font-poppins bg-gray-50 focus:bg-white border-gray-200">
-                  <button type="button"
-                          class="p-3 rounded-xl bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red-100"
-                          (click)="removeFeature(i)">
+                  <input [formControlName]="i" type="text" placeholder="Ex: Son haute définition"
+                         class="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 font-poppins bg-gray-50">
+                  <button type="button" (click)="removeFeature(i)"
+                          class="p-3 rounded-xl bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-100">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                     </svg>
                   </button>
                 </div>
               </div>
-              <button type="button"
-                      class="mt-4 px-6 py-3 rounded-xl font-poppins text-sm font-semibold flex items-center gap-2 transition-all duration-300"
-                      style="background-color: var(--c-beige); color: var(--c-green-dark);"
-                      (click)="addFeature()">
+              <button type="button" (click)="addFeature()"
+                      class="mt-4 px-6 py-3 rounded-xl font-poppins text-sm font-semibold flex items-center gap-2"
+                      style="background-color: var(--c-beige); color: var(--c-green-dark);">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                 </svg>
@@ -269,12 +207,12 @@
               </button>
             </div>
 
-            <!-- Nouveauté toggle -->
+            <!-- Nouveauté -->
             <div class="flex items-center p-4 rounded-xl" style="background-color: var(--c-beige);">
               <label class="flex items-center cursor-pointer">
                 <input type="checkbox" formControlName="isNew" class="sr-only">
                 <div class="w-12 h-6 rounded-full transition-colors duration-300 flex items-center p-1"
-                     [style.background-color]="productForm.get('isNew')?.value ? 'var(--c-green-teal)' : '#9ca3af'">
+                     [style.backgroundColor]="productForm.get('isNew')?.value ? 'var(--c-green-teal)' : '#9ca3af'">
                   <div class="w-4 h-4 rounded-full bg-white transform transition-transform duration-300"
                        [style.transform]="productForm.get('isNew')?.value ? 'translateX(1.5rem)' : 'translateX(0)'">
                   </div>
@@ -288,7 +226,9 @@
         </div>
       </div>
 
-      <!-- ÉTAPE 2 : Images -->
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <!-- ÉTAPE 2 : Images                                                  -->
+      <!-- ══════════════════════════════════════════════════════════════════ -->
       <div *ngIf="currentStep === 2" class="p-8 md:p-12">
         <h2 class="font-dosis text-3xl font-bold mb-8 flex items-center" style="color: var(--c-green-dark);">
           <span class="w-10 h-10 rounded-full flex items-center justify-center text-white text-lg mr-4"
@@ -303,11 +243,10 @@
             <h3 class="font-dosis text-xl font-semibold mb-4" style="color: var(--c-green-dark);">
               Image principale <span class="text-red-400">*</span>
             </h3>
-
             <div *ngIf="!mainImagePreview"
-                 class="border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300"
-                 [style.border-color]="'var(--c-green-teal)'"
-                 [style.background-color]="'var(--c-beige)'"
+                 class="border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer"
+                 [style.borderColor]="'var(--c-green-teal)'"
+                 [style.backgroundColor]="'var(--c-beige)'"
                  (click)="mainImageInput.click()">
               <input type="file" #mainImageInput accept="image/*" (change)="onMainImageSelected($event)" class="hidden">
               <div class="w-24 h-24 mx-auto mb-6 rounded-2xl bg-white flex items-center justify-center">
@@ -320,22 +259,16 @@
               </p>
               <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">PNG, JPG, WebP • Max 5 Mo</p>
             </div>
-
             <div *ngIf="mainImagePreview" class="relative group">
               <img [src]="mainImagePreview" alt="Aperçu"
                    class="w-full aspect-square object-cover rounded-2xl shadow-xl">
-              <div class="absolute inset-0 bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <button type="button"
-                        class="w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg"
-                        (click)="removeMainImage()">
+              <div class="absolute inset-0 bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <button type="button" (click)="removeMainImage()"
+                        class="w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600">
                   <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                   </svg>
                 </button>
-              </div>
-              <div class="absolute top-4 left-4 px-4 py-2 rounded-full text-sm font-semibold bg-white/90 shadow-lg"
-                   style="color: var(--c-green-dark);">
-                Image principale
               </div>
             </div>
           </div>
@@ -345,10 +278,9 @@
             <h3 class="font-dosis text-xl font-semibold mb-4" style="color: var(--c-green-dark);">
               Galerie d'images
             </h3>
-
-            <div class="border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 mb-6"
-                 [style.border-color]="'var(--c-green-teal)'"
-                 [style.background-color]="'var(--c-beige)'"
+            <div class="border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer mb-6"
+                 [style.borderColor]="'var(--c-green-teal)'"
+                 [style.backgroundColor]="'var(--c-beige)'"
                  (click)="galleryInput.click()">
               <input type="file" #galleryInput accept="image/*" multiple (change)="onGallerySelected($event)" class="hidden">
               <div class="w-16 h-16 mx-auto mb-4 rounded-xl bg-white flex items-center justify-center">
@@ -359,16 +291,12 @@
               <p class="font-poppins font-semibold mb-1" style="color: var(--c-green-dark);">Ajouter des images</p>
               <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">PNG, JPG, WebP • Max 5 Mo par image</p>
             </div>
-
             <div class="grid grid-cols-3 gap-3">
-              <div *ngFor="let preview of galleryPreviews; let i = index"
-                   class="relative group aspect-square">
-                <img [src]="preview" alt="Galerie"
-                     class="w-full h-full object-cover rounded-xl shadow-md">
-                <div class="absolute inset-0 bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <button type="button"
-                          class="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600"
-                          (click)="removeGalleryImage(i)">
+              <div *ngFor="let preview of galleryPreviews; let i = index" class="relative group aspect-square">
+                <img [src]="preview" alt="Galerie" class="w-full h-full object-cover rounded-xl shadow-md">
+                <div class="absolute inset-0 bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <button type="button" (click)="removeGalleryImage(i)"
+                          class="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                     </svg>
@@ -380,20 +308,336 @@
         </div>
       </div>
 
-      <!-- ÉTAPE 3 : Réalisations -->
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <!-- ÉTAPE 3 : Onglets                                                 -->
+      <!-- ══════════════════════════════════════════════════════════════════ -->
       <div *ngIf="currentStep === 3" class="p-8 md:p-12">
+        <h2 class="font-dosis text-3xl font-bold mb-4 flex items-center" style="color: var(--c-green-dark);">
+    <span class="w-10 h-10 rounded-full flex items-center justify-center text-white text-lg mr-4"
+          style="background-color: var(--c-green-teal);">3</span>
+          Onglets du produit
+        </h2>
+        <p class="font-poppins text-sm mb-8" style="color: var(--c-gray-dark);">
+          Sélectionnez des onglets prédéfinis et/ou créez vos propres onglets personnalisés.
+        </p>
+
+        <div *ngIf="isLoadingTabs" class="flex items-center gap-2 py-4">
+          <svg class="w-5 h-5 animate-spin" style="color: var(--c-green-teal);"
+               fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+          </svg>
+          <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">Chargement...</span>
+        </div>
+
+        <div *ngIf="!isLoadingTabs" class="space-y-10">
+
+          <!-- Section 1 : Onglets prédéfinis -->
+          <div>
+            <h3 class="font-dosis text-xl font-semibold mb-4 flex items-center gap-2" style="color: var(--c-green-dark);">
+        <span class="px-3 py-1 rounded-full text-xs font-semibold"
+              style="background-color: var(--c-gold); color: var(--c-green-dark);">Prédéfinis</span>
+              Onglets standards
+            </h3>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+              <div *ngFor="let tab of tabDefinitions"
+                   class="cursor-pointer rounded-xl border-2 p-4 text-center transition-all duration-300"
+                   [style.borderColor]="isTabSelected(tab.id) ? 'var(--c-green-teal)' : '#e5e7eb'"
+                   [style.backgroundColor]="isTabSelected(tab.id) ? '#f0fdf4' : 'white'"
+                   (click)="toggleTab(tab)">
+                <div class="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center"
+                     [style.backgroundColor]="isTabSelected(tab.id) ? 'var(--c-green-teal)' : '#e5e7eb'">
+                  <svg *ngIf="isTabSelected(tab.id)" class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                  </svg>
+                  <svg *ngIf="!isTabSelected(tab.id)" class="w-4 h-4" style="color: var(--c-gray-dark);"
+                       fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                  </svg>
+                </div>
+                <p class="font-poppins font-medium text-sm"
+                   [style.color]="isTabSelected(tab.id) ? 'var(--c-green-teal)' : 'var(--c-gray-dark)'">
+                  {{ tab.label }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Contenu des onglets prédéfinis sélectionnés -->
+            <div *ngFor="let tab of selectedTabs" class="rounded-2xl border-2 p-6 mb-4"
+                 [style.borderColor]="'var(--c-green-teal)'">
+              <h4 class="font-dosis text-lg font-semibold mb-3" style="color: var(--c-green-dark);">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold mr-2"
+                style="background-color: var(--c-gold); color: var(--c-green-dark);">
+            {{ tab.tabLabel }}
+          </span>
+              </h4>
+              <textarea rows="4"
+                        [value]="tab.content"
+                        (input)="updateTabContent(tab.tabId, $any($event.target).value)"
+                        class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 font-poppins bg-gray-50 focus:bg-white resize-none transition-all"
+                        [placeholder]="'Contenu pour l\'onglet ' + tab.tabLabel + '...'">
+        </textarea>
+            </div>
+
+            <div *ngIf="selectedTabs.length === 0"
+                 class="text-center py-6 rounded-2xl" style="background-color: var(--c-beige);">
+              <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">
+                Aucun onglet prédéfini sélectionné.
+              </p>
+            </div>
+          </div>
+
+          <!-- Séparateur -->
+          <div class="flex items-center gap-4">
+            <div class="flex-1 h-px" style="background-color: var(--c-beige);"></div>
+            <span class="font-poppins text-sm font-semibold px-4" style="color: var(--c-gray-dark);">
+        OU ajoutez vos propres onglets
+      </span>
+            <div class="flex-1 h-px" style="background-color: var(--c-beige);"></div>
+          </div>
+
+          <!-- Section 2 : Onglets libres -->
+          <div>
+            <h3 class="font-dosis text-xl font-semibold mb-4 flex items-center gap-2" style="color: var(--c-green-dark);">
+        <span class="px-3 py-1 rounded-full text-xs font-semibold"
+              style="background-color: var(--c-green-teal); color: white;">Personnalisés</span>
+              Onglets libres
+            </h3>
+
+            <div *ngFor="let tab of customTabs; let i = index"
+                 class="rounded-2xl border-2 p-6 mb-4"
+                 style="border-color: var(--c-gold);">
+              <div class="flex items-center gap-4 mb-4">
+                <div class="flex-1">
+                  <label class="block font-poppins font-medium mb-2 text-sm" style="color: var(--c-green-dark);">
+                    Nom de l'onglet
+                  </label>
+                  <input type="text"
+                         [value]="tab.tabLabel"
+                         (input)="updateCustomTabLabel(i, $any($event.target).value)"
+                         placeholder="Ex: Garantie, FAQ, Entretien..."
+                         class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 font-poppins bg-gray-50 focus:bg-white">
+                </div>
+                <button type="button" (click)="removeCustomTab(i)"
+                        class="mt-6 p-3 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-all">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                  </svg>
+                </button>
+              </div>
+              <label class="block font-poppins font-medium mb-2 text-sm" style="color: var(--c-green-dark);">
+                Contenu
+              </label>
+              <textarea rows="4"
+                        [value]="tab.content"
+                        (input)="updateCustomTabContent(i, $any($event.target).value)"
+                        class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 font-poppins bg-gray-50 focus:bg-white resize-none transition-all"
+                        [placeholder]="'Contenu pour ' + (tab.tabLabel || 'cet onglet') + '...'">
+        </textarea>
+            </div>
+
+            <button type="button" (click)="addCustomTab()"
+                    class="w-full py-4 rounded-2xl font-poppins font-semibold flex items-center justify-center gap-2 border-2 border-dashed transition-all"
+                    style="border-color: var(--c-gold); color: var(--c-green-dark);">
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+              </svg>
+              Ajouter un onglet personnalisé
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <!-- ÉTAPE 4 : Attributs                                               -->
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <div *ngIf="currentStep === 4" class="p-8 md:p-12">
+        <h2 class="font-dosis text-3xl font-bold mb-4 flex items-center" style="color: var(--c-green-dark);">
+          <span class="w-10 h-10 rounded-full flex items-center justify-center text-white text-lg mr-4"
+                style="background-color: var(--c-green-teal);">4</span>
+          Attributs spécifiques
+        </h2>
+        <p class="font-poppins text-sm mb-8" style="color: var(--c-gray-dark);">
+          Ajoutez les attributs propres à ce produit (Couleur, Capacité, Taille...) et leurs valeurs avec surcoût éventuel.
+        </p>
+
+        <div class="space-y-6">
+          <div *ngFor="let attr of attributes; let attrIndex = index"
+               class="bg-gray-50 rounded-2xl p-6 border-2 border-gray-200">
+            <div class="flex items-center gap-4 mb-6">
+              <div class="flex-1">
+                <label class="block font-poppins font-medium mb-2 text-sm" style="color: var(--c-green-dark);">
+                  Nom de l'attribut
+                </label>
+                <input type="text"
+                       [value]="attr.name"
+                       (input)="updateAttributeName(attrIndex, $any($event.target).value)"
+                       placeholder="Ex: Couleur, Capacité, Taille..."
+                       class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 font-poppins bg-white">
+              </div>
+              <button type="button" (click)="removeAttribute(attrIndex)"
+                      class="mt-6 p-3 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-all">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                </svg>
+              </button>
+            </div>
+
+            <div class="space-y-3">
+              <label class="block font-poppins font-medium text-sm" style="color: var(--c-green-dark);">
+                Valeurs possibles
+              </label>
+              <div *ngFor="let val of attr.values; let valIndex = index"
+                   class="flex items-center gap-3 group">
+                <input type="text"
+                       [value]="val.value"
+                       (input)="updateAttributeValue(attrIndex, valIndex, $any($event.target).value)"
+                       placeholder="Ex: Rouge, 8GB, M..."
+                       class="flex-1 px-4 py-3 rounded-xl border-2 border-gray-200 font-poppins bg-white">
+                <div class="relative w-36">
+                  <span class="absolute left-3 top-3 text-gray-400 text-sm">+€</span>
+                  <input type="number"
+                         [value]="val.extraPrice"
+                         (input)="updateAttributeExtraPrice(attrIndex, valIndex, +$any($event.target).value)"
+                         placeholder="0.00"
+                         step="0.01"
+                         min="0"
+                         class="w-full pl-9 pr-3 py-3 rounded-xl border-2 border-gray-200 font-poppins bg-white text-sm">
+                </div>
+                <button type="button" (click)="removeAttributeValue(attrIndex, valIndex)"
+                        *ngIf="attr.values.length > 1"
+                        class="p-2 rounded-lg bg-red-50 text-red-400 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-100">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                  </svg>
+                </button>
+              </div>
+              <button type="button" (click)="addAttributeValue(attrIndex)"
+                      class="px-4 py-2 rounded-xl font-poppins text-sm font-medium flex items-center gap-2 transition-all"
+                      style="background-color: var(--c-beige); color: var(--c-green-dark);">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+                Ajouter une valeur
+              </button>
+            </div>
+          </div>
+
+          <button type="button" (click)="addAttribute()"
+                  class="w-full py-4 rounded-2xl font-poppins font-semibold flex items-center justify-center gap-2 border-2 border-dashed transition-all"
+                  [style.borderColor]="'var(--c-green-teal)'"
+                  [style.color]="'var(--c-green-teal)'"
+                  [style.backgroundColor]="'transparent'">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+            Ajouter un attribut
+          </button>
+
+          <div *ngIf="attributes.length === 0"
+               class="text-center py-8 rounded-2xl" style="background-color: var(--c-beige);">
+            <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">
+              Ce produit n'a pas d'attributs spécifiques. Vous pouvez en ajouter ou passer à l'étape suivante.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <!-- ÉTAPE 5 : Variantes                                                -->
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <div *ngIf="currentStep === 5" class="p-8 md:p-12">
+        <h2 class="font-dosis text-3xl font-bold mb-4 flex items-center" style="color: var(--c-green-dark);">
+          <span class="w-10 h-10 rounded-full flex items-center justify-center text-white text-lg mr-4"
+                style="background-color: var(--c-green-teal);">5</span>
+          Aperçu des variantes
+        </h2>
+        <p class="font-poppins text-sm mb-8" style="color: var(--c-gray-dark);">
+          Voici les variantes qui seront générées automatiquement à partir de vos attributs.
+        </p>
+
+        <div *ngIf="attributes.length === 0"
+             class="text-center py-12 rounded-2xl" style="background-color: var(--c-beige);">
+          <svg class="w-16 h-16 mx-auto mb-4" style="color: var(--c-gray-dark);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          <p class="font-poppins" style="color: var(--c-gray-dark);">
+            Aucun attribut défini — aucune variante ne sera générée.
+          </p>
+        </div>
+
+        <div *ngIf="attributes.length > 0">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div *ngFor="let attr of attributes"
+                 class="rounded-xl p-4 border-2"
+                 [style.borderColor]="'var(--c-green-teal)'"
+                 style="background-color: #f0fdf4;">
+              <p class="font-dosis font-bold mb-2" style="color: var(--c-green-dark);">{{ attr.name }}</p>
+              <div class="flex flex-wrap gap-2">
+                <span *ngFor="let val of attr.values"
+                      class="px-3 py-1 rounded-full text-xs font-semibold"
+                      style="background-color: var(--c-gold); color: var(--c-green-dark);">
+                  {{ val.value }}
+                  <span *ngIf="val.extraPrice > 0"> (+{{ val.extraPrice }}€)</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl mb-6 flex items-center gap-3"
+               style="background-color: var(--c-beige);">
+            <svg class="w-6 h-6" style="color: var(--c-green-teal);" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            <p class="font-poppins font-medium" style="color: var(--c-green-dark);">
+              {{ getVariantCount() }} variante(s) seront générées automatiquement.
+            </p>
+          </div>
+
+          <div class="overflow-x-auto rounded-2xl border-2 border-gray-200">
+            <table class="w-full">
+              <thead>
+              <tr style="background-color: var(--c-beige);">
+                <th class="px-6 py-4 text-left font-poppins font-semibold text-sm" style="color: var(--c-green-dark);">Combinaison</th>
+                <th class="px-6 py-4 text-right font-poppins font-semibold text-sm" style="color: var(--c-green-dark);">Surcoût</th>
+                <th class="px-6 py-4 text-right font-poppins font-semibold text-sm" style="color: var(--c-green-dark);">Prix final</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let variant of getPreviewVariants(); let i = index"
+                  class="border-t border-gray-100"
+                  [style.backgroundColor]="i % 2 === 0 ? 'white' : '#fafafa'">
+                <td class="px-6 py-4 font-poppins text-sm" style="color: var(--c-green-dark);">{{ variant.label }}</td>
+                <td class="px-6 py-4 text-right font-poppins text-sm" style="color: var(--c-gray-dark);">+{{ variant.extraPrice | number:'1.2-2' }} €</td>
+                <td class="px-6 py-4 text-right font-dosis font-bold" style="color: var(--c-green-teal);">
+                  {{ (productForm.get('price')?.value || 0) + variant.extraPrice | number:'1.2-2' }} €
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <!-- ÉTAPE 6 : Réalisations                                            -->
+      <!-- ══════════════════════════════════════════════════════════════════ -->
+      <div *ngIf="currentStep === 6" class="p-8 md:p-12">
         <h2 class="font-dosis text-3xl font-bold mb-8 flex items-center" style="color: var(--c-green-dark);">
           <span class="w-10 h-10 rounded-full flex items-center justify-center text-white text-lg mr-4"
-                style="background-color: var(--c-green-teal);">3</span>
+                style="background-color: var(--c-green-teal);">6</span>
           Réalisations précédentes
         </h2>
 
         <div class="max-w-2xl mx-auto">
-          <div class="border-2 border-dashed rounded-2xl p-16 text-center cursor-pointer transition-all duration-300 mb-8"
-               [style.border-color]="'var(--c-green-teal)'"
-               [style.background-color]="'var(--c-beige)'"
+          <div class="border-2 border-dashed rounded-2xl p-16 text-center cursor-pointer mb-8"
+               [style.borderColor]="'var(--c-green-teal)'"
+               [style.backgroundColor]="'var(--c-beige)'"
                (click)="achievementsInput.click()">
-            <input type="file" #achievementsInput accept="image/*" multiple (change)="onAchievementsSelected($event)" class="hidden">
+            <input type="file" #achievementsInput accept="image/*" multiple
+                   (change)="onAchievementsSelected($event)" class="hidden">
             <div class="w-32 h-32 mx-auto mb-6 rounded-3xl bg-white flex items-center justify-center shadow-lg">
               <svg class="w-16 h-16" style="color: var(--c-green-teal);" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
@@ -416,10 +660,9 @@
                  class="relative group aspect-square">
               <img [src]="preview" alt="Réalisation"
                    class="w-full h-full object-cover rounded-xl shadow-lg">
-              <div class="absolute inset-0 bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <button type="button"
-                        class="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600"
-                        (click)="removeAchievementImage(i)">
+              <div class="absolute inset-0 bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <button type="button" (click)="removeAchievementImage(i)"
+                        class="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600">
                   <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                   </svg>
@@ -432,13 +675,11 @@
 
       <!-- Footer boutons -->
       <div class="p-8 border-t flex justify-between items-center"
-           style="background-color: var(--c-beige);">
+           style="background-color: var(--c-beige); border-color: var(--c-white);">
 
-        <button type="button"
-                *ngIf="currentStep > 1"
-                class="px-8 py-4 rounded-xl font-poppins font-semibold transition-all duration-300 flex items-center gap-2"
-                style="border: 2px solid var(--c-green-teal); color: var(--c-green-teal); background: transparent;"
-                (click)="prevStep()">
+        <button type="button" *ngIf="currentStep > 1" (click)="prevStep()"
+                class="px-8 py-4 rounded-xl font-poppins font-semibold transition-all flex items-center gap-2"
+                style="border: 2px solid var(--c-green-teal); color: var(--c-green-teal); background: transparent;">
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M15 19l-7-7 7-7"/>
           </svg>
@@ -447,21 +688,17 @@
 
         <div class="flex-1"></div>
 
-        <button type="button"
-                *ngIf="currentStep < totalSteps"
-                class="px-8 py-4 rounded-xl font-poppins font-semibold transition-all duration-300 flex items-center gap-2"
-                style="background-color: var(--c-green-teal); color: var(--c-white);"
-                (click)="nextStep()">
+        <button type="button" *ngIf="currentStep < totalSteps" (click)="nextStep()"
+                class="px-8 py-4 rounded-xl font-poppins font-semibold transition-all flex items-center gap-2"
+                style="background-color: var(--c-green-teal); color: white;">
           Étape suivante
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M9 5l7 7-7 7"/>
           </svg>
         </button>
 
-        <button type="submit"
-                *ngIf="currentStep === totalSteps"
-                [disabled]="isSubmitting"
-                class="px-10 py-4 rounded-xl font-poppins font-semibold transition-all duration-300 flex items-center gap-2"
+        <button type="submit" *ngIf="currentStep === totalSteps" [disabled]="isSubmitting"
+                class="px-10 py-4 rounded-xl font-poppins font-semibold transition-all flex items-center gap-2"
                 style="background-color: var(--c-gold); color: var(--c-green-dark);">
           <ng-container *ngIf="!isSubmitting">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -477,7 +714,6 @@
             Création en cours...
           </ng-container>
         </button>
-
       </div>
     </form>
   </div>

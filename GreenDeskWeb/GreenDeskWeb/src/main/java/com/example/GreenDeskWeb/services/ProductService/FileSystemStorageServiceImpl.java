@@ -28,6 +28,7 @@ public class FileSystemStorageServiceImpl implements FileSystemStorageService {
         if (file.isEmpty()) throw new IOException("Fichier vide");
 
         Path folder = root.resolve(subfolder);
+       
         Files.createDirectories(folder);
 
         // Garde le nom original du fichier, juste nettoyé
@@ -64,6 +65,17 @@ public class FileSystemStorageServiceImpl implements FileSystemStorageService {
             }
         }
         return paths;
+    }
+
+    @Override
+    public void delete(String relativePath) {
+        if (relativePath == null || relativePath.isBlank()) return;
+        try {
+            Path file = root.resolve(relativePath).normalize().toAbsolutePath();
+            Files.deleteIfExists(file);
+        } catch (IOException e) {
+            System.err.println("Impossible de supprimer le fichier: " + relativePath + " — " + e.getMessage());
+        }
     }
 }
 

@@ -1,5 +1,5 @@
 export interface ProductTab {
-  tabId: number;
+  tabId?: number;
   tabKey: string;
   tabLabel: string;
   content: string;

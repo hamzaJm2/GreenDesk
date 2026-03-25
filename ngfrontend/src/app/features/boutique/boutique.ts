@@ -5,19 +5,21 @@ import {Product} from '../../models/product';
 import {ActivatedRoute, RouterModule} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {ProductService} from '../../services/product-service';
+import {ConfirmationDialogComponent} from '../../shared/confirmation-dialog/confirmation-dialog';
 
 @Component({
   selector: 'app-boutique',
+  standalone: true,
   imports: [
     CommonModule,
     RouterModule,
-    ProductCard
+    ProductCard,
+    ConfirmationDialogComponent
   ],
   templateUrl: './boutique.html',
   styleUrl: './boutique.scss',
 })
 export class Boutique implements OnInit {
-
 
   allProducts: Product[] = [];
   filteredProducts: Product[] = [];
@@ -25,6 +27,10 @@ export class Boutique implements OnInit {
   errorMessage: string = '';
   selectedCategory: string = 'all';
   searchQuery: string = '';
+
+  // Dialog de confirmation
+  showDeleteDialog: boolean = false;
+  productToDelete: Product | null = null;
 
   categoryOptions = [
     { value: 'all', label: 'Tous les produits' },
@@ -42,23 +48,18 @@ export class Boutique implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Lire les queryParams
     this.route.queryParams.subscribe((params: any) => {
       const category = params['category'];
       if (category && category !== 'all') {
         this.pendingCategory = category.toUpperCase();
       }
     });
-
-    // Charger les produits
     this.loadProducts();
   }
 
   loadProducts(): void {
     this.isLoading = true;
     this.errorMessage = '';
-
-    // Forcer la détection de changement pour afficher le loader
     this.cdr.detectChanges();
 
     this.productService.getAllProducts().subscribe({
@@ -66,7 +67,6 @@ export class Boutique implements OnInit {
         console.log('Produits chargés:', products);
         this.allProducts = products;
 
-        // Appliquer le filtre si nécessaire
         if (this.pendingCategory) {
           this.selectedCategory = this.pendingCategory;
           this.filteredProducts = this.allProducts.filter(
@@ -78,16 +78,12 @@ export class Boutique implements OnInit {
         }
 
         this.isLoading = false;
-
-        // FORCER la détection de changement APRÈS avoir mis à jour les données
         this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Erreur:', error);
         this.errorMessage = 'Impossible de charger les produits.';
         this.isLoading = false;
-
-        // FORCER la détection de changement même en cas d'erreur
         this.cdr.detectChanges();
       }
     });
@@ -96,13 +92,13 @@ export class Boutique implements OnInit {
   filterByCategory(category: string): void {
     this.selectedCategory = category;
     this.applyFilters();
-    this.cdr.detectChanges(); // Forcer la mise à jour
+    this.cdr.detectChanges();
   }
 
   onSearch(event: any): void {
     this.searchQuery = event.target.value.toLowerCase();
     this.applyFilters();
-    this.cdr.detectChanges(); // Forcer la mise à jour
+    this.cdr.detectChanges();
   }
 
   applyFilters(): void {
@@ -122,7 +118,7 @@ export class Boutique implements OnInit {
     this.selectedCategory = 'all';
     this.searchQuery = '';
     this.filteredProducts = this.allProducts;
-    this.cdr.detectChanges(); // Forcer la mise à jour
+    this.cdr.detectChanges();
   }
 
   refreshProducts(): void {
@@ -131,5 +127,40 @@ export class Boutique implements OnInit {
 
   getFullImageUrl(imagePath: string): string {
     return `http://localhost:8080/${imagePath}`;
+  }
+
+  // Ouvrir le dialog de confirmation
+  openDeleteDialog(product: Product, event: Event): void {
+    event.stopPropagation(); // empêche la navigation vers le détail
+    this.productToDelete = product;
+    this.showDeleteDialog = true;
+    this.cdr.detectChanges();
+  }
+
+  // Confirmer la suppression
+  confirmDelete(): void {
+    if (!this.productToDelete) return;
+
+    this.productService.deleteProduct(this.productToDelete.id).subscribe({
+      next: () => {
+        this.allProducts = this.allProducts.filter(p => p.id !== this.productToDelete!.id);
+        this.applyFilters();
+        this.cdr.detectChanges();
+        this.closeDeleteDialog();
+      },
+      error: (err) => {
+        console.error('Erreur suppression:', err);
+        this.errorMessage = 'Erreur lors de la suppression du produit.';
+        this.cdr.detectChanges();
+        this.closeDeleteDialog();
+      }
+    });
+  }
+
+  // Fermer le dialog
+  closeDeleteDialog(): void {
+    this.showDeleteDialog = false;
+    this.productToDelete = null;
+    this.cdr.detectChanges();
   }
 }

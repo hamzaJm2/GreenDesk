@@ -31,7 +31,7 @@ public class FileSystemStorageController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("productName") String productName) throws IOException {
 
-        String safeFolderName = productName.replaceAll("[^a-zA-Z0-9\\-_ ]", "_");
+        String safeFolderName = productName.trim().replaceAll("[^a-zA-Z0-9\\-_ ]", "_");
         String path = storage.store(file, "products/" + safeFolderName, file.getOriginalFilename());
         return ResponseEntity.ok(Map.of("path", path));
     }
@@ -42,7 +42,7 @@ public class FileSystemStorageController {
             @RequestParam("files") List<MultipartFile> files,
             @RequestParam("productName") String productName) throws IOException {
 
-        String safeFolderName = productName.replaceAll("[^a-zA-Z0-9\\-_ ]", "_");
+        String safeFolderName = productName.trim().replaceAll("[^a-zA-Z0-9\\-_ ]", "_");
         List<String> paths = new ArrayList<>();
         for (MultipartFile f : files) {
             if (f != null && !f.isEmpty()) {
@@ -58,7 +58,7 @@ public class FileSystemStorageController {
             @RequestParam("files") List<MultipartFile> files,
             @RequestParam("productName") String productName) throws IOException {
 
-        String safeFolderName = productName.replaceAll("[^a-zA-Z0-9\\-_ ]", "_");
+        String safeFolderName = productName.trim().replaceAll("[^a-zA-Z0-9\\-_ ]", "_");
         List<String> paths = new ArrayList<>();
         for (MultipartFile f : files) {
             if (f != null && !f.isEmpty()) {

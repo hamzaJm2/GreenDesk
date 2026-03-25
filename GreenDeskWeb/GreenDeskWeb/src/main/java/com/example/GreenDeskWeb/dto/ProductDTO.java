@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -27,5 +28,8 @@ public class ProductDTO {
     private boolean isNew;
     private Long categoryId;
     private double price;
+    private List<ProductTabContentDTO> tabs = new ArrayList<>();
+    private List<ProductAttributeDTO> attributes = new ArrayList<>();
+    private List<ProductVariantDTO> variants = new ArrayList<>();
 }
 

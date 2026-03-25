@@ -1,3 +1,7 @@
+import {ProductTabContent} from '../home/productTabContent';
+import {ProductAttribute} from './productAttribute';
+import {ProductVariant} from './productVariant';
+
 export interface Product {
   id: number;
   name: string;
@@ -11,6 +15,9 @@ export interface Product {
   categoryId: number;
   new: boolean;
   price?: number;
+  tabs?: ProductTabContent[];
+  attributes?: ProductAttribute[];
+  variants?: ProductVariant[];
 }
 
 

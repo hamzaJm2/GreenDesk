@@ -13,14 +13,13 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
         registry.addResourceHandler("/products/**")
-                .addResourceLocations("file:/C:/Users/yasmi/OneDrive/Bureau/Green Desk Project/GreenDesk/GreenDeskWeb/GreenDeskWeb/uploads/products/");
+                .addResourceLocations("file:/C:/Users/yasmi/OneDrive/Bureau/Green Desk Project/GreenDesk/GreenDeskWeb/uploads/products/");
 
         registry.addResourceHandler("/achievements/**")
-                .addResourceLocations("file:/C:/Users/yasmi/OneDrive/Bureau/Green Desk Project/GreenDesk/GreenDeskWeb/GreenDeskWeb/uploads/achievements/");
+                .addResourceLocations("file:/C:/Users/yasmi/OneDrive/Bureau/Green Desk Project/GreenDesk/GreenDeskWeb/uploads/achievements/");
 
         registry.addResourceHandler("/categories/**")
-                .addResourceLocations("file:/C:/Users/yasmi/OneDrive/Bureau/Green Desk Project/GreenDesk/GreenDeskWeb/GreenDeskWeb/uploads/categories/");
-
+                .addResourceLocations("file:/C:/Users/yasmi/OneDrive/Bureau/Green Desk Project/GreenDesk/GreenDeskWeb/uploads/categories/");
         registry
                 .addResourceHandler("/uploads/**")
                 .addResourceLocations("file:uploads/");
