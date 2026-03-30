@@ -14,20 +14,20 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Category {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String categoryTitle;
-
     private String description;
     private String image;
-    private String route;
+
     private String color;
+
+    @Enumerated(EnumType.STRING)
+    private ProductCategory productCategory;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<Product> products = new ArrayList<>();
-   private  int count;
-
+    private int count;
 }

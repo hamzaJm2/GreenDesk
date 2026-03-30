@@ -144,20 +144,7 @@
                          }">
                 </div>
               </div>
-              <div>
-                <label class="block font-poppins font-medium mb-2 text-sm" style="color: var(--c-green-dark);">
-                  Livraison (€) <span class="text-red-400">*</span>
-                </label>
-                <div class="relative">
-                  <span class="absolute left-4 top-4 text-gray-400">€</span>
-                  <input type="number" formControlName="deliveryPrice" placeholder="0.00" step="0.01"
-                         class="w-full pl-10 pr-4 py-4 rounded-xl border-2 transition-all duration-300 font-poppins bg-gray-50"
-                         [ngClass]="{
-                           'border-red-300': productForm.get('deliveryPrice')?.invalid && productForm.get('deliveryPrice')?.touched,
-                           'border-gray-200': !(productForm.get('deliveryPrice')?.invalid && productForm.get('deliveryPrice')?.touched)
-                         }">
-                </div>
-              </div>
+
             </div>
           </div>
 
@@ -229,10 +216,11 @@
       <!-- ══════════════════════════════════════════════════════════════════ -->
       <!-- ÉTAPE 2 : Images                                                  -->
       <!-- ══════════════════════════════════════════════════════════════════ -->
+
       <div *ngIf="currentStep === 2" class="p-8 md:p-12">
         <h2 class="font-dosis text-3xl font-bold mb-8 flex items-center" style="color: var(--c-green-dark);">
-          <span class="w-10 h-10 rounded-full flex items-center justify-center text-white text-lg mr-4"
-                style="background-color: var(--c-green-teal);">2</span>
+    <span class="w-10 h-10 rounded-full flex items-center justify-center text-white text-lg mr-4"
+          style="background-color: var(--c-green-teal);">2</span>
           Images du produit
         </h2>
 
@@ -243,10 +231,12 @@
             <h3 class="font-dosis text-xl font-semibold mb-4" style="color: var(--c-green-dark);">
               Image principale <span class="text-red-400">*</span>
             </h3>
-            <div *ngIf="!mainImagePreview"
-                 class="border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer"
-                 [style.borderColor]="'var(--c-green-teal)'"
-                 [style.backgroundColor]="'var(--c-beige)'"
+
+            <!-- Zone d'upload avec loading -->
+            <div *ngIf="!mainImagePreview && !uploadingMainImage"
+                 class="border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer hover:border-green-teal transition-all"
+                 [style.border-color]="'var(--c-green-teal)'"
+                 [style.background-color]="'var(--c-beige)'"
                  (click)="mainImageInput.click()">
               <input type="file" #mainImageInput accept="image/*" (change)="onMainImageSelected($event)" class="hidden">
               <div class="w-24 h-24 mx-auto mb-6 rounded-2xl bg-white flex items-center justify-center">
@@ -259,12 +249,31 @@
               </p>
               <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">PNG, JPG, WebP • Max 5 Mo</p>
             </div>
-            <div *ngIf="mainImagePreview" class="relative group">
+
+            <!-- État de chargement pour l'image principale -->
+            <div *ngIf="uploadingMainImage"
+                 class="border-2 border-dashed rounded-2xl p-12 text-center"
+                 [style.border-color]="'var(--c-green-teal)'"
+                 [style.background-color]="'var(--c-beige)'">
+              <div class="w-24 h-24 mx-auto mb-6 rounded-2xl bg-white flex items-center justify-center">
+                <svg class="w-12 h-12 animate-spin" style="color: var(--c-green-teal);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+              </div>
+              <p class="font-poppins font-semibold text-lg mb-2" style="color: var(--c-green-dark);">
+                Chargement...
+              </p>
+              <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">Traitement de l'image en cours</p>
+            </div>
+
+            <!-- Aperçu de l'image principale -->
+            <div *ngIf="mainImagePreview && !uploadingMainImage" class="relative group">
               <img [src]="mainImagePreview" alt="Aperçu"
                    class="w-full aspect-square object-cover rounded-2xl shadow-xl">
               <div class="absolute inset-0 bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <button type="button" (click)="removeMainImage()"
-                        class="w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600">
+                        class="w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-all hover:scale-110">
                   <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                   </svg>
@@ -278,9 +287,11 @@
             <h3 class="font-dosis text-xl font-semibold mb-4" style="color: var(--c-green-dark);">
               Galerie d'images
             </h3>
-            <div class="border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer mb-6"
-                 [style.borderColor]="'var(--c-green-teal)'"
-                 [style.backgroundColor]="'var(--c-beige)'"
+
+            <!-- Zone d'upload -->
+            <div class="border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer hover:border-green-teal transition-all mb-6"
+                 [style.border-color]="'var(--c-green-teal)'"
+                 [style.background-color]="'var(--c-beige)'"
                  (click)="galleryInput.click()">
               <input type="file" #galleryInput accept="image/*" multiple (change)="onGallerySelected($event)" class="hidden">
               <div class="w-16 h-16 mx-auto mb-4 rounded-xl bg-white flex items-center justify-center">
@@ -290,13 +301,34 @@
               </div>
               <p class="font-poppins font-semibold mb-1" style="color: var(--c-green-dark);">Ajouter des images</p>
               <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">PNG, JPG, WebP • Max 5 Mo par image</p>
+              <p *ngIf="galleryPreviews.length > 0" class="font-poppins text-xs mt-2" style="color: var(--c-green-teal);">
+                {{ galleryPreviews.length }} image(s) ajoutée(s)
+              </p>
             </div>
-            <div class="grid grid-cols-3 gap-3">
-              <div *ngFor="let preview of galleryPreviews; let i = index" class="relative group aspect-square">
+
+            <!-- Indicateur de chargement pour la galerie -->
+            <div *ngIf="uploadingGallery" class="flex items-center justify-center gap-3 py-8">
+              <svg class="w-6 h-6 animate-spin" style="color: var(--c-green-teal);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">Chargement des images...</span>
+            </div>
+
+            <!-- Grille responsive qui s'adapte au nombre d'images -->
+            <!--
+              - Sur mobile: 2 colonnes
+              - Sur tablette: 3 colonnes
+              - Sur desktop: 4 colonnes
+              - Sur grand écran: 5 colonnes
+            -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+              <div *ngFor="let preview of galleryPreviews; let i = index"
+                   class="relative group aspect-square">
                 <img [src]="preview" alt="Galerie" class="w-full h-full object-cover rounded-xl shadow-md">
                 <div class="absolute inset-0 bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <button type="button" (click)="removeGalleryImage(i)"
-                          class="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600">
+                          class="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-all hover:scale-110">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                     </svg>
@@ -304,6 +336,7 @@
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -621,20 +654,23 @@
         </div>
       </div>
 
+
       <!-- ══════════════════════════════════════════════════════════════════ -->
-      <!-- ÉTAPE 6 : Réalisations                                            -->
+      <!-- ÉTAPE 6 : Réalisations -->
       <!-- ══════════════════════════════════════════════════════════════════ -->
       <div *ngIf="currentStep === 6" class="p-8 md:p-12">
         <h2 class="font-dosis text-3xl font-bold mb-8 flex items-center" style="color: var(--c-green-dark);">
-          <span class="w-10 h-10 rounded-full flex items-center justify-center text-white text-lg mr-4"
-                style="background-color: var(--c-green-teal);">6</span>
+    <span class="w-10 h-10 rounded-full flex items-center justify-center text-white text-lg mr-4"
+          style="background-color: var(--c-green-teal);">6</span>
           Réalisations précédentes
         </h2>
 
         <div class="max-w-2xl mx-auto">
-          <div class="border-2 border-dashed rounded-2xl p-16 text-center cursor-pointer mb-8"
-               [style.borderColor]="'var(--c-green-teal)'"
-               [style.backgroundColor]="'var(--c-beige)'"
+
+          <!-- Zone d'upload -->
+          <div class="border-2 border-dashed rounded-2xl p-16 text-center cursor-pointer mb-8 hover:border-green-teal transition-all"
+               [style.border-color]="'var(--c-green-teal)'"
+               [style.background-color]="'var(--c-beige)'"
                (click)="achievementsInput.click()">
             <input type="file" #achievementsInput accept="image/*" multiple
                    (change)="onAchievementsSelected($event)" class="hidden">
@@ -651,10 +687,20 @@
             </p>
             <span class="inline-block px-6 py-3 rounded-full font-poppins text-sm font-semibold"
                   style="background-color: var(--c-gold); color: var(--c-green-dark);">
-              Sélectionner des fichiers
-            </span>
+        Sélectionner des fichiers
+      </span>
           </div>
 
+          <!-- Indicateur de chargement pour les réalisations -->
+          <div *ngIf="uploadingAchievements" class="flex items-center justify-center gap-3 py-8">
+            <svg class="w-6 h-6 animate-spin" style="color: var(--c-green-teal);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+            <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">Chargement des images...</span>
+          </div>
+
+          <!-- Grille des réalisations -->
           <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div *ngFor="let preview of achievementPreviews; let i = index"
                  class="relative group aspect-square">
@@ -662,7 +708,7 @@
                    class="w-full h-full object-cover rounded-xl shadow-lg">
               <div class="absolute inset-0 bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <button type="button" (click)="removeAchievementImage(i)"
-                        class="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600">
+                        class="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-all hover:scale-110">
                   <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
                   </svg>
@@ -672,7 +718,6 @@
           </div>
         </div>
       </div>
-
       <!-- Footer boutons -->
       <div class="p-8 border-t flex justify-between items-center"
            style="background-color: var(--c-beige); border-color: var(--c-white);">

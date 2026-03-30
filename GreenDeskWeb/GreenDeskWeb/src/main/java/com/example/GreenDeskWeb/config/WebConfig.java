@@ -11,18 +11,17 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String base = System.getProperty("user.dir") + "/uploads/";
+
+        System.out.println(">>> Serving files from: " + base); // ← log pour vérifier
 
         registry.addResourceHandler("/products/**")
-                .addResourceLocations("file:/C:/Users/yasmi/OneDrive/Bureau/Green Desk Project/GreenDesk/GreenDeskWeb/uploads/products/");
+                .addResourceLocations("file:" + base + "products/");
 
         registry.addResourceHandler("/achievements/**")
-                .addResourceLocations("file:/C:/Users/yasmi/OneDrive/Bureau/Green Desk Project/GreenDesk/GreenDeskWeb/uploads/achievements/");
+                .addResourceLocations("file:" + base + "achievements/");
 
         registry.addResourceHandler("/categories/**")
-                .addResourceLocations("file:/C:/Users/yasmi/OneDrive/Bureau/Green Desk Project/GreenDesk/GreenDeskWeb/uploads/categories/");
-        registry
-                .addResourceHandler("/uploads/**")
-                .addResourceLocations("file:uploads/");
-
+                .addResourceLocations("file:" + base + "categories/");
     }
 }

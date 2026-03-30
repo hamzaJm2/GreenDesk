@@ -68,18 +68,12 @@
           <!-- Prix et livraison -->
           <div class="flex items-center space-x-6 mb-6">
             <div>
-              <span class="font-poppins text-sm block" style="color: var(--c-gray-dark);">Prix</span>
+              <span class="font-poppins text-sm block" style="color: var(--c-gray-dark);">À partir de</span>
               <span class="font-dosis text-3xl font-bold" style="color: var(--c-green-teal);">
-                {{ formattedPrice }}
-              </span>
+      {{ formattedPrice }}
+    </span>
             </div>
-            <div class="w-px h-10" style="background-color: var(--c-gold);"></div>
-            <div>
-              <span class="font-poppins text-sm block" style="color: var(--c-gray-dark);">Livraison</span>
-              <span class="font-dosis text-xl font-semibold" style="color: var(--c-green-dark);">
-                {{ product.deliveryPrice ? (product.deliveryPrice + ' €') : 'Offerte' }}
-              </span>
-            </div>
+
           </div>
 
           <!-- Description -->

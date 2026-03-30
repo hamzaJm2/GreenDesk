@@ -36,6 +36,10 @@ export class ProductCreateComponent implements OnInit {
 
   attributes: { name: string; values: { value: string; extraPrice: number }[] }[] = [];
 
+  uploadingMainImage = false;
+  uploadingGallery = false;
+  uploadingAchievements = false;
+
   mainImageFile: File | null = null;
   mainImagePreview: string | null = null;
   galleryFiles: File[] = [];
@@ -56,6 +60,7 @@ export class ProductCreateComponent implements OnInit {
     private categoryService: CategoryService,
     private router: Router,
     private cdr: ChangeDetectorRef
+
   ) {
     this.productForm = this.fb.group({
       name:          ['', [Validators.required, Validators.minLength(3)]],
@@ -63,7 +68,6 @@ export class ProductCreateComponent implements OnInit {
       categoryTitle: [''],
       categoryId:    [null, Validators.required],
       price:         [null, [Validators.required, Validators.min(0)]],
-      deliveryPrice: [null, [Validators.required, Validators.min(0)]],
       description:   ['', [Validators.required, Validators.minLength(10)]],
       features:      this.fb.array([]),
       isNew:         [true]
@@ -74,7 +78,10 @@ export class ProductCreateComponent implements OnInit {
   ngOnInit(): void {
     this.categoryService.getAllCategories().subscribe({
       next: (cats) => {
-        this.categories = [...cats];
+        this.categories = cats.map(cat => ({
+          ...cat,
+          productCategory: cat.productCategory || cat.title.toLowerCase().replace(/[^a-z0-9]/g, '_')
+        }));
         this.isLoadingCategories = false;
         this.cdr.detectChanges();
       },
@@ -112,10 +119,16 @@ export class ProductCreateComponent implements OnInit {
 
   onCategorySelect(cat: Category): void {
     this.productForm.patchValue({
-      category:      cat.route,
+      category:      cat.productCategory,  // ← Utiliser productCategory
       categoryTitle: cat.title,
       categoryId:    Number(cat.id)
     });
+
+    // Forcer la validation
+    this.productForm.get('category')?.updateValueAndValidity();
+    this.productForm.get('categoryId')?.updateValueAndValidity();
+
+    this.cdr.detectChanges();
   }
 
   // ── Onglets prédéfinis ─────────────────────────────────────────────────────
@@ -194,41 +207,127 @@ export class ProductCreateComponent implements OnInit {
 
   // ── Images ─────────────────────────────────────────────────────────────────
 
+  // ── Images avec gestion robuste ─────────────────────────────────────────────────
+
   onMainImageSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file || !this.validateFile(file)) return;
-    this.mainImageFile = file;
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file || !this.validateFile(file)) {
+      input.value = ''; // Reset input
+      return;
+    }
+
+    this.uploadingMainImage = true;
     this.errorMessage = '';
-    this.readPreview(file, (result) => this.mainImagePreview = result);
+    this.cdr.detectChanges();
+
+    this.mainImageFile = file;
+
+    this.readPreview(file, (result) => {
+      this.mainImagePreview = result;
+      this.uploadingMainImage = false;
+      this.cdr.detectChanges();
+    });
+
+    input.value = ''; // Reset input
   }
 
   removeMainImage(): void {
     this.mainImageFile = null;
     this.mainImagePreview = null;
+    this.cdr.detectChanges();
   }
 
   onGallerySelected(event: Event): void {
-    const files = Array.from((event.target as HTMLInputElement).files ?? []);
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+
+    if (files.length === 0) return;
+
     const valid = files.filter(f => this.validateFile(f));
-    this.galleryFiles = [...this.galleryFiles, ...valid];
-    valid.forEach(f => this.readPreview(f, (r) => this.galleryPreviews.push(r)));
+
+    if (valid.length === 0) {
+      input.value = '';
+      return;
+    }
+
+    this.uploadingGallery = true;
+    this.cdr.detectChanges();
+
+    let processedCount = 0;
+
+    valid.forEach(file => {
+      this.readPreview(file, (result) => {
+        // Créer de nouveaux tableaux pour déclencher la détection
+        const newPreviews = [...this.galleryPreviews, result];
+        const newFiles = [...this.galleryFiles, file];
+
+        this.galleryPreviews = newPreviews;
+        this.galleryFiles = newFiles;
+
+        processedCount++;
+
+        if (processedCount === valid.length) {
+          this.uploadingGallery = false;
+        }
+
+        this.cdr.detectChanges();
+      });
+    });
+
+    input.value = ''; // Reset input
   }
 
   removeGalleryImage(index: number): void {
-    this.galleryFiles.splice(index, 1);
-    this.galleryPreviews.splice(index, 1);
+    this.galleryFiles = this.galleryFiles.filter((_, i) => i !== index);
+    this.galleryPreviews = this.galleryPreviews.filter((_, i) => i !== index);
+    this.cdr.detectChanges();
   }
 
   onAchievementsSelected(event: Event): void {
-    const files = Array.from((event.target as HTMLInputElement).files ?? []);
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+
+    if (files.length === 0) return;
+
     const valid = files.filter(f => this.validateFile(f));
-    this.achievementFiles = [...this.achievementFiles, ...valid];
-    valid.forEach(f => this.readPreview(f, (r) => this.achievementPreviews.push(r)));
+
+    if (valid.length === 0) {
+      input.value = '';
+      return;
+    }
+
+    this.uploadingAchievements = true;
+    this.cdr.detectChanges();
+
+    let processedCount = 0;
+
+    valid.forEach(file => {
+      this.readPreview(file, (result) => {
+        // Créer de nouveaux tableaux pour déclencher la détection
+        const newPreviews = [...this.achievementPreviews, result];
+        const newFiles = [...this.achievementFiles, file];
+
+        this.achievementPreviews = newPreviews;
+        this.achievementFiles = newFiles;
+
+        processedCount++;
+
+        if (processedCount === valid.length) {
+          this.uploadingAchievements = false;
+        }
+
+        this.cdr.detectChanges();
+      });
+    });
+
+    input.value = ''; // Reset input
   }
 
   removeAchievementImage(index: number): void {
-    this.achievementFiles.splice(index, 1);
-    this.achievementPreviews.splice(index, 1);
+    this.achievementFiles = this.achievementFiles.filter((_, i) => i !== index);
+    this.achievementPreviews = this.achievementPreviews.filter((_, i) => i !== index);
+    this.cdr.detectChanges();
   }
 
   // ── Navigation ─────────────────────────────────────────────────────────────
@@ -236,8 +335,25 @@ export class ProductCreateComponent implements OnInit {
   nextStep(): void {
     if (this.currentStep === 1) {
       this.productForm.markAllAsTouched();
+
+      // Vérifier chaque champ requis
+      const errors: string[] = [];
+
+      if (!this.productForm.get('name')?.value || this.productForm.get('name')?.invalid) {
+        errors.push('Nom du produit ');
+      }
+      if (!this.productForm.get('categoryId')?.value) {
+        errors.push('Catégorie');
+      }
+      if (!this.productForm.get('price')?.value || this.productForm.get('price')?.invalid) {
+        errors.push('Prix');
+      }
+      if (!this.productForm.get('description')?.value || this.productForm.get('description')?.invalid) {
+        errors.push('Description');
+      }
+
       if (!this.productForm.valid) {
-        this.errorMessage = 'Veuillez remplir tous les champs obligatoires.';
+        this.errorMessage = `Veuillez remplir tous les champs obligatoires : ${errors.join(', ')}.`;
         return;
       }
     }
@@ -306,7 +422,6 @@ export class ProductCreateComponent implements OnInit {
           categoryTitle: formValue.categoryTitle,
           categoryId:    formValue.categoryId,
           price:         formValue.price,
-          deliveryPrice: formValue.deliveryPrice,
           description:   formValue.description,
           image:         main.path,
           gallery:       gallery.paths,
@@ -339,9 +454,6 @@ export class ProductCreateComponent implements OnInit {
     });
   }
 
-  onCancel(): void {
-    this.router.navigate(['/boutique']);
-  }
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 

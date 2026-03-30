@@ -13,11 +13,10 @@ import {ConfirmationDialogComponent} from '../../shared/confirmation-dialog/conf
   imports: [
     CommonModule,
     RouterModule,
-    ProductCard,
-    ConfirmationDialogComponent
+
   ],
   templateUrl: './boutique.html',
-  styleUrl: './boutique.scss',
+  styleUrls: ['./boutique.scss']
 })
 export class Boutique implements OnInit {
 
@@ -28,9 +27,7 @@ export class Boutique implements OnInit {
   selectedCategory: string = 'all';
   searchQuery: string = '';
 
-  // Dialog de confirmation
-  showDeleteDialog: boolean = false;
-  productToDelete: Product | null = null;
+
 
   categoryOptions = [
     { value: 'all', label: 'Tous les produits' },
@@ -129,38 +126,7 @@ export class Boutique implements OnInit {
     return `http://localhost:8080/${imagePath}`;
   }
 
-  // Ouvrir le dialog de confirmation
-  openDeleteDialog(product: Product, event: Event): void {
-    event.stopPropagation(); // empêche la navigation vers le détail
-    this.productToDelete = product;
-    this.showDeleteDialog = true;
-    this.cdr.detectChanges();
-  }
 
-  // Confirmer la suppression
-  confirmDelete(): void {
-    if (!this.productToDelete) return;
 
-    this.productService.deleteProduct(this.productToDelete.id).subscribe({
-      next: () => {
-        this.allProducts = this.allProducts.filter(p => p.id !== this.productToDelete!.id);
-        this.applyFilters();
-        this.cdr.detectChanges();
-        this.closeDeleteDialog();
-      },
-      error: (err) => {
-        console.error('Erreur suppression:', err);
-        this.errorMessage = 'Erreur lors de la suppression du produit.';
-        this.cdr.detectChanges();
-        this.closeDeleteDialog();
-      }
-    });
-  }
 
-  // Fermer le dialog
-  closeDeleteDialog(): void {
-    this.showDeleteDialog = false;
-    this.productToDelete = null;
-    this.cdr.detectChanges();
-  }
 }

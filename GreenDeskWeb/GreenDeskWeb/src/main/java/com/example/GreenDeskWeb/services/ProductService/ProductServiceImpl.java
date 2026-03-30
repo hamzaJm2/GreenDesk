@@ -147,7 +147,7 @@ public class ProductServiceImpl implements ProductService {
                     dto.setTitle(category.getCategoryTitle());
                     dto.setDescription(category.getDescription());
                     dto.setImage(category.getImage());
-                    dto.setRoute(category.getRoute());
+                    dto.setProductCategory(category.getProductCategory());
                     dto.setColor(category.getColor());
                     dto.setCount(category.getProducts() != null ? category.getProducts().size() : 0);
 

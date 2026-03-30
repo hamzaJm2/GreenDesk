@@ -22,7 +22,7 @@ public class Product {
 
     private String name;
     private double price;
-    private double deliveryPrice;
+
     private String image;
     private String description;
 

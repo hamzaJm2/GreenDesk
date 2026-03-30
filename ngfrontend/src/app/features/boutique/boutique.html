@@ -84,18 +84,6 @@
                    style="background-color: var(--c-white); color: var(--c-green-dark);">
                 {{ product.categoryTitle }}
               </div>
-
-              <!-- Bouton supprimer avec effet modernisé -->
-              <button (click)="openDeleteDialog(product, $event)"
-                      class="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 text-red-500
-                             flex items-center justify-center opacity-0 group-hover:opacity-100
-                             transition-all duration-300 hover:bg-red-500 hover:text-white
-                             shadow-md hover:shadow-lg z-20"
-                      title="Supprimer le produit">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                </svg>
-              </button>
             </div>
 
             <!-- Infos produit -->
@@ -196,15 +184,4 @@
     </div>
   </section>
 
-  <!-- Dialog de confirmation -->
-  <app-confirmation-dialog
-    [isOpen]="showDeleteDialog"
-    [title]="'Supprimer le produit'"
-    [message]="'Êtes-vous sûr de vouloir supprimer ce produit ? Cette action est irréversible.'"
-    [itemName]="productToDelete?.name || ''"
-    [confirmText]="'Supprimer'"
-    [cancelText]="'Annuler'"
-    (confirm)="confirmDelete()"
-    (cancel)="closeDeleteDialog()">
-  </app-confirmation-dialog>
 </div>

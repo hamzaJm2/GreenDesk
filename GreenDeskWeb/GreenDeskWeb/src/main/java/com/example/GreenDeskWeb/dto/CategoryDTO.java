@@ -1,6 +1,7 @@
 package com.example.GreenDeskWeb.dto;
 
 
+import com.example.GreenDeskWeb.enums.ProductCategory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ public class CategoryDTO {
     private String title;
     private String description;
     private String image;
-    private String route;
+    private ProductCategory productCategory;
     private String color;
     private  int count;
 }
