@@ -20,7 +20,9 @@ public class ProductDTO {
     private ProductCategory category;
     private String categoryTitle;
     private String image;
-    private String description;
+    private String longDescription ;
+    private String shortDescription;
+    private List<String> strengths ;
     private List<String> gallery;
     private List<String> achievements;
     @JsonProperty("new")

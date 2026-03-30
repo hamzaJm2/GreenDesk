@@ -151,21 +151,34 @@
           <!-- Colonne droite -->
           <div class="space-y-6">
 
-            <!-- Description -->
             <div>
               <label class="block font-poppins font-medium mb-2 text-sm" style="color: var(--c-green-dark);">
-                Description <span class="text-red-400">*</span>
+                Description courte <span class="text-red-400">*</span>
               </label>
-              <textarea formControlName="description" rows="5"
-                        placeholder="Décrivez le produit en quelques lignes..."
+              <textarea formControlName="shortDescription" rows="2"
+                        placeholder="Décrivez le produit en quelques mots..."
                         class="w-full px-4 py-4 rounded-xl border-2 transition-all duration-300 font-poppins bg-gray-50 resize-none"
                         [ngClass]="{
-                          'border-red-300': productForm.get('description')?.invalid && productForm.get('description')?.touched,
-                          'border-gray-200': !(productForm.get('description')?.invalid && productForm.get('description')?.touched)
-                        }">
-              </textarea>
+                'border-red-300': productForm.get('shortDescription')?.invalid && productForm.get('shortDescription')?.touched,
+                'border-gray-200': !(productForm.get('shortDescription')?.invalid && productForm.get('shortDescription')?.touched)
+              }">
+    </textarea>
             </div>
 
+            <!-- Description longue -->
+            <div>
+              <label class="block font-poppins font-medium mb-2 text-sm" style="color: var(--c-green-dark);">
+                Description longue <span class="text-red-400">*</span>
+              </label>
+              <textarea formControlName="longDescription" rows="5"
+                        placeholder="Décrivez le produit en détail..."
+                        class="w-full px-4 py-4 rounded-xl border-2 transition-all duration-300 font-poppins bg-gray-50 resize-none"
+                        [ngClass]="{
+                'border-red-300': productForm.get('longDescription')?.invalid && productForm.get('longDescription')?.touched,
+                'border-gray-200': !(productForm.get('longDescription')?.invalid && productForm.get('longDescription')?.touched)
+              }">
+    </textarea>
+            </div>
             <!-- Points forts -->
             <div>
               <label class="block font-poppins font-medium mb-2 text-sm" style="color: var(--c-green-dark);">

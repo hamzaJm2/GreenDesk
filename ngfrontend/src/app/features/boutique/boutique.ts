@@ -105,7 +105,7 @@ export class Boutique implements OnInit {
 
       const matchesSearch = this.searchQuery === '' ||
         product.name.toLowerCase().includes(this.searchQuery) ||
-        product.description.toLowerCase().includes(this.searchQuery);
+        product.longDescription.toLowerCase().includes(this.searchQuery);
 
       return matchesCategory && matchesSearch;
     });

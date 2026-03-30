@@ -24,7 +24,13 @@ public class Product {
     private double price;
 
     private String image;
-    private String description;
+    private String longDescription ;
+    private String shortDescription;
+
+    @ElementCollection
+    @CollectionTable(name = "product_strengths", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "strength_text")
+    private List<String> strengths = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "product_gallery", joinColumns = @JoinColumn(name = "product_id"))

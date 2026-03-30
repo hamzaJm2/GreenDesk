@@ -8,7 +8,9 @@ export interface Product {
   category: string;
   categoryTitle: string;
   image: string;
-  description: string;
+  shortDescription:  string;
+  longDescription : string;
+  strengths : string[];
   gallery: string[];
   achievements: string[];
   categoryId: number;

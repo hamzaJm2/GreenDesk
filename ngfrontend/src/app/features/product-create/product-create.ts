@@ -68,7 +68,8 @@ export class ProductCreateComponent implements OnInit {
       categoryTitle: [''],
       categoryId:    [null, Validators.required],
       price:         [null, [Validators.required, Validators.min(0)]],
-      description:   ['', [Validators.required, Validators.minLength(10)]],
+      shortDescription: ['', [Validators.required, Validators.minLength(3)]],
+      longDescription:  ['', [Validators.required, Validators.minLength(10)]],
       features:      this.fb.array([]),
       isNew:         [true]
     });
@@ -348,9 +349,13 @@ export class ProductCreateComponent implements OnInit {
       if (!this.productForm.get('price')?.value || this.productForm.get('price')?.invalid) {
         errors.push('Prix');
       }
-      if (!this.productForm.get('description')?.value || this.productForm.get('description')?.invalid) {
-        errors.push('Description');
+      if (!this.productForm.get('shortDescription')?.value || this.productForm.get('shortDescription')?.invalid) {
+        errors.push('Description courte ');
       }
+      if (!this.productForm.get('longDescription')?.value || this.productForm.get('longDescription')?.invalid) {
+        errors.push('Description longue ');
+      }
+
 
       if (!this.productForm.valid) {
         this.errorMessage = `Veuillez remplir tous les champs obligatoires : ${errors.join(', ')}.`;
@@ -416,13 +421,17 @@ export class ProductCreateComponent implements OnInit {
             }))
         ];
 
+
+
         const productData: Omit<Product, 'id'> = {
           name:          formValue.name,
           category:      formValue.category,
           categoryTitle: formValue.categoryTitle,
           categoryId:    formValue.categoryId,
           price:         formValue.price,
-          description:   formValue.description,
+          shortDescription:   formValue.shortDescription,
+          longDescription : formValue.longDescription,
+          strengths :  formValue.features.filter((f: string) => f && f.trim() !== ''),
           image:         main.path,
           gallery:       gallery.paths,
           achievements:  achievements.paths,
