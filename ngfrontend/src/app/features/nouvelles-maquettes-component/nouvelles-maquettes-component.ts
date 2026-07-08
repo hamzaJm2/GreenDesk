@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -264,8 +265,11 @@ export class NouvellesMaquettesComponent implements OnInit, OnDestroy {
       } else {
         await this.uploadLogoAndRefresh(this.mockupService.uploadLogo(this.projectId!, file));
       }
-    } catch {
-      this.logoError = "Erreur lors de l'upload.";
+    } catch (err) {
+      console.error('Erreur upload logo', err);
+      this.logoError = err instanceof HttpErrorResponse
+        ? `Erreur lors de l'upload (${err.status}) : ${err.error?.message ?? err.message}`
+        : "Erreur lors de l'upload.";
       this.cdr.detectChanges();
     } finally {
       this.endLogoUpload();
