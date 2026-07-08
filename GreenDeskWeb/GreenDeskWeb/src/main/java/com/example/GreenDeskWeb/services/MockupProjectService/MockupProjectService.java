@@ -15,5 +15,6 @@ public interface MockupProjectService {
     MockupProjectDTO duplicate(Long id);
     void delete(Long id);
     String uploadLogo(Long projectId, org.springframework.web.multipart.MultipartFile file) throws java.io.IOException;
+    String uploadPdfLogo(Long projectId, org.springframework.web.multipart.MultipartFile pdfFile, org.springframework.web.multipart.MultipartFile previewImage) throws java.io.IOException;
     void deleteLogo(Long projectId, Long logoId);
 }

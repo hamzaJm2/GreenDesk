@@ -142,7 +142,7 @@ public class MockupProjectServiceImpl implements MockupProjectService {
         logo.setMimeType(file.getContentType());
         logo.setExtension(extension);
         logo.setVector(extension.equals("svg") || extension.equals("ai") || extension.equals("pdf"));
-        logo.setTypeApercu("image");
+        logo.setTypeApercu(resolveTypeApercu(extension));
         logo.setDateImport(LocalDateTime.now());
 
         mockupLogoRepository.save(logo);
@@ -153,6 +153,48 @@ public class MockupProjectServiceImpl implements MockupProjectService {
         }
 
         return path;
+    }
+
+    @Override
+    public String uploadPdfLogo(Long projectId, MultipartFile pdfFile, MultipartFile previewImage) throws IOException {
+        MockupProject project = mockupProjectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Projet introuvable : " + projectId));
+
+        String originalFilename = pdfFile.getOriginalFilename() != null ? pdfFile.getOriginalFilename() : "logo.pdf";
+        String pdfPath = storageService.store(pdfFile, "mockups/" + projectId, originalFilename);
+
+        String previewFilename = originalFilename.replaceAll("(?i)\\.pdf$", "") + ".png";
+        String previewPath = storageService.store(previewImage, "mockups/" + projectId, previewFilename);
+
+        MockupLogo logo = new MockupLogo();
+        logo.setProject(project);
+        logo.setNomOriginal(originalFilename);
+        logo.setNomFichierStocke(originalFilename);
+        logo.setPublicPath(previewPath);
+        logo.setOriginalPdfPath(pdfPath);
+        logo.setMimeType(previewImage.getContentType());
+        logo.setExtension("pdf");
+        logo.setVector(true);
+        logo.setTypeApercu("image");
+        logo.setDateImport(LocalDateTime.now());
+
+        mockupLogoRepository.save(logo);
+
+        if (project.getLogoPrincipalId() == null) {
+            project.setLogoPrincipalId(String.valueOf(logo.getId()));
+            mockupProjectRepository.save(project);
+        }
+
+        return previewPath;
+    }
+
+    private String resolveTypeApercu(String extension) {
+        return switch (extension) {
+            case "png", "jpg", "jpeg", "gif", "webp", "bmp", "svg" -> "image";
+            case "pdf" -> "pdf";
+            case "ai" -> "vector";
+            default -> "other";
+        };
     }
 
     @Override

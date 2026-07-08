@@ -84,8 +84,13 @@
           </div>
 
           <label class="block w-full border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all duration-300 hover:opacity-90 mb-6"
-                 style="border-color: var(--c-green-teal); background-color: var(--c-white);">
-            <input type="file" class="hidden" multiple accept="image/*,.svg,.ai,.pdf"
+                 style="border-color: var(--c-green-teal);"
+                 [style.background-color]="isDraggingLogo ? '#F0FDF4' : 'var(--c-white)'"
+                 (dragover)="onLogoDragOver($event)"
+                 (dragleave)="onLogoDragLeave($event)"
+                 (drop)="onLogoDrop($event)">
+            <input type="file" class="hidden" multiple
+                   accept="image/*,.svg,.ai,.pdf,.eps,application/pdf,application/postscript,application/illustrator,application/vnd.adobe.illustrator,image/svg+xml"
                    (change)="onLogoFileSelected($event)">
             <div *ngIf="!uploadingLogo">
               <div class="w-14 h-14 mx-auto mb-3 rounded-2xl flex items-center justify-center" style="background-color: var(--c-beige);">
@@ -116,7 +121,14 @@
                      class="absolute top-2 left-2 px-2 py-0.5 rounded-full text-xs font-poppins font-semibold z-10"
                      style="background-color: var(--c-green-teal); color: var(--c-white);">Principal</div>
                 <div class="p-4 flex items-center justify-center h-24" style="background-color: var(--c-beige);">
-                  <img [src]="getLogoUrl(logo.publicPath)" [alt]="logo.nomOriginal" class="max-h-16 max-w-full object-contain">
+                  <img *ngIf="logo.typeApercu === 'image'" [src]="getLogoUrl(logo.publicPath)" [alt]="logo.nomOriginal" class="max-h-16 max-w-full object-contain">
+                  <div *ngIf="logo.typeApercu !== 'image'" class="flex flex-col items-center gap-1">
+                    <svg class="w-8 h-8" style="color: var(--c-green-dark);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                    </svg>
+                    <span class="font-poppins text-xs font-semibold uppercase" style="color: var(--c-gray-dark);">.{{ logo.extension }}</span>
+                  </div>
                 </div>
                 <div class="p-2">
                   <p class="font-poppins text-xs truncate mb-2" style="color: var(--c-gray-dark);">{{ logo.nomOriginal }}</p>

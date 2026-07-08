@@ -10,6 +10,7 @@ public class MockupLogoDTO {
     private String nomOriginal;
     private String nomFichierStocke;
     private String publicPath;
+    private String originalPdfPath;
     private String mimeType;
     private String extension;
     private boolean isVector;

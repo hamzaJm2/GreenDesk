@@ -26,6 +26,7 @@ export interface MockupLogoDTO {
   nomOriginal: string;
   nomFichierStocke: string;
   publicPath: string;
+  originalPdfPath?: string;
   mimeType: string;
   extension: string;
   isVector: boolean;
