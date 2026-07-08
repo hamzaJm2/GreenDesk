@@ -41,4 +41,24 @@ export class UploadService {
     formData.append('productName', productName);
     return this.http.post<UploadMultipleResponse>(`${this.uploadUrl}/product/achievements`, formData);
   }
+
+
+  uploadVideo(file: File, productName: string): Promise<{ path: string }> {
+    const formData = new FormData();
+    formData.append('video', file);
+    formData.append('productName', productName);
+
+    return this.http.post<{ path: string }>(
+      `${this.uploadUrl}/video`,  // <- ✅ Correction ici
+      formData
+    )
+      .toPromise()
+      .then(response => {
+        if (!response) {
+          throw new Error('Upload failed: no response');
+        }
+        return response;
+      });
+  }
+
 }

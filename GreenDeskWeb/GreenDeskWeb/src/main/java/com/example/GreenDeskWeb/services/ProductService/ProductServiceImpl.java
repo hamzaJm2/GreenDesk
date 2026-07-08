@@ -2,6 +2,7 @@ package com.example.GreenDeskWeb.services.ProductService;
 
 import com.example.GreenDeskWeb.dto.*;
 import com.example.GreenDeskWeb.entites.*;
+import com.example.GreenDeskWeb.enums.LabelType;
 import com.example.GreenDeskWeb.mappers.ProductMapper;
 import com.example.GreenDeskWeb.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -136,6 +137,140 @@ public class ProductServiceImpl implements ProductService {
         return toFullProductDTO(fullProduct);
     }
 
+    @Override
+    @Transactional
+    public ProductDTO updateProduct(Long id, ProductDTO dto) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found: " + id));
+
+        // ── Champs simples ──────────────────────────────────────────────────────
+        product.setName(dto.getName());
+        product.setShortDescription(dto.getShortDescription());
+        product.setLongDescription(dto.getLongDescription());
+        product.setPrice(dto.getPrice());
+        product.setNew(dto.isNew());
+        product.setActif(dto.isActif());
+        product.setLabelType(dto.getLabelType() != null ? dto.getLabelType() : LabelType.FIF);
+        if (dto.getImage() != null) product.setImage(dto.getImage());
+        if (dto.getVideo() != null) product.setVideo(dto.getVideo());
+        if (dto.getVideoType() != null) product.setVideoType(dto.getVideoType());
+        if (dto.getGallery() != null) product.setGallery(dto.getGallery());
+        if (dto.getAchievements() != null) product.setAchievements(dto.getAchievements());
+        if (dto.getStrengths() != null) product.setStrengths(dto.getStrengths());
+
+        // ── Catégorie ───────────────────────────────────────────────────────────
+        if (dto.getCategoryId() != null) {
+            Category cat = categoryRepository.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new EntityNotFoundException("Category not found"));
+            product.setCategory(cat);
+            product.setProductCategory(dto.getCategory());
+        }
+
+        // ── Tabs ────────────────────────────────────────────────────────────────
+        if (dto.getTabs() != null) {
+            product.getTabs().clear();
+            for (ProductTabContentDTO tabDTO : dto.getTabs()) {
+                ProductTabContent tabContent = productMapper.ProductTabContentDtoToEntity(tabDTO);
+                tabContent.setProduct(product);
+                if (tabDTO.getTabId() != null) {
+                    ProductTabDefinition tabDef = productTabDefinitionRepository
+                            .findById(tabDTO.getTabId())
+                            .orElseThrow(() -> new EntityNotFoundException("Tab not found: " + tabDTO.getTabId()));
+                    tabContent.setTab(tabDef);
+                } else {
+                    String key = tabDTO.getTabLabel().toLowerCase().replaceAll("[^a-z0-9]", "_");
+                    ProductTabDefinition tabDef = productTabDefinitionRepository
+                            .findByTabKey(key)
+                            .orElseGet(() -> {
+                                ProductTabDefinition newDef = new ProductTabDefinition();
+                                newDef.setTabKey(key);
+                                newDef.setLabel(tabDTO.getTabLabel());
+                                return productTabDefinitionRepository.save(newDef);
+                            });
+                    tabContent.setTab(tabDef);
+                }
+                product.getTabs().add(tabContent);
+            }
+        }
+
+        // ── Points forts structurés ─────────────────────────────────────────────
+        if (dto.getStrengthItems() != null) {
+            product.getStrengthItems().clear();
+            int order = 0;
+            for (ProductStrengthDTO s : dto.getStrengthItems()) {
+                ProductStrength strength = new ProductStrength();
+                strength.setProduct(product);
+                strength.setTitre(s.getTitre());
+                strength.setPhrase(s.getPhrase());
+                strength.setIconId(s.getIconId());
+                strength.setDisplayOrder(order++);
+                product.getStrengthItems().add(strength);
+            }
+        }
+
+        // ── Zones de marquage ───────────────────────────────────────────────────
+        if (dto.getMarkingZones() != null) {
+            product.getMarkingZones().clear();
+            int order = 0;
+            for (ProductMarkingZoneDTO z : dto.getMarkingZones()) {
+                ProductMarkingZone zone = new ProductMarkingZone();
+                zone.setProduct(product);
+                zone.setNom(z.getNom());
+                zone.setZoomActive(z.isZoomActive());
+                zone.setPaddingPercent(z.getPaddingPercent());
+                if (z.getMasquePng() != null) zone.setMasquePng(z.getMasquePng());
+                zone.setLargeurZoneMm(z.getLargeurZoneMm());
+                zone.setHauteurZoneMm(z.getHauteurZoneMm());
+                zone.setDisplayOrder(order++);
+                product.getMarkingZones().add(zone);
+            }
+        }
+
+        // ── Coloris ─────────────────────────────────────────────────────────────
+        if (dto.getColoris() != null) {
+            // Mise à jour sans supprimer — pour garder les IDs existants
+            for (ProductColorisDTO c : dto.getColoris()) {
+                if (c.getId() != null) {
+                    // Update existant
+                    product.getColoris().stream()
+                            .filter(existing -> existing.getId().equals(c.getId()))
+                            .findFirst()
+                            .ifPresent(existing -> {
+                                existing.setNom(c.getNom());
+                                existing.setCodeHex(c.getCodeHex());
+                                existing.setActif(c.isActif());
+                                existing.setDisplayOrder(c.getDisplayOrder());
+                                if (c.getImageProduit() != null) existing.setImageProduit(c.getImageProduit());
+                                if (c.getCouleurMasquePng() != null) existing.setCouleurMasquePng(c.getCouleurMasquePng());
+                                if (c.getImageBaseBlanc() != null) existing.setImageBaseBlanc(c.getImageBaseBlanc());
+                                existing.setCouleurPersonnalisable(c.isCouleurPersonnalisable());
+                            });
+                } else {
+                    // Nouveau coloris
+                    ProductColoris coloris = new ProductColoris();
+                    coloris.setProduct(product);
+                    coloris.setNom(c.getNom());
+                    coloris.setCodeHex(c.getCodeHex());
+                    coloris.setActif(c.isActif());
+                    coloris.setDisplayOrder(c.getDisplayOrder());
+                    coloris.setImageProduit(c.getImageProduit());
+                    coloris.setCouleurMasquePng(c.getCouleurMasquePng());
+                    coloris.setImageBaseBlanc(c.getImageBaseBlanc());
+                    coloris.setCouleurPersonnalisable(c.isCouleurPersonnalisable());
+                    product.getColoris().add(coloris);
+                }
+            }
+            // Supprimer ceux qui ne sont plus dans le DTO
+            List<Long> dtoIds = dto.getColoris().stream()
+                    .filter(c -> c.getId() != null)
+                    .map(ProductColorisDTO::getId)
+                    .toList();
+            product.getColoris().removeIf(c -> c.getId() != null && !dtoIds.contains(c.getId()));
+        }
+
+        Product saved = productRepository.save(product);
+        return toFullProductDTO(productRepository.findById(saved.getId()).orElseThrow());
+    }
     @Override
     @Transactional(readOnly = true)
     public List<CategoryDTO> findAllCategories() {

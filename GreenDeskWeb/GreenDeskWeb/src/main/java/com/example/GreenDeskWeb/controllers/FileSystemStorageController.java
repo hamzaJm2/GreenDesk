@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,10 +20,12 @@ import java.util.Map;
 public class FileSystemStorageController {
 
     private final FileSystemStorageService storage;
+    private final FileSystemStorageService fileSystemStorageService;
 
     @Autowired
-    public FileSystemStorageController(FileSystemStorageService storage) {
+    public FileSystemStorageController(FileSystemStorageService storage, FileSystemStorageService fileSystemStorageService) {
         this.storage = storage;
+        this.fileSystemStorageService = fileSystemStorageService;
     }
 
     // Image principale → uploads/products/{productName}/{originalFileName}
@@ -66,6 +69,50 @@ public class FileSystemStorageController {
             }
         }
         return ResponseEntity.ok(Map.of("paths", paths));
+    }
+
+    @PostMapping("/video")
+    public ResponseEntity<Map<String, String>> uploadVideo(
+            @RequestParam("video") MultipartFile video,
+            @RequestParam("productName") String productName) {
+
+        try {
+            String videoPath = fileSystemStorageService.uploadVideo(video, productName);
+            Map<String, String> response = new HashMap<>();
+            response.put("path", videoPath);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // Image coloris → uploads/products/{productName}/coloris/{originalFileName}
+    @PostMapping("/product/coloris")
+    public ResponseEntity<Map<String, String>> uploadColorisImage(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("productName") String productName) throws IOException {
+        String safeFolderName = productName.trim().replaceAll("[^a-zA-Z0-9\\-_ ]", "_");
+        String path = storage.store(file, "products/" + safeFolderName + "/coloris", file.getOriginalFilename());
+        return ResponseEntity.ok(Map.of("path", "media/" + path));
+    }
+
+    // Masque de couleur → uploads/products/{productName}/coloris/{originalFileName}
+    @PostMapping("/product/coloris-mask")
+    public ResponseEntity<Map<String, String>> uploadColorisMask(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("productName") String productName) throws IOException {
+        String safeFolderName = productName.trim().replaceAll("[^a-zA-Z0-9\\-_ ]", "_");
+        String path = storage.store(file, "products/" + safeFolderName + "/coloris", file.getOriginalFilename());
+        return ResponseEntity.ok(Map.of("path", "media/" + path));
+    }
+
+    @PostMapping("/product/masque")
+    public ResponseEntity<Map<String, String>> uploadMasque(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("productName") String productName) throws IOException {
+        String safeFolderName = productName.trim().replaceAll("[^a-zA-Z0-9\\-_ ]", "_");
+        String path = storage.store(file, "products/" + safeFolderName + "/masques", file.getOriginalFilename());
+        return ResponseEntity.ok(Map.of("path", "media/" + path));
     }
 }
 

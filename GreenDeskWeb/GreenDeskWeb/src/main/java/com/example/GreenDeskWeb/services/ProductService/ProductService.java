@@ -1,9 +1,6 @@
 package com.example.GreenDeskWeb.services.ProductService;
 
-import com.example.GreenDeskWeb.dto.CategoryDTO;
-import com.example.GreenDeskWeb.dto.ProductDTO;
-import com.example.GreenDeskWeb.dto.ProductTabDefinitionDTO;
-import com.example.GreenDeskWeb.dto.ProductVariantDTO;
+import com.example.GreenDeskWeb.dto.*;
 
 import java.util.List;
 
@@ -12,10 +9,9 @@ public interface ProductService {
     List<ProductDTO> findAllProducts();
     List<ProductDTO> findProductsByCategoryId(Long categoryId);
     ProductDTO createProduct(ProductDTO productDTO);
-
+    ProductDTO updateProduct(Long id, ProductDTO productDTO);  // ← NOUVEAU
     List<CategoryDTO> findAllCategories();
     List<ProductTabDefinitionDTO> findAllTabDefinitions();
     ProductVariantDTO toggleVariant(Long productId, Long variantId);
     void deleteProduct(Long id);
-
 }

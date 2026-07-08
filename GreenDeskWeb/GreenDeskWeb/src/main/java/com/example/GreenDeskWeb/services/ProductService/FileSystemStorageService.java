@@ -11,4 +11,6 @@ public interface FileSystemStorageService {
      String store(MultipartFile file, String subfolder, String originalName) throws IOException;
      List<String> storeAll(List<MultipartFile> files, String subfolder) throws IOException;
      void delete(String relativePath);
+     String uploadVideo(MultipartFile file, String productName) throws IOException;
+
 }

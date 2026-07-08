@@ -1,0 +1,108 @@
+<div class="min-h-screen flex items-center justify-center px-4"
+     style="background-color: var(--c-beige);">
+
+  <div class="w-full max-w-md rounded-2xl shadow-sm p-8 border-2"
+       style="background-color: var(--c-white); border-color: var(--c-beige);">
+
+    <!-- Brand -->
+    <div class="text-center mb-8">
+      <h1 class="font-dosis text-3xl font-bold mb-1" style="color: var(--c-green-dark);">
+        GreenDesk
+      </h1>
+      <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">
+        Créez votre compte
+      </p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="errorMessage"
+         class="mb-4 px-4 py-3 rounded-xl font-poppins text-sm"
+         style="background-color: #fee2e2; color: #dc2626;">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <div>
+          <label class="block font-poppins text-sm font-medium mb-1"
+                 style="color: var(--c-gray-dark);">
+            Prénom
+          </label>
+          <input type="text"
+                 [(ngModel)]="prenom"
+                 name="prenom"
+                 autocomplete="given-name"
+                 placeholder="Jean"
+                 class="w-full px-4 py-3 rounded-xl border-2 font-poppins text-sm outline-none transition-colors"
+                 style="border-color: var(--c-beige); color: var(--c-green-dark);"
+                 required>
+        </div>
+        <div>
+          <label class="block font-poppins text-sm font-medium mb-1"
+                 style="color: var(--c-gray-dark);">
+            Nom
+          </label>
+          <input type="text"
+                 [(ngModel)]="nom"
+                 name="nom"
+                 autocomplete="family-name"
+                 placeholder="Dupont"
+                 class="w-full px-4 py-3 rounded-xl border-2 font-poppins text-sm outline-none transition-colors"
+                 style="border-color: var(--c-beige); color: var(--c-green-dark);"
+                 required>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="block font-poppins text-sm font-medium mb-1"
+               style="color: var(--c-gray-dark);">
+          Email
+        </label>
+        <input type="email"
+               [(ngModel)]="email"
+               name="email"
+               autocomplete="email"
+               placeholder="votre@email.com"
+               class="w-full px-4 py-3 rounded-xl border-2 font-poppins text-sm outline-none transition-colors"
+               style="border-color: var(--c-beige); color: var(--c-green-dark);"
+               required>
+      </div>
+
+      <div class="mb-6">
+        <label class="block font-poppins text-sm font-medium mb-1"
+               style="color: var(--c-gray-dark);">
+          Mot de passe
+        </label>
+        <input type="password"
+               [(ngModel)]="password"
+               name="password"
+               autocomplete="new-password"
+               placeholder="••••••••"
+               class="w-full px-4 py-3 rounded-xl border-2 font-poppins text-sm outline-none transition-colors"
+               style="border-color: var(--c-beige); color: var(--c-green-dark);"
+               required>
+      </div>
+
+      <button type="submit"
+              [disabled]="isLoading"
+              class="w-full py-3 rounded-xl font-poppins font-semibold text-sm transition-opacity"
+              style="background-color: var(--c-green-teal); color: var(--c-white);"
+              [style.opacity]="isLoading ? '0.6' : '1'">
+        {{ isLoading ? 'Inscription...' : 'Créer mon compte' }}
+      </button>
+
+    </form>
+
+    <p class="text-center mt-6 font-poppins text-sm" style="color: var(--c-gray-dark);">
+      Déjà un compte ?
+      <a [routerLink]="['/login']"
+         class="font-semibold hover:underline"
+         style="color: var(--c-green-teal);">
+        Se connecter
+      </a>
+    </p>
+
+  </div>
+</div>

@@ -1,0 +1,59 @@
+<div class="product-logo-preview">
+
+  <!-- Indisponible -->
+  <div *ngIf="unavailableReason" class="preview-unavailable">
+    <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">
+      {{ unavailableReason }}
+    </p>
+  </div>
+
+  <!-- Rendu produit -->
+  <div *ngIf="!unavailableReason" class="preview-stage-wrap">
+
+    <!-- Wrapper avec overflow hidden pour contenir le zoom -->
+    <div class="preview-zoom-container"
+         #zoomContainer
+         [class.is-panning]="isPanning"
+         (wheel)="onWheel($event, zoomContainer)"
+         (mousedown)="onMouseDown($event, zoomContainer)">
+      <div class="preview-zoom-inner"
+           [style.transform]="'translate(' + panX + 'px,' + panY + 'px) scale(' + (zoomLevel/100) + ')'"
+           [style.transform-origin]="'0 0'"
+           [style.--preview-zoom]="zoomLevel/100">
+        <app-product-mockup-render
+          [productImage]="fullProductImagePath"
+          [masquePng]="fullMaskPath || null"
+          [logoImage]="fullLogoPath"
+          [xPercent]="xPercent"
+          [yPercent]="yPercent"
+          [scalePercent]="scalePercent"
+          [rotationDeg]="rotationDeg"
+          [interactive]="true"
+          [maskBounds]="maskBoundsPercent"
+          [backgroundElements]="resolvedBackgroundElements"
+          [forceShowBorder]="forceShowBorder"
+          (placementChange)="onPlacementChange($event)"
+          (removeLogo)="onRemoveLogo()"
+          (stageReady)="onStageReady($event)"
+          (stageBgClicked)="onRenderStageBgClicked()"
+          (backgroundElementClicked)="onBackgroundElementClicked($event)"
+          (interactionStart)="interactionStart.emit()"
+          (interactionEnd)="interactionEnd.emit()"
+        >
+        </app-product-mockup-render>
+      </div>
+      <span *ngIf="zoomLevel !== 100" class="zoom-level-badge font-poppins text-xs">
+        {{ zoomLevel }}%
+      </span>
+    </div>
+
+    <!-- Info zone -->
+    <p *ngIf="markingZone?.masquePng" class="font-poppins text-xs mt-2" style="color: var(--c-gray-dark);">
+      Zone active : {{ markingZone?.nom || 'Zone 1' }}
+    </p>
+    <p *ngIf="!markingZone?.masquePng" class="font-poppins text-xs mt-2" style="color: var(--c-gray-dark);">
+      Aucun masque — positionnement libre
+    </p>
+  </div>
+
+</div>

@@ -3,7 +3,7 @@
 
     <!-- État de chargement -->
     <div *ngIf="isLoading" class="text-center py-20">
-      <div class="inline-block w-16 h-16 border-4 border-t-green-teal border-beige rounded-full animate-spin"
+      <div class="inline-block w-16 h-16 border-4 rounded-full animate-spin"
            style="border-top-color: var(--c-green-teal); border-left-color: var(--c-beige); border-right-color: var(--c-beige); border-bottom-color: var(--c-beige);"></div>
       <p class="font-poppins mt-4" style="color: var(--c-gray-dark);">Chargement du produit...</p>
     </div>
@@ -13,15 +13,13 @@
       <div class="w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center"
            style="background-color: var(--c-beige);">
         <svg class="w-12 h-12" style="color: var(--c-gray-dark);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linecap="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
       </div>
       <h3 class="font-dosis text-2xl font-bold mb-2" style="color: var(--c-green-dark);">
         Oups ! Une erreur est survenue
       </h3>
-      <p class="font-poppins mb-6" style="color: var(--c-gray-dark);">
-        {{ errorMessage }}
-      </p>
+      <p class="font-poppins mb-6" style="color: var(--c-gray-dark);">{{ errorMessage }}</p>
       <button class="px-6 py-3 rounded-lg font-poppins font-semibold transition-all duration-300"
               style="background-color: var(--c-green-teal); color: var(--c-white);"
               [routerLink]="['/boutique']">
@@ -29,57 +27,96 @@
       </button>
     </div>
 
-    <!-- Contenu produit - UNIQUEMENT quand product existe -->
+    <!-- Contenu produit -->
     <div *ngIf="!isLoading && !errorMessage && product">
 
       <!-- Fil d'Ariane -->
       <div class="flex items-center space-x-2 font-poppins text-sm mb-8" style="color: var(--c-gray-dark);">
-        <a [routerLink]="['/boutique']" class="hover:underline" [style.hover.color]="'var(--c-green-teal)'">Boutique</a>
+        <a [routerLink]="['/boutique']" class="hover:underline">Boutique</a>
         <span>/</span>
-        <a [routerLink]="['/boutique']" [queryParams]="{category: product.category}" class="hover:underline" [style.hover.color]="'var(--c-green-teal)'">{{ product.categoryTitle }}</a>
+        <a [routerLink]="['/boutique']" [queryParams]="{category: product.category}" class="hover:underline">{{ product.categoryTitle }}</a>
         <span>/</span>
         <span style="color: var(--c-green-dark);">{{ product.name }}</span>
       </div>
 
-      <!-- Bloc 1: Galerie + Infos produit -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- BLOC 1 : Galerie + Infos produit               -->
+      <!-- ═══════════════════════════════════════════════ -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
 
         <!-- Galerie d'images -->
         <div *ngIf="allImages.length > 0">
           <app-product-gallery [images]="allImages"></app-product-gallery>
         </div>
-        <div *ngIf="allImages.length === 0" class="bg-beige rounded-xl aspect-square flex items-center justify-center" style="background-color: var(--c-beige);">
+        <div *ngIf="allImages.length === 0"
+             class="rounded-xl aspect-square flex items-center justify-center"
+             style="background-color: var(--c-beige);">
           <p class="font-poppins" style="color: var(--c-gray-dark);">Aucune image disponible</p>
         </div>
 
         <!-- Infos produit -->
-        <div>
+        <div class="flex flex-col">
+
           <!-- Badge Nouveauté -->
           <div *ngIf="product.new"
-               class="inline-block px-4 py-2 rounded-full text-sm font-semibold mb-4"
+               class="inline-block self-start px-4 py-1.5 rounded-full text-sm font-semibold mb-4"
                style="background-color: var(--c-gold); color: var(--c-green-dark);">
             Nouveau produit
           </div>
 
-          <h1 class="font-dosis text-4xl md:text-5xl font-bold mb-4" style="color: var(--c-green-dark);">
+          <!-- Nom du produit -->
+          <h1 class="font-dosis text-4xl md:text-5xl font-bold mb-2" style="color: var(--c-green-dark);">
             {{ product.name }}
           </h1>
 
-          <!-- Prix et livraison -->
+          <!-- ✅ SHORT DESCRIPTION sous le nom -->
+          <p *ngIf="product.shortDescription"
+             class="font-poppins text-base mb-6 leading-relaxed"
+             style="
+     border-left: 3px solid var(--c-green-teal);
+     padding-left: 14px;
+     border-radius: 0;
+     font-style: italic;
+     color: var(--c-gray-dark);
+   ">
+            {{ product.shortDescription }}
+          </p>
+
+          <!-- Prix -->
           <div class="flex items-center space-x-6 mb-6">
             <div>
               <span class="font-poppins text-sm block" style="color: var(--c-gray-dark);">À partir de</span>
               <span class="font-dosis text-3xl font-bold" style="color: var(--c-green-teal);">
-      {{ formattedPrice }}
-    </span>
+                {{ formattedPrice }}
+              </span>
             </div>
-
           </div>
 
-          <!-- Description -->
-          <div class="mb-8 p-6 rounded-xl" style="background-color: var(--c-beige);">
+          <!-- ✅ LONG DESCRIPTION -->
+          <div class="mb-6 p-6 rounded-xl" style="background-color: var(--c-beige);">
             <h3 class="font-dosis font-semibold mb-3" style="color: var(--c-green-dark);">Description :</h3>
-            <p class="font-poppins" style="color: var(--c-gray-dark);">{{ product.description }}</p>
+            <p class="font-poppins leading-relaxed" style="color: var(--c-gray-dark);">{{ product.longDescription }}</p>
+          </div>
+
+          <!-- ✅ POINTS FORTS -->
+          <div *ngIf="product.strengths && product.strengths.length > 0" class="mb-8">
+            <h3 class="font-dosis font-semibold mb-4" style="color: var(--c-green-dark);">
+              Points forts :
+            </h3>
+            <ul class="flex flex-col gap-2">
+              <li *ngFor="let strength of product.strengths"
+                  class="flex items-start gap-3 p-3 rounded-lg"
+                  style="background-color: var(--c-beige);">
+                <!-- Icône coche verte -->
+                <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mt-0.5"
+                      style="background-color: var(--c-green-teal);">
+                  <svg class="w-3.5 h-3.5" style="color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                  </svg>
+                </span>
+                <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">{{ strength }}</span>
+              </li>
+            </ul>
           </div>
 
           <!-- Bouton Ajouter au panier -->
@@ -89,7 +126,6 @@
                   [style.background-color]="cartSuccess ? 'var(--c-green-teal)' : 'var(--c-gold)'"
                   style="color: var(--c-green-dark);">
 
-            <!-- État normal -->
             <ng-container *ngIf="!isAddingToCart && !cartSuccess">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
@@ -97,7 +133,6 @@
               <span>Ajouter au panier</span>
             </ng-container>
 
-            <!-- Chargement -->
             <ng-container *ngIf="isAddingToCart">
               <svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
@@ -106,9 +141,8 @@
               <span>Ajout en cours...</span>
             </ng-container>
 
-            <!-- Succès -->
             <ng-container *ngIf="cartSuccess">
-              <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" style="color: white;">
                 <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
               </svg>
               <span style="color: white;">Ajouté au panier !</span>
@@ -124,17 +158,58 @@
               <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
             </svg>
           </button>
+
         </div>
       </div>
 
-      <!-- BLOC 2: Configuration (optionnel) -->
-      <!-- <div class="mb-16">
-        <app-product-config [productId]="product.id.toString()" [basePrice]="product.price || 0"></app-product-config>
-      </div> -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- BLOC 2 : Vidéo du produit (YouTube ou locale)  -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div *ngIf="product.video" class="mb-16">
+        <h2 class="font-dosis text-3xl font-bold mb-6" style="color: var(--c-green-dark);">
+          Vidéo de présentation
+        </h2>
 
-      <!-- BLOC 3: Onglets du produit (depuis votre API) -->
+        <div class="rounded-2xl overflow-hidden shadow-xl"
+             style="background-color: var(--c-green-dark);">
+
+          <!-- ✅ Vidéo YouTube : iframe responsive 16/9 -->
+          <div *ngIf="product.videoType === 'youtube'"
+               class="relative w-full"
+               style="padding-bottom: 56.25%; height: 0;">
+            <iframe
+              class="absolute inset-0 w-full h-full"
+              [src]="getYoutubeEmbedUrl(product.video)"
+              title="Vidéo de présentation"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+          </div>
+
+          <!-- ✅ Vidéo locale / upload : balise <video> native -->
+          <div class="rounded-2xl overflow-hidden shadow-xl bg-black">
+            <div *ngIf="product.videoType === 'upload' || product.videoType === null">
+              <video
+                class="w-full"
+                style="display: block; aspect-ratio: 16/9; object-fit: contain; background: #000;"
+                controls
+                preload="metadata"
+                [src]="getVideoUrl(product.video)">
+                Votre navigateur ne supporte pas la lecture de vidéos.
+              </video>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- BLOC 3 : Onglets du produit — REMPLACE l'existant -->
+      <!-- ═══════════════════════════════════════════════ -->
       <div class="mb-16" *ngIf="productTabs.length > 0">
-        <!-- Navigation des onglets -->
+
+        <!-- Barre d'onglets -->
         <div class="border-b overflow-x-auto whitespace-nowrap pb-1" style="border-color: var(--c-beige);">
           <div class="flex space-x-6 md:space-x-8">
             <button *ngFor="let tab of productTabs"
@@ -143,57 +218,158 @@
                 'color': activeTab === tab.tabKey ? 'var(--c-green-dark)' : 'var(--c-gray-dark)',
                 'border-color': activeTab === tab.tabKey ? 'var(--c-green-teal)' : 'transparent'
               }"
-                    [style.hover.color]="'var(--c-green-teal)'"
                     (click)="setActiveTab(tab.tabKey)">
               {{ tab.tabLabel }}
             </button>
           </div>
         </div>
 
-        <!-- Contenu de l'onglet actif -->
+        <!-- Contenu des onglets -->
         <div class="py-8">
-          <div *ngFor="let tab of productTabs" class="prose max-w-none font-poppins" style="color: var(--c-gray-dark);">
-            <div *ngIf="activeTab === tab.tabKey">
-              <!-- Si le contenu contient du HTML (comme des liens) -->
-              <div *ngIf="tab.content.includes('<')" [innerHTML]="tab.content"></div>
+          <ng-container *ngFor="let tab of productTabs">
+            <div *ngIf="activeTab === tab.tabKey" class="font-poppins" style="color: var(--c-gray-dark);">
 
-              <!-- Si le contenu est du texte simple avec des retours à la ligne -->
-              <div *ngIf="!tab.content.includes('<')">
-                <p *ngFor="let line of formatContent(tab.content)" class="mb-2">{{ line }}</p>
-              </div>
+              <!-- ── TEXTE LIBRE ────────────────────────────────────────── -->
+              <ng-container *ngIf="!isStructuredTab(tab.tabKey)">
+                <div *ngIf="tab.content.includes('<')" [innerHTML]="getActiveTabContent()"></div>
+                <div *ngIf="!tab.content.includes('<')">
+                  <p *ngFor="let line of formatContent(tab.content)" class="mb-2">{{ line }}</p>
+                </div>
+              </ng-container>
+
+              <!-- ── DIMENSIONS ─────────────────────────────────────────── -->
+              <ng-container *ngIf="tab.tabKey === 'dimensions' && parseTabContent(tab.content) as data">
+                <div class="rounded-2xl p-6" style="background-color: var(--c-beige);">
+                  <div *ngFor="let item of data.items" class="flex items-baseline gap-3 mb-3">
+              <span class="font-poppins font-bold text-sm w-40 flex-shrink-0"
+                    style="color: var(--c-green-dark);">{{ item.nom }}</span>
+                    <span class="font-poppins text-xs" style="color: var(--c-gray-dark);">{{ item.valeur }}</span>
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- ── POIDS ──────────────────────────────────────────────── -->
+              <ng-container *ngIf="tab.tabKey === 'poids' && parseTabContent(tab.content) as data">
+                <div class="rounded-2xl p-6 inline-flex items-center gap-3"
+                     style="background-color: var(--c-beige);">
+                  <svg class="w-5 h-5" style="color: var(--c-green-teal);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
+                  </svg>
+                  <span class="font-poppins font-bold text-lg" style="color: var(--c-green-dark);">
+              {{ data.valeur }} {{ data.unite }}
+            </span>
+                </div>
+              </ng-container>
+
+              <!-- ── MARQUAGE ────────────────────────────────────────────── -->
+              <ng-container *ngIf="tab.tabKey === 'marquage' && parseTabContent(tab.content) as data">
+                <div class="rounded-2xl p-6" style="background-color: var(--c-beige);">
+                  <div *ngIf="data.type" class="flex items-baseline gap-3 mb-3">
+              <span class="font-poppins font-bold text-sm w-40 flex-shrink-0"
+                    style="color: var(--c-green-dark);">Technologie</span>
+                    <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">{{ data.type }}</span>
+                  </div>
+                  <div *ngIf="data.dimensions" class="flex items-baseline gap-3 mb-3">
+              <span class="font-poppins font-bold text-sm w-40 flex-shrink-0"
+                    style="color: var(--c-green-dark);">Dimensions</span>
+                    <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">{{ data.dimensions }}</span>
+                  </div>
+                  <div class="flex items-center gap-3 mt-3">
+              <span class="font-poppins font-bold text-sm w-40 flex-shrink-0"
+                    style="color: var(--c-green-dark);">Nominatif</span>
+                    <span class="px-3 py-1 rounded-full font-poppins text-xs font-semibold"
+                          [style.backgroundColor]="data.nominatif ? 'var(--c-green-teal)' : 'var(--c-beige)'"
+                          [style.color]="data.nominatif ? 'white' : 'var(--c-gray-dark)'"
+                          [style.border]="data.nominatif ? 'none' : '1px solid #ccc'">
+                {{ data.nominatif ? 'Disponible' : 'Non disponible' }}
+              </span>
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- ── EMBALLAGE ───────────────────────────────────────────── -->
+              <ng-container *ngIf="tab.tabKey === 'emballage' && parseTabContent(tab.content) as data">
+                <div class="rounded-2xl p-6" style="background-color: var(--c-beige);">
+                  <p *ngIf="data.description" class="font-poppins text-sm mb-4"
+                     style="color: var(--c-gray-dark);">{{ data.description }}</p>
+                  <div *ngIf="data.dimensions?.length > 0" class="border-t pt-4"
+                       style="border-color: rgba(0,0,0,0.08);">
+                    <div *ngFor="let dim of data.dimensions" class="flex items-baseline gap-3 mb-2">
+                <span class="font-poppins font-bold text-sm w-32 flex-shrink-0"
+                      style="color: var(--c-green-dark);">{{ dim.label }}</span>
+                      <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">{{ dim.valeur }}</span>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- ── COLORIS DISPONIBLES ─────────────────────────────────── -->
+              <ng-container *ngIf="tab.tabKey === 'coloris' && parseTabContent(tab.content) as data">
+                <div class="rounded-2xl p-6" style="background-color: var(--c-beige);">
+                  <div *ngFor="let item of data.items" class="flex items-baseline gap-3 mb-3">
+              <span class="font-poppins font-bold text-sm w-40 flex-shrink-0"
+                    style="color: var(--c-green-dark);">{{ item.label }}</span>
+                    <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">{{ item.valeur }}</span>
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- ── CERTIFICATIONS / TÉLÉCHARGEMENTS ───────────────────── -->
+              <ng-container *ngIf="(tab.tabKey === 'certifications' || tab.tabKey === 'telechargements') && parseTabContent(tab.content) as data">
+                <div class="space-y-3">
+                  <a *ngFor="let doc of data.docs"
+                     [href]="doc.url || ('/uploads/' + doc.fichier)"
+                     target="_blank"
+                     class="flex items-center gap-4 p-4 rounded-2xl border-2 transition-all hover:shadow-md group"
+                     style="border-color: var(--c-beige); background-color: white;">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                         style="background-color: var(--c-beige);">
+                      <svg class="w-5 h-5" style="color: #dc2626;" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
+                      </svg>
+                    </div>
+                    <span class="font-poppins text-sm font-medium flex-1"
+                          style="color: var(--c-green-dark);">{{ doc.nom }}</span>
+                    <svg class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                         style="color: var(--c-green-teal);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                  </a>
+                </div>
+              </ng-container>
+
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+        <!-- ═══════════════════════════════════════════════ -->
+        <!-- BLOC 4 : Galerie des réalisations              -->
+        <!-- ═══════════════════════════════════════════════ -->
+        <div *ngIf="product.achievements && product.achievements.length > 0" class="mt-20">
+          <h2 class="font-dosis text-3xl font-bold mb-8" style="color: var(--c-green-dark);">
+            Nos précédentes réalisations
+          </h2>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div *ngFor="let achievement of product.achievements"
+                 class="aspect-square overflow-hidden rounded-lg cursor-pointer">
+              <img [src]="getImageUrl(achievement)"
+                   alt="Réalisation"
+                   class="w-full h-full object-cover hover:scale-110 transition-transform duration-500">
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Message si aucun onglet -->
-      <div *ngIf="productTabs.length === 0 && !isLoading && product"
-           class="mb-16 text-center py-12"
-           style="background-color: var(--c-beige); border-radius: 1rem;">
-        <p class="font-poppins" style="color: var(--c-gray-dark);">Aucune information détaillée disponible pour ce produit.</p>
-      </div>
-
-      <!-- BLOC 4: Galerie des réalisations -->
-      <div *ngIf="product.achievements && product.achievements.length > 0" class="mt-20">
-        <h2 class="font-dosis text-3xl font-bold mb-8" style="color: var(--c-green-dark);">
-          Nos précédentes réalisations
-        </h2>
-
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div *ngFor="let achievement of product.achievements"
-               class="aspect-square overflow-hidden rounded-lg cursor-pointer">
-            <img [src]="getImageUrl(achievement)"
-                 alt="Réalisation"
-                 class="w-full h-full object-cover hover:scale-110 transition-transform duration-500">
-
-          </div>
+        <div *ngIf="!product.achievements || product.achievements.length === 0"
+             class="mt-20 text-center py-12"
+             style="background-color: var(--c-beige); border-radius: 1rem;">
+          <p class="font-poppins" style="color: var(--c-gray-dark);">Aucune réalisation disponible pour le moment.</p>
         </div>
-      </div>
 
-      <!-- Message si pas de réalisations -->
-      <div *ngIf="!product.achievements || product.achievements.length === 0" class="mt-20 text-center py-12" style="background-color: var(--c-beige); border-radius: 1rem;">
-        <p class="font-poppins" style="color: var(--c-gray-dark);">Aucune réalisation disponible pour le moment.</p>
-      </div>
+
     </div>
   </div>
-</div>
+
+  </div>

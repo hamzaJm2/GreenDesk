@@ -1,5 +1,6 @@
 package com.example.GreenDeskWeb.services.ProductService;
 
+import lombok.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,11 +12,14 @@ import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class FileSystemStorageServiceImpl implements FileSystemStorageService {
 
     private final Path root = Paths.get("uploads");
+
+
 
     public FileSystemStorageServiceImpl() throws IOException {
         if (!Files.exists(root)) {
@@ -76,6 +80,30 @@ public class FileSystemStorageServiceImpl implements FileSystemStorageService {
         } catch (IOException e) {
             System.err.println("Impossible de supprimer le fichier: " + relativePath + " — " + e.getMessage());
         }
+    }
+
+    private final String videoUploadPath = "./uploads/videos";
+
+    @Override
+    public String uploadVideo(MultipartFile file, String productName) throws IOException {
+        // Créer le dossier si inexistant
+        Path uploadPath = Paths.get(videoUploadPath);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        // Générer un nom unique pour la vidéo
+        String originalFilename = file.getOriginalFilename();
+        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        String fileName = productName.replaceAll("[^a-zA-Z0-9]", "_") + "_" +
+                UUID.randomUUID().toString() + extension;
+
+        // Sauvegarder le fichier
+        Path filePath = uploadPath.resolve(fileName);
+        Files.copy(file.getInputStream(), filePath);
+
+        // Retourner le chemin relatif
+        return "/uploads/videos/" + fileName;
     }
 }
 

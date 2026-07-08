@@ -1,0 +1,106 @@
+<div class="p-6 md:p-10">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="font-dosis text-3xl font-bold" style="color: var(--c-green-dark);">
+        Historique maquettes clients
+      </h1>
+      <p class="font-poppins text-sm mt-1" style="color: var(--c-gray-dark);">
+        {{ projects.length }} maquette{{ projects.length !== 1 ? 's' : '' }} au total
+      </p>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="mb-6">
+    <input type="text"
+           [(ngModel)]="searchQuery"
+           (ngModelChange)="applyFilter()"
+           placeholder="Rechercher par client ou nom de projet..."
+           class="w-full max-w-md px-4 py-3 rounded-xl border-2 font-poppins text-sm outline-none"
+           style="border-color: var(--c-beige); color: var(--c-green-dark); background-color: var(--c-white);">
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="flex justify-center py-16">
+    <div class="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
+         style="border-color: var(--c-green-teal); border-top-color: transparent;"></div>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!isLoading && filtered.length === 0"
+       class="text-center py-16 font-poppins"
+       style="color: var(--c-gray-dark);">
+    Aucune maquette trouvée.
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="!isLoading && filtered.length > 0"
+       class="rounded-2xl border overflow-hidden"
+       style="border-color: var(--c-beige);">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr style="background-color: var(--c-beige);">
+            <th class="text-left px-5 py-3 font-poppins text-xs font-semibold uppercase tracking-wide"
+                style="color: var(--c-green-dark);">
+              Projet
+            </th>
+            <th class="text-left px-5 py-3 font-poppins text-xs font-semibold uppercase tracking-wide"
+                style="color: var(--c-green-dark);">
+              Client
+            </th>
+            <th class="text-left px-5 py-3 font-poppins text-xs font-semibold uppercase tracking-wide"
+                style="color: var(--c-green-dark);">
+              Email
+            </th>
+            <th class="text-left px-5 py-3 font-poppins text-xs font-semibold uppercase tracking-wide"
+                style="color: var(--c-green-dark);">
+              Statut
+            </th>
+            <th class="text-left px-5 py-3 font-poppins text-xs font-semibold uppercase tracking-wide"
+                style="color: var(--c-green-dark);">
+              Mise à jour
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of filtered; let i = index"
+              class="border-t transition-colors hover:bg-opacity-50"
+              [style.backgroundColor]="i % 2 === 0 ? 'var(--c-white)' : 'rgba(var(--c-beige-rgb, 245,240,230), 0.3)'"
+              style="border-color: var(--c-beige);">
+            <td class="px-5 py-4">
+              <span class="font-poppins text-sm font-medium" style="color: var(--c-green-dark);">
+                {{ p.nomProjet || 'Sans titre' }}
+              </span>
+            </td>
+            <td class="px-5 py-4">
+              <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">
+                {{ getClientLabel(p) }}
+              </span>
+            </td>
+            <td class="px-5 py-4">
+              <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">
+                {{ p.ownerEmail || '—' }}
+              </span>
+            </td>
+            <td class="px-5 py-4">
+              <span class="px-3 py-1 rounded-full font-poppins text-xs font-medium"
+                    [style.backgroundColor]="p.statut === 'finalise' ? 'rgba(16,185,129,0.12)' : 'rgba(245,158,11,0.12)'"
+                    [style.color]="p.statut === 'finalise' ? '#059669' : '#b45309'">
+                {{ p.statut === 'finalise' ? 'Finalisé' : 'Brouillon' }}
+              </span>
+            </td>
+            <td class="px-5 py-4">
+              <span class="font-poppins text-sm" style="color: var(--c-gray-dark);">
+                {{ formatDate(p.dateMiseAJour) }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

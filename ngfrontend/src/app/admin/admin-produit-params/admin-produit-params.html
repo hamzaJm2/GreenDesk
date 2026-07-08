@@ -1,0 +1,527 @@
+<div class="min-h-screen" style="background-color: var(--c-beige);">
+
+  <!-- Header -->
+  <div class="py-8 px-6 md:px-12 lg:px-20" style="background-color: var(--c-green-dark);">
+    <div class="max-w-4xl mx-auto">
+      <a [routerLink]="['/admin/produits']"
+         class="font-poppins text-sm mb-3 inline-block hover:opacity-80"
+         style="color: var(--c-gold);">← Retour aux produits</a>
+      <h1 class="font-dosis text-3xl font-bold" style="color: var(--c-white);">
+        {{ product?.name ?? 'Paramètres produit' }}
+      </h1>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="flex justify-center py-20">
+    <div class="w-10 h-10 rounded-full border-4 animate-spin"
+         style="border-color: var(--c-green-teal); border-top-color: transparent;"></div>
+  </div>
+
+  <div *ngIf="!isLoading" class="py-8 px-6 md:px-12 lg:px-20">
+    <div class="max-w-4xl mx-auto">
+
+      <!-- Messages -->
+      <div *ngIf="successMessage"
+           class="mb-6 px-5 py-3 rounded-xl font-poppins text-sm"
+           style="background-color: #F0FDF4; color: #166534; border: 1px solid #BBF7D0;">
+        ✓ {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage"
+           class="mb-6 px-5 py-3 rounded-xl font-poppins text-sm"
+           style="background-color: #FEF2F2; color: #991B1B; border: 1px solid #FECACA;">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Stepper -->
+      <div class="flex items-center gap-2 mb-8 p-4 rounded-2xl overflow-x-auto"
+           style="background-color: var(--c-white);">
+        <ng-container *ngFor="let step of STEPS; let last = last">
+          <button (click)="goToStep(step.num)"
+                  class="flex items-center gap-2 px-4 py-2 rounded-xl font-poppins text-sm font-semibold transition-all flex-shrink-0"
+                  [style.background-color]="currentStep === step.num ? 'var(--c-green-teal)' : 'var(--c-beige)'"
+                  [style.color]="currentStep === step.num ? 'white' : 'var(--c-gray-dark)'">
+            <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                  [style.background-color]="currentStep === step.num ? 'rgba(255,255,255,0.25)' : 'var(--c-green-dark)'"
+                  [style.color]="'white'">
+              {{ step.num }}
+            </span>
+            {{ step.label }}
+          </button>
+          <div *ngIf="!last" class="w-6 h-px flex-shrink-0" style="background-color: var(--c-beige);"></div>
+        </ng-container>
+      </div>
+
+      <!-- ══ ÉTAPE 1 — Infos générales ══════════════════════════════════════ -->
+      <div *ngIf="currentStep === 1" class="rounded-2xl p-8" style="background-color: var(--c-white);">
+        <h2 class="font-dosis text-2xl font-bold mb-6" style="color: var(--c-green-dark);">
+          Informations générales
+        </h2>
+
+        <div class="space-y-5">
+          <!-- Nom -->
+          <div>
+            <label class="block font-poppins text-sm font-semibold mb-2" style="color: var(--c-green-dark);">
+              Nom du produit
+            </label>
+            <input type="text" [(ngModel)]="nom"
+                   class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 font-poppins bg-gray-50 focus:bg-white focus:outline-none">
+          </div>
+
+          <!-- Description courte -->
+          <div>
+            <label class="block font-poppins text-sm font-semibold mb-2" style="color: var(--c-green-dark);">
+              Description courte
+            </label>
+            <input type="text" [(ngModel)]="shortDescription"
+                   class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 font-poppins bg-gray-50 focus:bg-white focus:outline-none">
+          </div>
+
+          <!-- Description longue -->
+          <div>
+            <label class="block font-poppins text-sm font-semibold mb-2" style="color: var(--c-green-dark);">
+              Description longue
+            </label>
+            <textarea rows="4" [(ngModel)]="longDescription"
+                      class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 font-poppins bg-gray-50 focus:bg-white resize-none focus:outline-none">
+            </textarea>
+          </div>
+
+          <!-- Statut + Nouveau -->
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex items-center gap-3 p-4 rounded-xl cursor-pointer"
+                 style="background-color: var(--c-beige);"
+                 (click)="actif = !actif">
+              <div class="w-11 h-6 rounded-full transition-colors flex items-center p-0.5"
+                   [style.background-color]="actif ? 'var(--c-green-teal)' : '#d1d5db'">
+                <div class="w-5 h-5 rounded-full bg-white transition-transform"
+                     [style.transform]="actif ? 'translateX(1.25rem)' : 'translateX(0)'"></div>
+              </div>
+              <span class="font-poppins text-sm font-semibold" style="color: var(--c-green-dark);">
+                {{ actif ? 'Actif' : 'Inactif' }}
+              </span>
+            </div>
+
+            <div class="flex items-center gap-3 p-4 rounded-xl cursor-pointer"
+                 style="background-color: var(--c-beige);"
+                 (click)="isNew = !isNew">
+              <div class="w-11 h-6 rounded-full transition-colors flex items-center p-0.5"
+                   [style.background-color]="isNew ? 'var(--c-gold)' : '#d1d5db'">
+                <div class="w-5 h-5 rounded-full bg-white transition-transform"
+                     [style.transform]="isNew ? 'translateX(1.25rem)' : 'translateX(0)'"></div>
+              </div>
+              <span class="font-poppins text-sm font-semibold" style="color: var(--c-green-dark);">
+                {{ isNew ? 'Nouveau' : 'Standard' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Label FIF/OFG -->
+          <div>
+            <label class="block font-poppins text-sm font-semibold mb-3" style="color: var(--c-green-dark);">
+              Label fabrication / origine
+            </label>
+            <div class="flex gap-3">
+              <button *ngFor="let opt of LABEL_OPTIONS"
+                      (click)="labelType = opt.value"
+                      class="flex-1 py-3 rounded-xl font-poppins text-sm font-semibold transition-all border-2"
+                      [style.border-color]="labelType === opt.value ? 'var(--c-green-teal)' : '#e5e7eb'"
+                      [style.background-color]="labelType === opt.value ? '#f0fdf4' : 'var(--c-beige)'"
+                      [style.color]="labelType === opt.value ? 'var(--c-green-teal)' : 'var(--c-gray-dark)'">
+                {{ opt.label }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ ÉTAPE 2 — Coloris ═══════════════════════════════════════════════ -->
+      <div *ngIf="currentStep === 2" class="rounded-2xl p-8" style="background-color: var(--c-white);">
+        <h2 class="font-dosis text-2xl font-bold mb-6" style="color: var(--c-green-dark);">
+          Variantes coloris
+        </h2>
+
+        <div class="space-y-4 mb-6">
+          <div *ngFor="let c of coloris; let i = index"
+               class="rounded-2xl border-2 p-5 transition-all"
+               [style.border-color]="c.actif ? 'var(--c-green-teal)' : '#e5e7eb'">
+
+            <div class="flex items-start gap-4">
+              <!-- Preview image produit -->
+              <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center"
+                   style="background-color: var(--c-beige);">
+                <img *ngIf="c.imagePreview || c.imageProduit"
+                     [src]="c.imagePreview || getImageUrl(c.imageProduit!)"
+                     class="w-full h-full object-contain p-2">
+                <svg *ngIf="!c.imagePreview && !c.imageProduit"
+                     class="w-6 h-6" style="color: var(--c-gray-dark);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14"/>
+                </svg>
+              </div>
+
+              <!-- Preview masque couleur -->
+              <div *ngIf="c.colorMaskPreview || c.couleurMasquePng"
+                   class="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center relative"
+                   style="background-color: #1a1a1a;"
+                   title="Masque couleur actif">
+                <img [src]="c.colorMaskPreview || getImageUrl(c.couleurMasquePng!)"
+                     class="w-full h-full object-contain">
+                <div class="absolute inset-0 rounded-xl pointer-events-none"
+                     style="border: 1px dashed var(--c-green-teal); opacity: 0.7;"></div>
+              </div>
+
+              <!-- Champs -->
+              <div class="flex-1 space-y-3">
+                <div class="flex gap-3">
+                  <input type="text" [(ngModel)]="c.nom"
+                         placeholder="Nom du coloris"
+                         class="flex-1 px-3 py-2 rounded-xl border-2 border-gray-200 font-poppins text-sm bg-gray-50 focus:outline-none">
+                  <div class="flex items-center gap-2">
+                    <input type="color" [(ngModel)]="c.codeHex"
+                           class="w-10 h-10 rounded-lg cursor-pointer border-2 border-gray-200 p-0.5">
+                    <span class="font-poppins text-xs font-mono" style="color: var(--c-gray-dark);">
+                      {{ c.codeHex }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-3 flex-wrap">
+                  <!-- Upload image produit -->
+                  <label class="px-3 py-1.5 rounded-xl font-poppins text-xs font-semibold cursor-pointer flex-shrink-0"
+                         style="background-color: var(--c-beige); color: var(--c-green-dark);">
+                    <input type="file" accept="image/*" class="hidden"
+                           (change)="onColorisImageSelected($event, i)">
+                    {{ c.imageFile ? c.imageFile.name : 'Image produit' }}
+                  </label>
+
+                  <!-- Upload masque couleur (visible uniquement si personnalisable) -->
+                  <label *ngIf="c.couleurPersonnalisable"
+                         class="px-3 py-1.5 rounded-xl font-poppins text-xs font-semibold cursor-pointer flex-shrink-0 flex items-center gap-1.5"
+                         [style.background-color]="(c.colorMaskPreview || c.couleurMasquePng) ? '#f0fdf4' : 'var(--c-beige)'"
+                         [style.color]="(c.colorMaskPreview || c.couleurMasquePng) ? 'var(--c-green-teal)' : 'var(--c-gray-dark)'"
+                         title="PNG blanc = zone à recolorer, transparent = garder">
+                    <input type="file" accept=".png" class="hidden"
+                           (change)="onColorMaskSelected($event, i)">
+                    {{ c.colorMaskFile ? c.colorMaskFile.name : (c.couleurMasquePng ? 'Masque couleur ✓' : 'Masque couleur') }}
+                  </label>
+
+                  <!-- Image de base (blanc) — visible uniquement si personnalisable -->
+                  <ng-container *ngIf="c.couleurPersonnalisable">
+                    <div class="w-full mt-2 p-3 rounded-xl border border-dashed"
+                         style="border-color: var(--c-gold); background-color: #fffbf0;">
+                      <p class="font-poppins text-xs font-semibold mb-2" style="color: var(--c-gold);">
+                        Image de base (blanc)
+                      </p>
+                      <div class="flex items-center gap-2 flex-wrap">
+                        <!-- Dropdown autres coloris -->
+                        <select *ngIf="getOtherColorisImages(i).length > 0"
+                                class="px-2 py-1.5 rounded-lg border border-gray-200 font-poppins text-xs bg-white flex-1 min-w-0"
+                                style="color: var(--c-green-dark);"
+                                [ngModel]="c.imageBaseBlanc"
+                                (ngModelChange)="selectBaseBlanck(i, $event)">
+                          <option value="">— Choisir un coloris existant —</option>
+                          <option *ngFor="let opt of getOtherColorisImages(i)" [value]="opt.path">
+                            {{ opt.nom }}
+                          </option>
+                        </select>
+                        <!-- Upload nouveau fichier -->
+                        <label class="px-3 py-1.5 rounded-xl font-poppins text-xs font-semibold cursor-pointer flex-shrink-0 flex items-center gap-1.5"
+                               [style.background-color]="(c.baseBlanckPreview || c.imageBaseBlanc) ? '#f0fdf4' : 'var(--c-beige)'"
+                               [style.color]="(c.baseBlanckPreview || c.imageBaseBlanc) ? 'var(--c-green-teal)' : 'var(--c-gray-dark)'"
+                               title="Image blanche/neutre utilisée comme base de recolorisation">
+                          <input type="file" accept="image/*" class="hidden"
+                                 (change)="onBaseBlanckSelected($event, i)">
+                          {{ c.baseBlanckFile ? c.baseBlanckFile.name : (c.imageBaseBlanc ? 'Base blanc ✓' : 'Uploader une image') }}
+                        </label>
+                        <!-- Aperçu -->
+                        <img *ngIf="c.baseBlanckPreview || c.imageBaseBlanc"
+                             [src]="c.baseBlanckPreview || getImageUrl(c.imageBaseBlanc!)"
+                             class="w-10 h-10 rounded-lg object-contain border border-gray-200"
+                             style="background:#f9f9f9;">
+                      </div>
+                    </div>
+                  </ng-container>
+
+                  <!-- Toggle actif -->
+                  <div class="flex items-center gap-2 cursor-pointer" (click)="c.actif = !c.actif">
+                    <div class="w-9 h-5 rounded-full transition-colors flex items-center p-0.5"
+                         [style.background-color]="c.actif ? 'var(--c-green-teal)' : '#d1d5db'">
+                      <div class="w-4 h-4 rounded-full bg-white transition-transform"
+                           [style.transform]="c.actif ? 'translateX(1rem)' : 'translateX(0)'"></div>
+                    </div>
+                    <span class="font-poppins text-xs" style="color: var(--c-gray-dark);">
+                      {{ c.actif ? 'Actif' : 'Inactif' }}
+                    </span>
+                  </div>
+
+                  <!-- Supprimer -->
+                  <button (click)="removeColoris(i)"
+                          class="ml-auto p-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          <button (click)="addColoris()"
+                  class="w-full py-3 rounded-2xl font-poppins font-semibold flex items-center justify-center gap-2 border-2 border-dashed transition-all"
+                  style="border-color: var(--c-green-teal); color: var(--c-green-dark);">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+            Ajouter un coloris
+          </button>
+
+          <button *ngIf="!hasCouleurPersonnalisable"
+                  (click)="addCouleurPersonnalisee()"
+                  class="w-full py-3 rounded-2xl font-poppins font-semibold flex items-center justify-center gap-2 border-2 border-dashed transition-all"
+                  style="border-color: var(--c-gold); color: var(--c-gold);">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            Ajouter une couleur personnalisée
+          </button>
+        </div>
+      </div>
+
+      <!-- ══ ÉTAPE 3 — Zones de marquage ════════════════════════════════════ -->
+      <div *ngIf="currentStep === 3" class="rounded-2xl p-8" style="background-color: var(--c-white);">
+        <h2 class="font-dosis text-2xl font-bold mb-2" style="color: var(--c-green-dark);">
+          Zones de marquage
+        </h2>
+        <p class="font-poppins text-sm mb-6" style="color: var(--c-gray-dark);">
+          Associez un masque PNG transparent à chaque zone de marquage.
+        </p>
+
+        <div class="space-y-4 mb-6">
+          <div *ngFor="let z of markingZones; let i = index"
+               class="rounded-2xl border-2 p-5"
+               style="border-color: var(--c-beige);">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label class="block font-poppins text-xs font-semibold mb-1.5" style="color: var(--c-green-dark);">
+                  Nom de la zone
+                </label>
+                <input type="text" [(ngModel)]="z.nom"
+                       class="w-full px-3 py-2.5 rounded-xl border-2 border-gray-200 font-poppins text-sm bg-gray-50 focus:outline-none">
+              </div>
+              <div>
+                <label class="block font-poppins text-xs font-semibold mb-1.5" style="color: var(--c-green-dark);">
+                  Padding interne (%)
+                </label>
+                <input type="number" [(ngModel)]="z.paddingPercent" min="0" max="30"
+                       class="w-full px-3 py-2.5 rounded-xl border-2 border-gray-200 font-poppins text-sm bg-gray-50 focus:outline-none">
+              </div>
+              <div>
+                <label class="block font-poppins text-xs font-semibold mb-1.5" style="color: var(--c-green-dark);">
+                  Largeur zone (mm)
+                </label>
+                <input type="number" [(ngModel)]="z.largeurZoneMm" min="0" step="0.5"
+                       class="w-full px-3 py-2.5 rounded-xl border-2 border-gray-200 font-poppins text-sm bg-gray-50 focus:outline-none"
+                       placeholder="Ex : 50">
+              </div>
+              <div>
+                <label class="block font-poppins text-xs font-semibold mb-1.5" style="color: var(--c-green-dark);">
+                  Hauteur zone (mm)
+                </label>
+                <input type="number" [(ngModel)]="z.hauteurZoneMm" min="0" step="0.5"
+                       class="w-full px-3 py-2.5 rounded-xl border-2 border-gray-200 font-poppins text-sm bg-gray-50 focus:outline-none"
+                       placeholder="Ex : 30">
+              </div>
+            </div>
+
+            <!-- Zoom actif -->
+            <div class="flex items-center gap-3 mb-4 cursor-pointer" (click)="z.zoomActive = !z.zoomActive">
+              <div class="w-9 h-5 rounded-full transition-colors flex items-center p-0.5"
+                   [style.background-color]="z.zoomActive ? 'var(--c-green-teal)' : '#d1d5db'">
+                <div class="w-4 h-4 rounded-full bg-white transition-transform"
+                     [style.transform]="z.zoomActive ? 'translateX(1rem)' : 'translateX(0)'"></div>
+              </div>
+              <span class="font-poppins text-sm" style="color: var(--c-green-dark);">
+                Zoom actif sur cette zone dans le PDF
+              </span>
+            </div>
+
+            <!-- Masque PNG -->
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0 relative"
+                   style="background-color: #1a1a1a;">
+                <img *ngIf="z.masquePreview || z.masquePng"
+                     [src]="z.masquePreview || getImageUrl(z.masquePng!)"
+                     class="w-full h-full object-contain">
+                <svg *ngIf="!z.masquePreview && !z.masquePng"
+                     class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14"/>
+                </svg>
+                <div *ngIf="z.masquePreview || z.masquePng"
+                     class="absolute inset-0 rounded-xl pointer-events-none"
+                     style="border: 1px dashed #DC2626; opacity: 0.6; z-index: 1;"></div>
+              </div>
+              <div>
+                <label class="block font-poppins text-xs font-semibold mb-1" style="color: var(--c-green-dark);">
+                  Masque PNG
+                </label>
+                <label class="px-3 py-1.5 rounded-xl font-poppins text-xs font-semibold cursor-pointer inline-block"
+                       style="background-color: var(--c-beige); color: var(--c-green-dark);">
+                  <input type="file" accept=".png" class="hidden"
+                         (change)="onMasqueSelected($event, i)">
+                  {{ z.masqueFile ? z.masqueFile.name : 'Choisir un masque PNG' }}
+                </label>
+                <p class="font-poppins text-xs mt-1" style="color: var(--c-gray-dark);">
+                  PNG transparent — zone blanche = zone marquable
+                </p>
+              </div>
+
+              <button (click)="removeMarkingZone(i)"
+                      class="ml-auto p-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <button (click)="addMarkingZone()"
+                class="w-full py-3 rounded-2xl font-poppins font-semibold flex items-center justify-center gap-2 border-2 border-dashed transition-all"
+                style="border-color: var(--c-gold); color: var(--c-green-dark);">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+          </svg>
+          Ajouter une zone
+        </button>
+      </div>
+
+      <!-- ══ ÉTAPE 4 — Points forts ══════════════════════════════════════════ -->
+      <div *ngIf="currentStep === 4" class="rounded-2xl p-8" style="background-color: var(--c-white);">
+        <h2 class="font-dosis text-2xl font-bold mb-2" style="color: var(--c-green-dark);">
+          Points forts
+        </h2>
+        <p class="font-poppins text-sm mb-6" style="color: var(--c-gray-dark);">
+          Max 6 points forts. L'icône s'affiche automatiquement si tu laisses le champ vide.
+        </p>
+
+        <div class="space-y-4 mb-6">
+          <div *ngFor="let s of strengthItems; let i = index"
+               class="rounded-2xl border-2 p-5"
+               style="border-color: var(--c-beige);">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+              <div>
+                <label class="block font-poppins text-xs font-semibold mb-1.5" style="color: var(--c-green-dark);">
+                  Titre
+                </label>
+                <input type="text" [(ngModel)]="s.titre"
+                       placeholder="Ex: Fabriqué en France"
+                       class="w-full px-3 py-2.5 rounded-xl border-2 border-gray-200 font-poppins text-sm bg-gray-50 focus:outline-none">
+              </div>
+              <div>
+                <label class="block font-poppins text-xs font-semibold mb-1.5" style="color: var(--c-green-dark);">
+                  Identifiant icône (optionnel)
+                </label>
+                <input type="text" [(ngModel)]="s.iconId"
+                       placeholder="Ex: map-pin, bolt, recycle..."
+                       class="w-full px-3 py-2.5 rounded-xl border-2 border-gray-200 font-poppins text-sm bg-gray-50 focus:outline-none">
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="flex-1">
+                <label class="block font-poppins text-xs font-semibold mb-1.5" style="color: var(--c-green-dark);">
+                  Petite phrase
+                </label>
+                <textarea rows="2" [(ngModel)]="s.phrase"
+                          placeholder="Ex: Conçu et assemblé dans notre usine drômoise"
+                          class="w-full px-3 py-2.5 rounded-xl border-2 border-gray-200 font-poppins text-sm bg-gray-50 focus:outline-none resize-none">
+                </textarea>
+              </div>
+
+              <!-- Aperçu icône -->
+              <div class="flex flex-col items-center gap-1 flex-shrink-0">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center"
+                     style="background-color: var(--c-beige);">
+                  <i *ngIf="s.iconId"
+                     class="ti"
+                     [class]="'ti ti-' + s.iconId"
+                     style="font-size: 22px; color: var(--c-green-teal);"></i>
+                  <svg *ngIf="!s.iconId" class="w-5 h-5" style="color: var(--c-gray-dark);"
+                       fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                  </svg>
+                </div>
+                <span class="font-poppins text-xs" style="color: var(--c-gray-dark);">aperçu</span>
+              </div>
+
+              <button (click)="removeStrength(i)"
+                      class="p-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 mt-6 flex-shrink-0">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <button *ngIf="strengthItems.length < 6"
+                (click)="addStrength()"
+                class="w-full py-3 rounded-2xl font-poppins font-semibold flex items-center justify-center gap-2 border-2 border-dashed transition-all"
+                style="border-color: var(--c-green-teal); color: var(--c-green-dark);">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+          </svg>
+          Ajouter un point fort ({{ strengthItems.length }}/6)
+        </button>
+      </div>
+
+      <!-- Retour accueil admin -->
+      <div class="mt-6 flex justify-center">
+        <a [routerLink]="['/admin']"
+           class="font-poppins text-sm hover:opacity-80"
+           style="color: var(--c-gray-dark);">← Retour à l'accueil admin</a>
+      </div>
+
+      <!-- Navigation + Sauvegarder -->
+      <div class="flex items-center justify-between mt-6">
+        <button *ngIf="currentStep > 1" (click)="prevStep()"
+                class="px-6 py-3 rounded-xl font-poppins font-semibold transition-all"
+                style="background-color: var(--c-white); color: var(--c-green-dark);">
+          ← Précédent
+        </button>
+        <div *ngIf="currentStep === 1"></div>
+
+        <div class="flex gap-3">
+          <button (click)="save()"
+                  [disabled]="isSaving"
+                  class="px-6 py-3 rounded-xl font-poppins font-semibold flex items-center gap-2 transition-all"
+                  style="background-color: var(--c-gold); color: var(--c-green-dark);">
+            <svg *ngIf="!isSaving" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+            </svg>
+            <div *ngIf="isSaving" class="w-4 h-4 rounded-full border-2 animate-spin"
+                 style="border-color: var(--c-green-dark); border-top-color: transparent;"></div>
+            {{ isSaving ? 'Sauvegarde...' : 'Sauvegarder' }}
+          </button>
+
+          <button *ngIf="currentStep < totalSteps" (click)="nextStep()"
+                  class="px-6 py-3 rounded-xl font-poppins font-semibold transition-all"
+                  style="background-color: var(--c-green-teal); color: white;">
+            Suivant →
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

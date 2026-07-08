@@ -10,11 +10,16 @@ import { CategoryService } from '../../services/category-service';
 import { Product } from '../../models/product';
 import { Category } from '../../models/category';
 import { ProductTabDefinition } from '../../models/productTabDefinition';
+import {SafeUrlPipe} from '../../shared/pipes/safe-url.pipe';
+import {BaseVariantForm} from '../../models/BaseVariantForm';
+import {OptionGroupForm} from '../../models/OptionGroupForm';
+import {ShippingTierForm} from '../../models/ShippingTierForm';
+import {TaxEntryForm} from '../../models/TaxEntryForm';
 
 @Component({
   selector: 'app-product-create',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule,SafeUrlPipe],
   templateUrl: './product-create.html',
   styleUrls: ['./product-create.scss']
 })
@@ -48,10 +53,72 @@ export class ProductCreateComponent implements OnInit {
   achievementPreviews: string[] = [];
 
   isSubmitting = false;
-  currentStep = 1;
-  totalSteps = 6;
+  currentStep:number = 1;
+  totalSteps:number = 6;
   successMessage = '';
   errorMessage = '';
+
+  videoFile: File | null = null;
+  videoPreview: string | null = null;
+  youtubeUrl: string = '';
+  youtubeEmbedUrl: string | null = null;
+
+  videoType: 'upload' | 'youtube' | null = null;
+  uploadingVideo = false;
+
+  // ── Grille Tarifaire State ─────────────────────────────────────────────
+
+  // Quantités disponibles (partagées par toutes les variantes et options)
+  availableQties: number[] = [50, 100, 250, 500, 1000, 2000, 5000];
+  newQtyInput: number | null = null;
+
+  baseVariants: BaseVariantForm[] = [];
+  optionGroups: OptionGroupForm[] = [];
+  shippingTiers: ShippingTierForm[] = [];
+  taxes: TaxEntryForm[] = [];
+
+  deliveryDays: string = '';
+  gridNotes: string = '';
+
+  // Pour le tableau de prévisualisation
+  previewSelectedVariantIndex = 0;
+  previewSelectedOptionIndices: number[] = [];
+  previewQty: number | null = null;
+  previewZone: string = 'FR';
+
+
+
+
+// Map pour les fichiers PDF par tabKey
+  dimensionsData: { items: { nom: string; valeur: string }[] } = { items: [] };
+
+// Poids
+  poidsData: { valeur: string; unite: 'g' | 'kg' } = { valeur: '', unite: 'g' };
+
+// Marquage
+  marquageData: { type: string; dimensions: string; nominatif: boolean } =
+    { type: '', dimensions: '', nominatif: false };
+
+// Emballage
+  emballageData: { description: string; dimensions: { label: string; valeur: string }[] } =
+    { description: '', dimensions: [] };
+
+// Coloris disponibles — label : valeur
+  colorisItems: { label: string; valeur: string }[] = [];
+
+  addColorisItem(): void {
+    this.colorisItems.push({ label: '', valeur: '' });
+  }
+
+  removeColorisItem(index: number): void {
+    this.colorisItems.splice(index, 1);
+  }
+// Certifications / Téléchargements — map tabKey → liste de docs
+
+// Certifications / Téléchargements — map tabKey → liste de docs
+  pdfDocsMap: Record<string, { nom: string; type: 'pdf' | 'url'; file: File | null; url: string }[]> = {};
+
+
 
   constructor(
     private fb: FormBuilder,
@@ -100,6 +167,287 @@ export class ProductCreateComponent implements OnInit {
       },
       error: () => { this.isLoadingTabs = false; }
     });
+  }
+
+  // ── Grille Tarifaire Methods ───────────────────────────────────────────
+
+  addQty(): void {
+    if (!this.newQtyInput || this.newQtyInput <= 0) return;
+    if (this.availableQties.includes(this.newQtyInput)) return;
+
+    this.availableQties = [...this.availableQties, this.newQtyInput].sort((a, b) => a - b);
+
+    // Ajouter le palier à toutes les variantes existantes
+    this.baseVariants.forEach(v => {
+      v.tiers = this.availableQties.map(qty => ({
+        qty,
+        unitPrice: v.tiers.find(t => t.qty === qty)?.unitPrice ?? null
+      }));
+    });
+
+    // Ajouter le palier à tous les groupes d'options existants
+    this.optionGroups.forEach(og => {
+      og.tiers = this.availableQties.map(qty => ({
+        qty,
+        surcharge: og.tiers.find(t => t.qty === qty)?.surcharge ?? null
+      }));
+    });
+
+    // Ajouter le palier aux frais de port par zone
+    const zones = [...new Set(this.shippingTiers.map(s => s.zone))];
+    zones.forEach(zone => {
+      if (!this.shippingTiers.find(s => s.qty === this.newQtyInput && s.zone === zone)) {
+        this.shippingTiers.push({ qty: this.newQtyInput!, fixedCost: null, zone });
+      }
+    });
+
+    this.newQtyInput = null;
+    this.previewQty = this.availableQties[0];
+    this.cdr.detectChanges();
+  }
+
+  removeQty(qty: number): void {
+    if (this.availableQties.length <= 1) return;
+    this.availableQties = this.availableQties.filter(q => q !== qty);
+    this.baseVariants.forEach(v => { v.tiers = v.tiers.filter(t => t.qty !== qty); });
+    this.optionGroups.forEach(og => { og.tiers = og.tiers.filter(t => t.qty !== qty); });
+    this.shippingTiers = this.shippingTiers.filter(s => s.qty !== qty);
+    if (this.previewQty === qty) this.previewQty = this.availableQties[0] ?? null;
+    this.cdr.detectChanges();
+  }
+
+  addBaseVariant(): void {
+    this.baseVariants.push({
+      name: '',
+      displayOrder: this.baseVariants.length,
+      tiers: this.availableQties.map(qty => ({ qty, unitPrice: null })),
+      deliveryDays: '' // ✅ ajouté
+    });
+  }
+
+  removeBaseVariant(index: number): void {
+    this.baseVariants.splice(index, 1);
+    if (this.previewSelectedVariantIndex >= this.baseVariants.length) {
+      this.previewSelectedVariantIndex = Math.max(0, this.baseVariants.length - 1);
+    }
+  }
+
+  addOptionGroup(): void {
+    this.optionGroups.push({
+      name: '',
+      required: false,
+      additionalWeeks: null,
+      tiers: this.availableQties.map(qty => ({ qty, surcharge: null }))
+    });
+  }
+
+  removeOptionGroup(index: number): void {
+    this.optionGroups.splice(index, 1);
+    this.previewSelectedOptionIndices = this.previewSelectedOptionIndices.filter(i => i !== index);
+  }
+
+  addShippingZone(zone: string): void {
+    if (this.shippingTiers.some(s => s.zone === zone)) return;
+    this.availableQties.forEach(qty => {
+      this.shippingTiers.push({ qty, fixedCost: null, zone });
+    });
+  }
+
+  removeShippingZone(zone: string): void {
+    this.shippingTiers = this.shippingTiers.filter(s => s.zone !== zone);
+  }
+
+  getShippingZones(): string[] {
+    return [...new Set(this.shippingTiers.map(s => s.zone))];
+  }
+
+  getShippingForZone(zone: string): ShippingTierForm[] {
+    return this.availableQties.map(qty => {
+      const existing = this.shippingTiers.find(s => s.qty === qty && s.zone === zone);
+      if (!existing) {
+        const newTier: ShippingTierForm = { qty, fixedCost: null, zone };
+        this.shippingTiers.push(newTier);
+        return newTier;
+      }
+      return existing;
+    });
+  }
+
+  addTax(): void {
+    this.taxes.push({ taxName: '', amountPerUnit: null });
+  }
+
+  removeTax(index: number): void {
+    this.taxes.splice(index, 1);
+  }
+
+  togglePreviewOption(index: number): void {
+    const i = this.previewSelectedOptionIndices.indexOf(index);
+    if (i >= 0) {
+      this.previewSelectedOptionIndices.splice(i, 1);
+    } else {
+      this.previewSelectedOptionIndices.push(index);
+    }
+  }
+
+  isPreviewOptionSelected(index: number): boolean {
+    return this.previewSelectedOptionIndices.includes(index);
+  }
+
+  // Calcul pour la prévisualisation
+  getPreviewUnitBase(): number {
+    if (!this.previewQty || !this.baseVariants[this.previewSelectedVariantIndex]) return 0;
+    const tier = this.baseVariants[this.previewSelectedVariantIndex].tiers.find(t => t.qty === this.previewQty);
+    return tier?.unitPrice ?? 0;
+  }
+
+  getPreviewOptionSurcharge(): number {
+    if (!this.previewQty) return 0;
+    return this.previewSelectedOptionIndices.reduce((sum, idx) => {
+      const tier = this.optionGroups[idx]?.tiers.find(t => t.qty === this.previewQty);
+      return sum + (tier?.surcharge ?? 0);
+    }, 0);
+  }
+
+  getPreviewTaxPerUnit(): number {
+    return this.taxes.reduce((sum, t) => sum + (t.amountPerUnit ?? 0), 0);
+  }
+
+  getPreviewUnitTotal(): number {
+    return this.getPreviewUnitBase() + this.getPreviewOptionSurcharge() + this.getPreviewTaxPerUnit();
+  }
+
+  getPreviewSubtotal(): number {
+    return this.getPreviewUnitTotal() * (this.previewQty ?? 0);
+  }
+
+  getPreviewShipping(): number {
+    if (!this.previewQty) return 0;
+    const tier = this.shippingTiers.find(s => s.qty === this.previewQty && s.zone === this.previewZone);
+    return tier?.fixedCost ?? 0;
+  }
+
+  getPreviewTotal(): number {
+    return this.getPreviewSubtotal() + this.getPreviewShipping();
+  }
+
+  // Construit le payload pour l'API
+  buildPricingGridPayload() {
+    return {
+      deliveryDays: this.deliveryDays,
+      notes: this.gridNotes,
+      baseVariants: this.baseVariants.map((v, i) => ({
+        name: v.name,
+        displayOrder: i,
+        deliveryDays: v.deliveryDays,
+        tiers: v.tiers.map(t => ({ qty: t.qty, unitPrice: t.unitPrice ?? 0 }))
+      })),
+      optionGroups: this.optionGroups.map(og => ({
+        name: og.name,
+        required: og.required,
+        additionalWeeks: og.additionalWeeks,
+        tiers: og.tiers.map(t => ({ qty: t.qty, surcharge: t.surcharge }))
+      })),
+      shippingTiers: this.shippingTiers.map(s => ({
+        qty: s.qty,
+        fixedCost: s.fixedCost ?? 0,
+        zone: s.zone
+      })),
+      taxes: this.taxes.map(t => ({
+        taxName: t.taxName,
+        amountPerUnit: t.amountPerUnit ?? 0
+      }))
+    };
+  }
+
+
+  // Video
+
+  selectVideoType(type: 'upload' | 'youtube' | null): void {
+    // Si on change de type, on efface les données de l'ancien type
+    if (this.videoType !== type) {
+      this.videoFile = null;
+      this.videoPreview = null;
+      this.youtubeUrl = '';
+      this.youtubeEmbedUrl = null;
+      this.uploadingVideo = false;
+      this.errorMessage = '';
+    }
+
+    this.videoType = type;
+    this.cdr.detectChanges();
+  }
+
+  onVideoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('video/')) {
+      this.errorMessage = 'Le fichier doit être une vidéo.';
+      input.value = '';
+      return;
+    }
+    if (file.size > 100 * 1024 * 1024) {
+      this.errorMessage = 'La vidéo ne doit pas dépasser 100 Mo.';
+      input.value = '';
+      return;
+    }
+
+    this.uploadingVideo = true;
+    this.errorMessage = '';
+    this.videoType = 'upload';
+    this.youtubeUrl = '';
+    this.youtubeEmbedUrl = null;
+    this.cdr.detectChanges();
+
+    this.videoFile = file;
+    this.readVideoPreview(file, (result) => {
+      this.videoPreview = result;
+      this.uploadingVideo = false;
+      this.cdr.detectChanges();
+    });
+
+    input.value = '';
+  }
+
+// Méthode pour YouTube
+  onYoutubeUrlChange(value: string): void {
+    this.youtubeUrl = value;
+    if (!this.youtubeUrl) {
+      this.youtubeEmbedUrl = null;
+      return;
+    }
+
+    const youtubeRegex = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/;
+    const match = this.youtubeUrl.match(youtubeRegex);
+
+    if (match && match[1]) {
+      const videoId = match[1];
+      this.youtubeEmbedUrl = `https://www.youtube.com/embed/${videoId}`;
+      this.errorMessage = '';
+    } else {
+      this.youtubeEmbedUrl = null;
+      this.errorMessage = 'URL YouTube invalide.';
+    }
+    this.cdr.detectChanges();
+  }
+
+// Supprimer la vidéo
+  removeVideo(): void {
+    this.videoFile = null;
+    this.videoPreview = null;
+    this.youtubeUrl = '';
+    this.youtubeEmbedUrl = null;
+    this.videoType = null;
+    this.cdr.detectChanges();
+  }
+
+// Lecture preview vidéo
+  private readVideoPreview(file: File, callback: (result: string) => void): void {
+    const reader = new FileReader();
+    reader.onload = (e) => callback(e.target?.result as string);
+    reader.readAsDataURL(file);
   }
 
   // ── Features ───────────────────────────────────────────────────────────────
@@ -176,35 +524,7 @@ export class ProductCreateComponent implements OnInit {
     this.customTabs[index].content = content;
   }
 
-  // ── Attributs ──────────────────────────────────────────────────────────────
 
-  addAttribute(): void {
-    this.attributes.push({ name: '', values: [{ value: '', extraPrice: 0 }] });
-  }
-
-  removeAttribute(index: number): void {
-    this.attributes.splice(index, 1);
-  }
-
-  addAttributeValue(attrIndex: number): void {
-    this.attributes[attrIndex].values.push({ value: '', extraPrice: 0 });
-  }
-
-  removeAttributeValue(attrIndex: number, valueIndex: number): void {
-    this.attributes[attrIndex].values.splice(valueIndex, 1);
-  }
-
-  updateAttributeName(index: number, name: string): void {
-    this.attributes[index].name = name;
-  }
-
-  updateAttributeValue(attrIndex: number, valueIndex: number, value: string): void {
-    this.attributes[attrIndex].values[valueIndex].value = value;
-  }
-
-  updateAttributeExtraPrice(attrIndex: number, valueIndex: number, price: number): void {
-    this.attributes[attrIndex].values[valueIndex].extraPrice = price;
-  }
 
   // ── Images ─────────────────────────────────────────────────────────────────
 
@@ -384,73 +704,50 @@ export class ProductCreateComponent implements OnInit {
       this.errorMessage = "Veuillez remplir tous les champs et ajouter l'image principale.";
       return;
     }
-
-    this.isSubmitting = true;
-    this.errorMessage = '';
-    this.successMessage = '';
-
+    this.isSubmitting = true; this.errorMessage = ''; this.successMessage = '';
     const productName = this.productForm.value.name.trim();
+    const videoUpload$ = (this.videoType === 'upload' && this.videoFile)
+      ? this.uploadService.uploadVideo(this.videoFile, productName)
+      : Promise.resolve(null);
 
     forkJoin({
-      main:         this.uploadService.uploadMainImage(this.mainImageFile, productName),
-      gallery:      this.uploadService.uploadGallery(this.galleryFiles, productName),
-      achievements: this.uploadService.uploadAchievements(this.achievementFiles, productName)
+      main: this.uploadService.uploadMainImage(this.mainImageFile, productName),
+      gallery: this.uploadService.uploadGallery(this.galleryFiles, productName),
+      achievements: this.uploadService.uploadAchievements(this.achievementFiles, productName),
+      video: videoUpload$
     }).pipe(
-      switchMap(({ main, gallery, achievements }) => {
+      switchMap(({ main, gallery, achievements, video }) => {
         const formValue = this.productForm.value;
-
-        // Fusionner onglets prédéfinis + onglets libres
-        const allTabs = [
-          // Onglets prédéfinis (avec tabId)
-          ...this.selectedTabs.map(t => ({
-            id:       0,
-            tabId:    t.tabId,
-            tabKey:   t.tabKey,
-            tabLabel: t.tabLabel,
-            content:  t.content
-          })),
-          // Onglets libres (sans tabId → null)
-          ...this.customTabs
-            .filter(t => t.tabLabel.trim() !== '')
-            .map(t => ({
-              id:       0,
-              tabId:    null as any,
-              tabKey:   t.tabKey,
-              tabLabel: t.tabLabel,
-              content:  t.content
-            }))
-        ];
-
-
+        let videoData = null;
+        if (this.videoType === 'youtube' && this.youtubeUrl) videoData = this.youtubeUrl;
+        else if (this.videoType === 'upload' && video?.path) videoData = video.path;
 
         const productData: Omit<Product, 'id'> = {
-          name:          formValue.name,
-          category:      formValue.category,
+          name: formValue.name,
+          category: formValue.category,
           categoryTitle: formValue.categoryTitle,
-          categoryId:    formValue.categoryId,
-          price:         formValue.price,
-          shortDescription:   formValue.shortDescription,
-          longDescription : formValue.longDescription,
-          strengths :  formValue.features.filter((f: string) => f && f.trim() !== ''),
-          image:         main.path,
-          gallery:       gallery.paths,
-          achievements:  achievements.paths,
-          new:           formValue.isNew,
-          tabs:          allTabs,
-          attributes: this.attributes
-            .filter(a => a.name.trim() !== '')
-            .map(a => ({
-              name:   a.name,
-              values: a.values
-                .filter(v => v.value.trim() !== '')
-                .map(v => ({ value: v.value, extraPrice: v.extraPrice }))
-            }))
+          categoryId: formValue.categoryId,
+          price: formValue.price,
+          shortDescription: formValue.shortDescription,
+          longDescription: formValue.longDescription,
+          strengths: this.features.value.filter((f: string) => f.trim() !== ''),
+          image: main.path,
+          gallery: gallery.paths,
+          achievements: achievements.paths,
+          video: videoData ?? '',
+          videoType: this.videoType,
+          new: formValue.isNew,
+          tabs: this.buildTabsPayload(),
+          attributes: []
         };
-
         return this.productService.createProduct(productData);
       })
     ).subscribe({
       next: (created) => {
+        if (this.baseVariants.length > 0) {
+          const payload = this.buildPricingGridPayload();
+          this.productService.createPricingGrid(created.id, payload).subscribe();
+        }
         this.successMessage = 'Produit créé avec succès !';
         this.isSubmitting = false;
         setTimeout(() => this.router.navigate(['/produit', created.id]), 2000);
@@ -464,17 +761,28 @@ export class ProductCreateComponent implements OnInit {
   }
 
 
-  // ── Helpers ────────────────────────────────────────────────────────────────
+  /** Label affiché dans le header du tab */
+  getTabTypeLabel(tabKey: string): string {
+    const labels: Record<string, string> = {
+      'dimensions':       'Champs structurés',
+      'poids':            'Valeur',
+      'marquage':         'Champs structurés',
+      'emballage':        'Description + Dimensions',
+      'coloris':          'Automatique',
+      'certifications':   'Upload PDF',
+      'telechargements':  'Upload PDF',
+    };
+    return labels[tabKey] ?? 'Texte libre';
+  }
+
+
+
+
+
 
   private validateFile(file: File): boolean {
-    if (!file.type.startsWith('image/')) {
-      this.errorMessage = 'Le fichier doit être une image.';
-      return false;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      this.errorMessage = "L'image ne doit pas dépasser 5 Mo.";
-      return false;
-    }
+    if (!file.type.startsWith('image/')) { this.errorMessage = 'Le fichier doit être une image.'; return false; }
+    if (file.size > 5 * 1024 * 1024) { this.errorMessage = "L'image ne doit pas dépasser 5 Mo."; return false; }
     return true;
   }
 
@@ -484,34 +792,118 @@ export class ProductCreateComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 
-  getVariantCount(): number {
-    if (this.attributes.length === 0) return 0;
-    return this.attributes.reduce((total, attr) => {
-      const validValues = attr.values.filter(v => v.value.trim() !== '').length;
-      return total * (validValues || 1);
-    }, 1);
+
+
+
+
+
+
+
+
+
+
+
+  isTextFreeTab(tabKey: string): boolean {
+    const structured = ['dimensions', 'poids', 'marquage', 'emballage',
+      'coloris', 'certifications', 'telechargements'];
+    return !structured.includes(tabKey);
   }
 
-  getPreviewVariants(): { label: string; extraPrice: number }[] {
-    if (this.attributes.length === 0) return [];
-    const validAttrs = this.attributes
-      .filter(a => a.name.trim() !== '')
-      .map(a => a.values.filter(v => v.value.trim() !== ''));
-    if (validAttrs.length === 0) return [];
+// ── Dimensions ──────────────────────────────────────────────────────
+  addDimensionItem(): void {
+    this.dimensionsData.items.push({ nom: '', valeur: '' });
+  }
 
-    let combinations: { value: string; extraPrice: number }[][] = [[]];
-    for (const values of validAttrs) {
-      const newCombinations: { value: string; extraPrice: number }[][] = [];
-      for (const existing of combinations) {
-        for (const val of values) {
-          newCombinations.push([...existing, val]);
-        }
-      }
-      combinations = newCombinations;
+  removeDimensionItem(index: number): void {
+    this.dimensionsData.items.splice(index, 1);
+  }
+
+// ── Emballage dimensions ────────────────────────────────────────────
+  addEmballageDimension(): void {
+    this.emballageData.dimensions.push({ label: '', valeur: '' });
+  }
+
+  removeEmballageDimension(index: number): void {
+    this.emballageData.dimensions.splice(index, 1);
+  }
+
+// ── Coloris disponibles ─────────────────────────────────────────────
+
+
+// ── PDF Docs (certifications / téléchargements) ─────────────────────
+  getPdfDocs(tabKey: string): { nom: string; type: 'pdf' | 'url'; file: File | null; url: string }[] {
+    if (!this.pdfDocsMap[tabKey]) this.pdfDocsMap[tabKey] = [];
+    return this.pdfDocsMap[tabKey];
+  }
+
+  addPdfDoc(tabKey: string): void {
+    if (!this.pdfDocsMap[tabKey]) this.pdfDocsMap[tabKey] = [];
+    this.pdfDocsMap[tabKey].push({ nom: '', type: 'pdf', file: null, url: '' });
+  }
+
+  removePdfDoc(tabKey: string, index: number): void {
+    this.pdfDocsMap[tabKey]?.splice(index, 1);
+    this.cdr.detectChanges();
+  }
+
+  onPdfFileSelected(event: Event, tabKey: string, index: number): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file || !this.pdfDocsMap[tabKey]) return;
+    this.pdfDocsMap[tabKey][index].file = file;
+    // Auto-remplir le nom si vide
+    if (!this.pdfDocsMap[tabKey][index].nom) {
+      this.pdfDocsMap[tabKey][index].nom = file.name.replace('.pdf', '');
     }
-    return combinations.map(combo => ({
-      label:      combo.map(v => v.value).join(' - '),
-      extraPrice: combo.reduce((sum, v) => sum + (v.extraPrice || 0), 0)
-    }));
+    input.value = '';
+    this.cdr.detectChanges();
   }
+
+// ── Sérialisation tabs pour le submit ───────────────────────────────
+  private buildTabsPayload(): any[] {
+    const tabs: any[] = [];
+
+    for (const t of this.selectedTabs) {
+      let content = t.content;
+
+      switch (t.tabKey) {
+        case 'dimensions':
+          content = JSON.stringify(this.dimensionsData);
+          break;
+        case 'poids':
+          content = JSON.stringify(this.poidsData);
+          break;
+        case 'marquage':
+          content = JSON.stringify(this.marquageData);
+          break;
+        case 'emballage':
+          content = JSON.stringify(this.emballageData);
+          break;
+        case 'coloris':
+          content = JSON.stringify({ items: this.colorisItems });
+          break;
+        case 'certifications':
+        case 'telechargements':
+          // Stocker les noms des docs (les fichiers seront uploadés séparément)
+          content = JSON.stringify({
+            docs: (this.pdfDocsMap[t.tabKey] ?? []).map(d => ({
+              nom: d.nom,
+              fichier: d.file?.name ?? ''
+            }))
+          });
+          break;
+      }
+
+      tabs.push({ id: 0, tabId: t.tabId, tabKey: t.tabKey, tabLabel: t.tabLabel, content });
+    }
+
+    for (const t of this.customTabs.filter(t => t.tabLabel.trim())) {
+      tabs.push({ id: 0, tabId: null, tabKey: t.tabKey, tabLabel: t.tabLabel, content: t.content });
+    }
+
+    return tabs;
+  }
+
+
+
 }

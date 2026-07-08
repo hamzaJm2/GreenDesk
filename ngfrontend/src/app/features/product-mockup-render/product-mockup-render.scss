@@ -1,0 +1,161 @@
+.mockup-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: var(--c-beige);
+  user-select: none;
+}
+
+.mockup-viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.mockup-product-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.mockup-zone {
+  position: absolute;
+  inset: 0;
+}
+
+.zone-indicator {
+  position: absolute;
+  border: 2px dashed #DC2626;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.mockup-logo-clip-layer {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+
+  &.is-masked {
+    -webkit-mask-image: var(--mask-url);
+    mask-image: var(--mask-url);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+  }
+}
+
+.mockup-logo-image {
+  position: absolute;
+  pointer-events: none;
+  display: block;
+  min-width: 10px;
+  min-height: 10px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  &.is-dragging { opacity: 0.85; }
+}
+
+.mockup-controls-zone {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.mockup-logo-controls {
+  position: absolute;
+  opacity: 0;
+  cursor: grab;
+  pointer-events: auto;
+  transition: opacity 0.2s;
+
+  &.is-visible { opacity: 1; }
+  &.is-dragging { cursor: grabbing; opacity: 0.85; }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: calc(-2px / var(--preview-zoom, 1));
+    border: calc(2px / var(--preview-zoom, 1)) dashed var(--c-green-teal);
+    border-radius: 4px;
+    pointer-events: none;
+  }
+}
+
+.snap-indicator {
+  position: absolute;
+  top: calc(-26px / var(--preview-zoom, 1));
+  left: 50%;
+  transform: translateX(-50%) scale(calc(1 / var(--preview-zoom, 1)));
+  transform-origin: bottom center;
+  background: rgba(0, 0, 0, 0.72);
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.logo-resize-handle,
+.logo-rotate-handle,
+.logo-delete-handle {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  z-index: 10;
+}
+
+.logo-resize-handle {
+  bottom: calc(-12px / var(--preview-zoom, 1));
+  right: calc(-12px / var(--preview-zoom, 1));
+  transform: scale(calc(1 / var(--preview-zoom, 1)));
+  transform-origin: bottom right;
+  background-color: var(--c-green-teal);
+  color: var(--c-white);
+  cursor: se-resize;
+}
+
+.logo-rotate-handle {
+  top: calc(-12px / var(--preview-zoom, 1));
+  right: calc(-12px / var(--preview-zoom, 1));
+  transform: scale(calc(1 / var(--preview-zoom, 1)));
+  transform-origin: top right;
+  background-color: var(--c-gold);
+  color: var(--c-green-dark);
+}
+
+.logo-delete-handle {
+  top: calc(-12px / var(--preview-zoom, 1));
+  left: calc(-12px / var(--preview-zoom, 1));
+  transform: scale(calc(1 / var(--preview-zoom, 1)));
+  transform-origin: top left;
+  background-color: #DC2626;
+  color: white;
+  font-size: 16px;
+}

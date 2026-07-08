@@ -22,7 +22,7 @@ public class ProductTabContent {
     @ManyToOne
     private ProductTabDefinition tab;
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String content;
 }
 

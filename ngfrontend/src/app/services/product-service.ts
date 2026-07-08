@@ -50,5 +50,23 @@ export class ProductService {
   deleteProduct(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+
+  createPricingGrid(productId: number, payload: any): Observable<any> {
+    return this.http.post<any>(
+      `${this.apiUrl}/${productId}/pricing-grid`,
+      payload
+    );
+  }
+
+  getPricingGrid(productId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${productId}/pricing-grid`);
+  }
+
+  updateProduct(id: number, product: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, product);
+  }
+
+
 }
 

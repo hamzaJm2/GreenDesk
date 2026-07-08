@@ -1,5 +1,6 @@
 package com.example.GreenDeskWeb.entites;
 
+import com.example.GreenDeskWeb.enums.LabelType;
 import com.example.GreenDeskWeb.enums.ProductCategory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,16 +20,24 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     private String name;
     private double price;
-
     private String image;
-    private String longDescription ;
+
+    @Column(columnDefinition = "TEXT")
+    private String longDescription;
+
     private String shortDescription;
+    private String video;
+    private String videoType;
+
+    private boolean actif = true;
+
+    @Enumerated(EnumType.STRING)
+    private LabelType labelType = LabelType.FIF;
 
     @ElementCollection
-    @CollectionTable(name = "product_strengths", joinColumns = @JoinColumn(name = "product_id"))
+    @CollectionTable(name = "product_strengths_legacy", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "strength_text")
     private List<String> strengths = new ArrayList<>();
 
@@ -45,6 +54,7 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
     @Enumerated(EnumType.STRING)
     private ProductCategory productCategory;
 
@@ -58,4 +68,16 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductVariant> variants = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("displayOrder ASC")
+    private List<ProductStrength> strengthItems = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("displayOrder ASC")
+    private List<ProductMarkingZone> markingZones = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("displayOrder ASC")
+    private List<ProductColoris> coloris = new ArrayList<>();
 }

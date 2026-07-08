@@ -13,6 +13,8 @@ export interface Product {
   strengths : string[];
   gallery: string[];
   achievements: string[];
+  video?: string | null;
+  videoType?: 'upload' | 'youtube' | null;
   categoryId: number;
   new: boolean;
   price?: number;

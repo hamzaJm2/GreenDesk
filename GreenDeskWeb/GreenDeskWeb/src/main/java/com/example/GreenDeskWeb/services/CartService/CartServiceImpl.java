@@ -43,10 +43,10 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public CartDTO getCart(String sessionId) {
         Cart cart = getOrCreateCart(sessionId);
-        return cartMapper.CartToCartDTO(cart);  // ← mapper
+        return cartMapper.CartToCartDTO(cart);
     }
 
     @Override

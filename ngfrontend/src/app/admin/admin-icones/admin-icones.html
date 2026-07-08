@@ -1,0 +1,273 @@
+<div class="min-h-screen" style="background-color: var(--c-beige);">
+
+  <!-- Header -->
+  <div class="py-8 px-6 md:px-12 lg:px-20" style="background-color: var(--c-green-dark);">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
+      <div>
+        <a [routerLink]="['/admin']" class="font-poppins text-sm mb-1 inline-block hover:opacity-80"
+           style="color: var(--c-gold);">← Administration</a>
+        <h1 class="font-dosis text-3xl font-bold" style="color: var(--c-white);">Icônes automatiques</h1>
+        <p class="font-poppins text-sm mt-1" style="color: rgba(255,255,255,0.6);">
+          Associez des mots-clés à des icônes Tabler
+        </p>
+      </div>
+      <button (click)="startCreate()"
+              class="px-5 py-2.5 rounded-xl font-poppins font-semibold flex items-center gap-2 flex-shrink-0"
+              style="background-color: var(--c-gold); color: var(--c-green-dark);">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+        </svg>
+        Nouvelle règle
+      </button>
+    </div>
+  </div>
+
+  <div class="py-8 px-6 md:px-12 lg:px-20">
+    <div class="max-w-6xl mx-auto">
+
+      <!-- Messages -->
+      <div *ngIf="successMessage" class="mb-4 px-5 py-3 rounded-xl font-poppins text-sm"
+           style="background-color: #F0FDF4; color: #166534; border: 1px solid #BBF7D0;">
+        ✓ {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="mb-4 px-5 py-3 rounded-xl font-poppins text-sm"
+           style="background-color: #FEF2F2; color: #991B1B; border: 1px solid #FECACA;">
+        {{ errorMessage }}
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- ── Colonne gauche : Liste des règles ──────────────────────── -->
+        <div>
+          <h2 class="font-dosis text-xl font-bold mb-4" style="color: var(--c-green-dark);">
+            Règles existantes ({{ rules.length }})
+          </h2>
+
+          <div *ngIf="isLoading" class="flex justify-center py-10">
+            <div class="w-8 h-8 rounded-full border-4 animate-spin"
+                 style="border-color: var(--c-green-teal); border-top-color: transparent;"></div>
+          </div>
+
+          <div *ngIf="!isLoading && rules.length === 0"
+               class="text-center py-10 rounded-2xl" style="background-color: var(--c-white);">
+            <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">
+              Aucune règle — créez la première !
+            </p>
+          </div>
+
+          <div class="space-y-3">
+            <div *ngFor="let rule of rules"
+                 class="rounded-2xl p-4 transition-all"
+                 [style.background-color]="editingRule?.id === rule.id ? '#f0fdf4' : 'white'"
+                 [style.border]="editingRule?.id === rule.id ? '2px solid var(--c-green-teal)' : '2px solid transparent'">
+
+              <div class="flex items-start gap-3">
+                <!-- Icône aperçu -->
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                     style="background-color: var(--c-beige);">
+                  <i class="ti" [class]="'ti ti-' + rule.iconId"
+                     style="font-size: 22px; color: var(--c-green-teal);"></i>
+                </div>
+
+                <!-- Infos -->
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="font-poppins font-semibold text-sm" style="color: var(--c-green-dark);">
+                      {{ rule.label }}
+                    </span>
+                    <span class="font-poppins text-xs px-2 py-0.5 rounded-full"
+                          style="background-color: var(--c-beige); color: var(--c-gray-dark);">
+                      ti-{{ rule.iconId }}
+                    </span>
+                  </div>
+                  <div class="flex flex-wrap gap-1">
+                    <span *ngFor="let kw of rule.keywords"
+                          class="font-poppins text-xs px-2 py-0.5 rounded-full"
+                          style="background-color: var(--c-beige); color: var(--c-green-dark);">
+                      {{ kw }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-2 flex-shrink-0">
+                  <button (click)="startEdit(rule)"
+                          class="p-2 rounded-lg transition-all hover:opacity-80"
+                          style="background-color: var(--c-beige); color: var(--c-green-dark);">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                    </svg>
+                  </button>
+                  <button (click)="delete(rule.id!)"
+                          [disabled]="deletingId === rule.id"
+                          class="p-2 rounded-lg transition-all hover:opacity-80"
+                          style="background-color: #FEE2E2; color: #DC2626;">
+                    <svg *ngIf="deletingId !== rule.id" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    <div *ngIf="deletingId === rule.id" class="w-4 h-4 rounded-full border-2 animate-spin"
+                         style="border-color: #DC2626; border-top-color: transparent;"></div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Colonne droite : Formulaire + Test ─────────────────────── -->
+        <div class="space-y-5">
+
+          <!-- Formulaire -->
+          <div *ngIf="isCreating || editingRule"
+               class="rounded-2xl p-6" style="background-color: var(--c-white);">
+            <h3 class="font-dosis text-lg font-bold mb-5" style="color: var(--c-green-dark);">
+              {{ isCreating ? 'Nouvelle règle' : 'Modifier la règle' }}
+            </h3>
+
+            <div class="space-y-4">
+              <!-- Label -->
+              <div>
+                <label class="block font-poppins text-xs font-semibold mb-1.5" style="color: var(--c-green-dark);">
+                  Label
+                </label>
+                <input type="text" [(ngModel)]="form.label"
+                       placeholder="Ex: Fabriqué en France"
+                       class="w-full px-3 py-2.5 rounded-xl border-2 border-gray-200 font-poppins text-sm bg-gray-50 focus:bg-white focus:outline-none">
+              </div>
+
+              <!-- Identifiant icône + aperçu -->
+              <div>
+                <label class="block font-poppins text-xs font-semibold mb-1.5" style="color: var(--c-green-dark);">
+                  Identifiant icône Tabler
+                </label>
+                <div class="flex items-center gap-3">
+                  <div class="relative flex-1">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 font-poppins text-sm"
+                          style="color: var(--c-gray-dark);">ti-</span>
+                    <input type="text" [(ngModel)]="form.iconId"
+                           placeholder="map-pin, bolt, recycle..."
+                           class="w-full pl-10 pr-3 py-2.5 rounded-xl border-2 border-gray-200 font-poppins text-sm bg-gray-50 focus:bg-white focus:outline-none">
+                  </div>
+                  <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                       style="background-color: var(--c-beige);">
+                    <i *ngIf="form.iconId" class="ti" [class]="'ti ti-' + form.iconId"
+                       style="font-size: 22px; color: var(--c-green-teal);"></i>
+                    <svg *ngIf="!form.iconId" class="w-5 h-5" style="color: var(--c-gray-dark);"
+                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16"/>
+                    </svg>
+                  </div>
+                </div>
+                <p class="font-poppins text-xs mt-1.5" style="color: var(--c-gray-dark);">
+                  Chercher sur
+                  <a href="https://tabler.io/icons" target="_blank"
+                     style="color: var(--c-green-teal);">tabler.io/icons</a>
+                </p>
+              </div>
+
+              <!-- Mots-clés -->
+              <div>
+                <label class="block font-poppins text-xs font-semibold mb-1.5" style="color: var(--c-green-dark);">
+                  Mots-clés associés
+                </label>
+                <div class="flex gap-2 mb-2">
+                  <input type="text" [(ngModel)]="newKeyword"
+                         (keydown)="onKeywordKeydown($event)"
+                         placeholder="Ex: france, fabrication..."
+                         class="flex-1 px-3 py-2 rounded-xl border-2 border-gray-200 font-poppins text-sm bg-gray-50 focus:bg-white focus:outline-none">
+                  <button (click)="addKeyword()"
+                          class="px-4 py-2 rounded-xl font-poppins text-sm font-semibold"
+                          style="background-color: var(--c-green-teal); color: white;">
+                    Ajouter
+                  </button>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <span *ngFor="let kw of form.keywords; let i = index"
+                        class="flex items-center gap-1 px-3 py-1 rounded-full font-poppins text-xs font-semibold"
+                        style="background-color: var(--c-beige); color: var(--c-green-dark);">
+                    {{ kw }}
+                    <button (click)="removeKeyword(i)"
+                            class="ml-1 hover:text-red-500 transition-colors">
+                      ×
+                    </button>
+                  </span>
+                  <span *ngIf="form.keywords.length === 0" class="font-poppins text-xs"
+                        style="color: var(--c-gray-dark);">
+                    Aucun mot-clé
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Boutons -->
+            <div class="flex gap-3 mt-5">
+              <button (click)="save()"
+                      class="flex-1 py-2.5 rounded-xl font-poppins font-semibold transition-all"
+                      style="background-color: var(--c-green-teal); color: white;">
+                {{ isCreating ? 'Créer la règle' : 'Mettre à jour' }}
+              </button>
+              <button (click)="cancelForm()"
+                      class="px-4 py-2.5 rounded-xl font-poppins font-semibold"
+                      style="background-color: var(--c-beige); color: var(--c-green-dark);">
+                Annuler
+              </button>
+            </div>
+          </div>
+
+          <!-- Placeholder si aucun formulaire ouvert -->
+          <div *ngIf="!isCreating && !editingRule"
+               class="rounded-2xl p-6 text-center border-2 border-dashed"
+               style="border-color: var(--c-beige); background-color: var(--c-white);">
+            <p class="font-poppins text-sm mb-3" style="color: var(--c-gray-dark);">
+              Cliquez sur "Nouvelle règle" ou modifiez une règle existante
+            </p>
+            <button (click)="startCreate()"
+                    class="px-5 py-2 rounded-xl font-poppins text-sm font-semibold"
+                    style="background-color: var(--c-gold); color: var(--c-green-dark);">
+              + Nouvelle règle
+            </button>
+          </div>
+
+          <!-- Tester une icône -->
+          <div class="rounded-2xl p-6" style="background-color: var(--c-white);">
+            <h3 class="font-dosis text-lg font-bold mb-4" style="color: var(--c-green-dark);">
+              Tester la résolution
+            </h3>
+            <p class="font-poppins text-xs mb-3" style="color: var(--c-gray-dark);">
+              Saisissez un texte pour voir quelle icône sera choisie automatiquement.
+            </p>
+            <div class="flex gap-2 mb-3">
+              <input type="text" [(ngModel)]="testText"
+                     placeholder="Ex: Fabriqué en France à la Baume..."
+                     class="flex-1 px-3 py-2.5 rounded-xl border-2 border-gray-200 font-poppins text-sm bg-gray-50 focus:bg-white focus:outline-none">
+              <button (click)="testIconResolution()"
+                      class="px-4 py-2.5 rounded-xl font-poppins text-sm font-semibold flex-shrink-0"
+                      style="background-color: var(--c-green-dark); color: white;">
+                Tester
+              </button>
+            </div>
+            <div *ngIf="testResult"
+                 class="flex items-center gap-4 p-4 rounded-xl"
+                 style="background-color: var(--c-beige);">
+              <div class="w-12 h-12 rounded-xl flex items-center justify-center"
+                   style="background-color: white;">
+                <i class="ti" [class]="'ti ti-' + testResult.iconId"
+                   style="font-size: 24px; color: var(--c-green-teal);"></i>
+              </div>
+              <div>
+                <p class="font-poppins text-xs" style="color: var(--c-gray-dark);">Icône sélectionnée</p>
+                <p class="font-poppins font-semibold text-sm" style="color: var(--c-green-dark);">
+                  ti-{{ testResult.iconId }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

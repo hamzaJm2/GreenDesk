@@ -1,0 +1,74 @@
+<div class="mockup-stage" #stageEl [class.is-interactive]="interactive" (click)="onStageBgClick()">
+  <!-- Viewport produit -->
+  <div class="mockup-viewport">
+    <img
+      class="mockup-product-image"
+      [src]="productImage"
+      [alt]="productAlt">
+
+    <!-- Indicateur zone de marquage -->
+    <div *ngIf="maskBounds && (isLogoHovered || interactionActive || forceShowBorder)"
+         class="zone-indicator"
+         [style.left]="maskBounds.xPercent + '%'"
+         [style.top]="maskBounds.yPercent + '%'"
+         [style.width]="maskBounds.widthPercent + '%'"
+         [style.height]="maskBounds.heightPercent + '%'">
+    </div>
+
+    <!-- Zone de marquage avec clipping -->
+    <div class="mockup-zone">
+      <div class="mockup-logo-clip-layer" [class.is-masked]="hasMask" [style]="zoneStyle">
+        <!-- Non-active elements — visible, clickable to select -->
+        <div *ngFor="let bgEl of backgroundElements"
+             class="mockup-logo-image"
+             style="pointer-events: auto; cursor: pointer;"
+             [style.left]="bgEl.xPercent + '%'"
+             [style.top]="bgEl.yPercent + '%'"
+             [style.width]="bgEl.scalePercent + '%'"
+             [style.transform]="'translate(-50%, -50%) rotate(' + bgEl.rotationDeg + 'deg)'"
+             (click)="$event.stopPropagation(); backgroundElementClicked.emit(bgEl.elementId)">
+          <img [src]="bgEl.logoImage" alt="" style="width:100%;height:auto;display:block; pointer-events: none;">
+        </div>
+        <div
+          *ngIf="logoImage"
+          class="mockup-logo-image"
+          [class.is-dragging]="isDragging"
+          [style.left]="xPercent + '%'"
+          [style.top]="yPercent + '%'"
+          [style.width]="scalePercent + '%'"
+          [style.aspect-ratio]="logoAspectRatio"
+          [style.transform]="'translate(-50%, -50%) rotate(' + rotationDeg + 'deg)'">
+          <img [src]="logoImage" [alt]="logoAlt">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contrôles interactifs -->
+  <div
+    *ngIf="logoImage && interactive"
+    #zoneControlEl
+    class="mockup-controls-zone">
+
+    <div
+      class="mockup-logo-controls"
+      [class.is-visible]="isLogoHovered || interactionActive || forceShowBorder"
+      (click)="$event.stopPropagation()"
+      [class.is-dragging]="isDragging"
+      [style.left]="xPercent + '%'"
+      [style.top]="yPercent + '%'"
+      [style.width]="scalePercent + '%'"
+      [style.aspect-ratio]="logoAspectRatio"
+      [style.transform]="'translate(-50%, -50%) rotate(' + rotationDeg + 'deg)'"
+      (pointerdown)="onLogoPointerDown($event)"
+      (pointerenter)="isLogoHovered = true"
+      (pointerleave)="isLogoHovered = false">
+
+      <button class="logo-resize-handle" (pointerdown)="onResizePointerDown($event)">↗</button>
+      <button class="logo-rotate-handle" (pointerdown)="onRotatePointerDown($event)">↻</button>
+      <button class="logo-delete-handle" (click)="removeLogo.emit()">×</button>
+      <div *ngIf="showSnapIndicator" class="snap-indicator">{{ snapAngleLabel }}</div>
+    </div>
+  </div>
+
+</div>

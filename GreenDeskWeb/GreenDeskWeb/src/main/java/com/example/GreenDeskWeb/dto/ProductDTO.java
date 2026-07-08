@@ -1,6 +1,6 @@
 package com.example.GreenDeskWeb.dto;
 
-
+import com.example.GreenDeskWeb.enums.LabelType;
 import com.example.GreenDeskWeb.enums.ProductCategory;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Data
 @AllArgsConstructor
@@ -20,17 +19,23 @@ public class ProductDTO {
     private ProductCategory category;
     private String categoryTitle;
     private String image;
-    private String longDescription ;
+    private String longDescription;
     private String shortDescription;
-    private List<String> strengths ;
+    private String video;
+    private String videoType;
+    private List<String> strengths;
     private List<String> gallery;
     private List<String> achievements;
     @JsonProperty("new")
     private boolean isNew;
+    private boolean actif = true;
+    private LabelType labelType = LabelType.FIF;
     private Long categoryId;
     private double price;
     private List<ProductTabContentDTO> tabs = new ArrayList<>();
     private List<ProductAttributeDTO> attributes = new ArrayList<>();
     private List<ProductVariantDTO> variants = new ArrayList<>();
+    private List<ProductStrengthDTO> strengthItems = new ArrayList<>();
+    private List<ProductMarkingZoneDTO> markingZones = new ArrayList<>();
+    private List<ProductColorisDTO> coloris = new ArrayList<>();
 }
-

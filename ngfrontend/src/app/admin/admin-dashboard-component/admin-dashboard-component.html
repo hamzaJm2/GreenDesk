@@ -1,0 +1,71 @@
+<div class="min-h-screen" style="background-color: var(--c-beige);">
+
+  <!-- Header -->
+  <div class="py-12 px-6 md:px-12 lg:px-20" style="background-color: var(--c-green-dark);">
+    <div class="max-w-5xl mx-auto">
+      <p class="font-poppins text-sm mb-2" style="color: var(--c-gold);">Espace administration</p>
+      <h1 class="font-dosis text-4xl font-bold" style="color: var(--c-white);">
+        Tableau de bord
+      </h1>
+    </div>
+  </div>
+
+  <!-- Cards -->
+  <div class="py-10 px-6 md:px-12 lg:px-20">
+    <div class="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <!-- Produits -->
+      <a [routerLink]="['/admin/produits']"
+         class="rounded-2xl p-8 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg block"
+         style="background-color: var(--c-white);">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
+             style="background-color: var(--c-beige);">
+          <svg class="w-7 h-7" style="color: var(--c-green-teal);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+          </svg>
+        </div>
+        <h2 class="font-dosis text-xl font-bold mb-1" style="color: var(--c-green-dark);">Produits</h2>
+        <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">
+          Créer, modifier et configurer les produits
+        </p>
+      </a>
+
+      <!-- Icônes -->
+      <a [routerLink]="['/admin/icones']"
+         class="rounded-2xl p-8 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg block"
+         style="background-color: var(--c-white);">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
+             style="background-color: var(--c-beige);">
+          <svg class="w-7 h-7" style="color: var(--c-gold);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <h2 class="font-dosis text-xl font-bold mb-1" style="color: var(--c-green-dark);">Icônes automatiques</h2>
+        <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">
+          Gérer les règles mots-clés → icônes
+        </p>
+      </a>
+
+      <!-- Retour site -->
+      <a [routerLink]="['/']"
+         class="rounded-2xl p-8 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg block"
+         style="background-color: var(--c-white);">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
+             style="background-color: var(--c-beige);">
+          <svg class="w-7 h-7" style="color: var(--c-green-dark);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+          </svg>
+        </div>
+        <h2 class="font-dosis text-xl font-bold mb-1" style="color: var(--c-green-dark);">Retour au site</h2>
+        <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">
+          Revenir sur GreenDesk
+        </p>
+      </a>
+
+    </div>
+  </div>
+
+</div>
