@@ -178,8 +178,9 @@ export class ColorDetectionService {
     const counts = new Array(k).fill(0);
     assignments.forEach(a => counts[a]++);
 
+    const minPopulation = pixels.length * 0.03;
     return centroids.map((c, i) => ({ ...c, population: counts[i] }))
-      .filter(c => c.population > 0);
+      .filter(c => c.population >= minPopulation);
   }
 
   private colorDistance(a: { r: number; g: number; b: number }, b: { r: number; g: number; b: number }): number {

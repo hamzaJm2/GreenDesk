@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { CouleurDetecteeDTO, MockupProjectDTO, MockupProjectRequestDTO, ProductColorisDTO } from '../../models/mockup';
+import { Observable } from 'rxjs';
+import { CouleurDetecteeDTO, MockupLogoDTO, MockupProjectDTO, MockupProjectRequestDTO, ProductColorisDTO } from '../../models/mockup';
 import { Product } from '../../models/product';
 import { environment } from '../../environments/environment';
 import { MockupService } from '../../services/mockup-service';
@@ -16,6 +17,7 @@ import {
 } from '../product-logo-preview/product-logo-preview';
 import { ColorDetectionService } from '../../services/color-detection-service';
 import { PdfGenerationProgress, PdfGenerationService } from '../../services/pdf-generation-service';
+import { PdfPreviewService } from '../../services/pdf-preview-service';
 
 export interface ZoneElement {
   elementId: string;
@@ -104,7 +106,9 @@ export class NouvellesMaquettesComponent implements OnInit, OnDestroy {
   markingZonesByProduct: Record<number, any[]> = {};
 
   uploadingLogo = false;
+  isDraggingLogo = false;
   logoError = '';
+  private pendingLogoUploads = 0;
   isLoading = true;
   isSaving = false;
   errorMessage = '';
@@ -141,6 +145,7 @@ export class NouvellesMaquettesComponent implements OnInit, OnDestroy {
     private productService: ProductService,
     private colorDetectionService: ColorDetectionService,
     private pdfGenerationService: PdfGenerationService,
+    private pdfPreviewService: PdfPreviewService,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) {}
@@ -221,37 +226,97 @@ export class NouvellesMaquettesComponent implements OnInit, OnDestroy {
   // ── Logos ────────────────────────────────────────────────────
   onLogoFileSelected(event: any): void {
     const files: FileList = event.target.files;
-    if (!files || !this.projectId) return;
-    const fileArray = Array.from(files);
-    let completed = 0;
-    fileArray.forEach(file => {
-      this.uploadingLogo = true;
-      this.mockupService.uploadLogo(this.projectId!, file).subscribe({
-        next: () => {
-          completed++;
-          if (completed === fileArray.length) {
-            this.uploadingLogo = false;
-            this.mockupService.getById(this.projectId!).subscribe({
-              next: async (p) => {
-                this.project = p;
-                this.loadProjectColors();
-                const newLogos = p.logos.slice(-fileArray.length).filter((l: any) => l.typeApercu === 'image');
-                for (const logo of newLogos) {
-                  await this.detectColorsFromLogo(logo);
-                }
-                this.cdr.detectChanges();
+    this.uploadLogoFiles(files);
+    event.target.value = '';
+  }
+
+  onLogoDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingLogo = true;
+  }
+
+  onLogoDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingLogo = false;
+  }
+
+  onLogoDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingLogo = false;
+    this.uploadLogoFiles(event.dataTransfer?.files ?? null);
+  }
+
+  private uploadLogoFiles(files: FileList | null): void {
+    if (!files || files.length === 0 || !this.projectId) return;
+    this.logoError = '';
+    Array.from(files).forEach(file => this.processLogoFile(file));
+  }
+
+  private async processLogoFile(file: File): Promise<void> {
+    this.beginLogoUpload();
+    try {
+      const extension = file.name.split('.').pop()?.toLowerCase() ?? '';
+      if (extension === 'pdf') {
+        await this.processPdfLogoFile(file);
+      } else {
+        await this.uploadLogoAndRefresh(this.mockupService.uploadLogo(this.projectId!, file));
+      }
+    } catch {
+      this.logoError = "Erreur lors de l'upload.";
+      this.cdr.detectChanges();
+    } finally {
+      this.endLogoUpload();
+    }
+  }
+
+  private async processPdfLogoFile(file: File): Promise<void> {
+    const pageCount = await this.pdfPreviewService.getPageCount(file);
+    if (pageCount > 1) {
+      this.logoError = "Votre fichier PDF ne doit comporter qu'une seule page, les PDF multi-pages ne sont pas pris en charge.";
+      this.cdr.detectChanges();
+      return;
+    }
+    const previewBlob = await this.pdfPreviewService.renderFirstPageToPng(file);
+    const previewFile = new File([previewBlob], file.name.replace(/\.pdf$/i, '.png'), { type: 'image/png' });
+    await this.uploadLogoAndRefresh(this.mockupService.uploadPdfLogo(this.projectId!, file, previewFile));
+  }
+
+  private uploadLogoAndRefresh(upload$: Observable<{ path: string }>): Promise<void> {
+    return new Promise((resolve, reject) => {
+      upload$.subscribe({
+        next: ({ path }) => {
+          this.mockupService.getById(this.projectId!).subscribe({
+            next: async (p) => {
+              this.project = p;
+              this.loadProjectColors();
+              const newLogo = p.logos.find((l: MockupLogoDTO) => l.publicPath === path);
+              if (newLogo && newLogo.typeApercu === 'image') {
+                await this.detectColorsFromLogo(newLogo);
               }
-            });
-          }
-          this.cdr.detectChanges();
+              this.cdr.detectChanges();
+              resolve();
+            },
+            error: () => resolve()
+          });
         },
-        error: () => {
-          this.logoError = "Erreur lors de l'upload.";
-          this.uploadingLogo = false;
-          this.cdr.detectChanges();
-        }
+        error: reject
       });
     });
+  }
+
+  private beginLogoUpload(): void {
+    this.pendingLogoUploads++;
+    this.uploadingLogo = true;
+    this.cdr.detectChanges();
+  }
+
+  private endLogoUpload(): void {
+    this.pendingLogoUploads = Math.max(0, this.pendingLogoUploads - 1);
+    this.uploadingLogo = this.pendingLogoUploads > 0;
+    this.cdr.detectChanges();
   }
 
   deleteLogo(logoId: number): void {

@@ -56,6 +56,13 @@ export class MockupService {
     return this.http.post<{ path: string }>(`${this.baseUrl}/${id}/logos`, formData);
   }
 
+  uploadPdfLogo(id: number, pdfFile: File, previewImage: File): Observable<{ path: string }> {
+    const formData = new FormData();
+    formData.append('pdfFile', pdfFile);
+    formData.append('previewImage', previewImage);
+    return this.http.post<{ path: string }>(`${this.baseUrl}/${id}/logos/pdf`, formData);
+  }
+
   deleteLogo(projectId: number, logoId: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${projectId}/logos/${logoId}`);
   }

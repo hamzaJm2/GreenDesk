@@ -80,6 +80,15 @@ public class MockupProjectController {
                 .body(Map.of("path", path));
     }
 
+    @PostMapping("/{id}/logos/pdf")
+    public ResponseEntity<Map<String, String>> uploadPdfLogo(
+            @PathVariable Long id,
+            @RequestParam("pdfFile") MultipartFile pdfFile,
+            @RequestParam("previewImage") MultipartFile previewImage) throws IOException {
+        String path = mockupProjectService.uploadPdfLogo(id, pdfFile, previewImage);
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("path", path));
+    }
+
     @DeleteMapping("/{id}/logos/{logoId}")
     public ResponseEntity<Void> deleteLogo(
             @PathVariable Long id,
