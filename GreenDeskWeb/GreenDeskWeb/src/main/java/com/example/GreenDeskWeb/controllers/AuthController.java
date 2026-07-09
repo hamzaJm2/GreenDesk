@@ -53,4 +53,20 @@ public class AuthController {
         return ResponseEntity.badRequest()
                 .body(Map.of("error", e.getMessage()));
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Map<String, String>> handleRuntime(RuntimeException e) {
+        String msg = e.getMessage();
+        if (msg != null && msg.startsWith("COMPTE_EN_ATTENTE")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "COMPTE_EN_ATTENTE"));
+        }
+        if (msg != null && msg.startsWith("COMPTE_REFUSE:")) {
+            String motif = msg.substring("COMPTE_REFUSE:".length());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "COMPTE_REFUSE", "motif", motif));
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", msg != null ? msg : "Erreur serveur"));
+    }
 }
