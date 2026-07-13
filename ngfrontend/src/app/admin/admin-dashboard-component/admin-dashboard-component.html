@@ -48,6 +48,25 @@
         </p>
       </a>
 
+      <!-- Comptes en attente -->
+      <a [routerLink]="['/admin/comptes-attente']"
+         class="rounded-2xl p-8 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg block"
+         style="background-color: var(--c-white);">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
+             style="background-color: var(--c-beige);">
+          <svg class="w-7 h-7" style="color: #dc2626;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
+        </div>
+        <h2 class="font-dosis text-xl font-bold mb-1" style="color: var(--c-green-dark);">
+          Comptes en attente
+        </h2>
+        <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">
+          Valider ou refuser les demandes d'accès
+        </p>
+      </a>
+
       <!-- Retour site -->
       <a [routerLink]="['/']"
          class="rounded-2xl p-8 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg block"

@@ -30,6 +30,11 @@ export const ADMIN_ROUTES: Routes = [
     path: 'maquettes',
     loadComponent: () =>
       import('./admin-maquettes/admin-maquettes').then(m => m.AdminMaquettesComponent)
+  },
+  {
+    path: 'comptes-attente',
+    loadComponent: () =>
+      import('./admin-comptes-attente/admin-comptes-attente').then(m => m.AdminComptesAttenteComponent)
   }
 ];
 

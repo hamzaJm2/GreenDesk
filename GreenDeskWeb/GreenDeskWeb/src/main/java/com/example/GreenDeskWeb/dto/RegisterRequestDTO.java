@@ -8,4 +8,6 @@ public class RegisterRequestDTO {
     private String password;
     private String nom;
     private String prenom;
+    private String societe;
+    private String siret;
 }

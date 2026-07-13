@@ -10,7 +10,7 @@
         GreenDesk
       </h1>
       <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">
-        Créez votre compte
+        Créez votre compte professionnel
       </p>
     </div>
 
@@ -27,82 +27,132 @@
       <div class="grid grid-cols-2 gap-3 mb-4">
         <div>
           <label class="block font-poppins text-sm font-medium mb-1"
-                 style="color: var(--c-gray-dark);">
-            Prénom
-          </label>
-          <input type="text"
-                 [(ngModel)]="prenom"
-                 name="prenom"
-                 autocomplete="given-name"
+                 style="color: var(--c-gray-dark);">Prénom *</label>
+          <input type="text" [(ngModel)]="prenom" name="prenom"
                  placeholder="Jean"
-                 class="w-full px-4 py-3 rounded-xl border-2 font-poppins text-sm outline-none transition-colors"
-                 style="border-color: var(--c-beige); color: var(--c-green-dark);"
-                 required>
+                 class="w-full px-4 py-3 rounded-xl border-2 font-poppins text-sm outline-none"
+                 style="border-color: var(--c-beige); color: var(--c-green-dark);" required>
         </div>
         <div>
           <label class="block font-poppins text-sm font-medium mb-1"
-                 style="color: var(--c-gray-dark);">
-            Nom
-          </label>
-          <input type="text"
-                 [(ngModel)]="nom"
-                 name="nom"
-                 autocomplete="family-name"
+                 style="color: var(--c-gray-dark);">Nom *</label>
+          <input type="text" [(ngModel)]="nom" name="nom"
                  placeholder="Dupont"
-                 class="w-full px-4 py-3 rounded-xl border-2 font-poppins text-sm outline-none transition-colors"
-                 style="border-color: var(--c-beige); color: var(--c-green-dark);"
-                 required>
+                 class="w-full px-4 py-3 rounded-xl border-2 font-poppins text-sm outline-none"
+                 style="border-color: var(--c-beige); color: var(--c-green-dark);" required>
         </div>
       </div>
 
       <div class="mb-4">
         <label class="block font-poppins text-sm font-medium mb-1"
-               style="color: var(--c-gray-dark);">
-          Email
-        </label>
-        <input type="email"
-               [(ngModel)]="email"
-               name="email"
-               autocomplete="email"
-               placeholder="votre@email.com"
-               class="w-full px-4 py-3 rounded-xl border-2 font-poppins text-sm outline-none transition-colors"
-               style="border-color: var(--c-beige); color: var(--c-green-dark);"
-               required>
+               style="color: var(--c-gray-dark);">Société *</label>
+        <input type="text" [(ngModel)]="societe" name="societe"
+               placeholder="Nom de votre société"
+               class="w-full px-4 py-3 rounded-xl border-2 font-poppins text-sm outline-none"
+               style="border-color: var(--c-beige); color: var(--c-green-dark);" required>
       </div>
 
-      <div class="mb-6">
+      <div class="mb-4">
         <label class="block font-poppins text-sm font-medium mb-1"
-               style="color: var(--c-gray-dark);">
-          Mot de passe
-        </label>
-        <input type="password"
-               [(ngModel)]="password"
-               name="password"
-               autocomplete="new-password"
-               placeholder="••••••••"
-               class="w-full px-4 py-3 rounded-xl border-2 font-poppins text-sm outline-none transition-colors"
-               style="border-color: var(--c-beige); color: var(--c-green-dark);"
-               required>
+               style="color: var(--c-gray-dark);">SIRET * (14 chiffres)</label>
+        <input type="text" [(ngModel)]="siret" name="siret"
+               placeholder="12345678901234" maxlength="14"
+               class="w-full px-4 py-3 rounded-xl border-2 font-poppins text-sm outline-none"
+               style="border-color: var(--c-beige); color: var(--c-green-dark);" required>
       </div>
 
-      <button type="submit"
-              [disabled]="isLoading"
+      <div class="mb-4">
+        <label class="block font-poppins text-sm font-medium mb-1"
+               style="color: var(--c-gray-dark);">Email *</label>
+        <input type="email" [(ngModel)]="email" name="email"
+               placeholder="votre@email.com"
+               class="w-full px-4 py-3 rounded-xl border-2 font-poppins text-sm outline-none"
+               style="border-color: var(--c-beige); color: var(--c-green-dark);" required>
+      </div>
+
+      <div class="mb-4">
+        <label class="block font-poppins text-sm font-medium mb-1"
+               style="color: var(--c-gray-dark);">Mot de passe *</label>
+        <input type="password" [(ngModel)]="password" name="password"
+               placeholder="••••••••"
+               class="w-full px-4 py-3 rounded-xl border-2 font-poppins text-sm outline-none"
+               style="border-color: var(--c-beige); color: var(--c-green-dark);" required>
+      </div>
+
+      <div class="mb-6 flex items-start gap-3">
+        <input type="checkbox" [(ngModel)]="certifie" name="certifie" id="certifie"
+               class="mt-1 w-4 h-4 cursor-pointer"
+               style="accent-color: var(--c-green-teal);">
+        <label for="certifie" class="font-poppins text-xs cursor-pointer"
+               style="color: var(--c-gray-dark); line-height: 1.5;">
+          J'ai pris connaissance que ce site est réservé aux professionnels
+          et je certifie être un revendeur d'objets média *
+        </label>
+      </div>
+
+      <button type="submit" [disabled]="isLoading"
               class="w-full py-3 rounded-xl font-poppins font-semibold text-sm transition-opacity"
               style="background-color: var(--c-green-teal); color: var(--c-white);"
               [style.opacity]="isLoading ? '0.6' : '1'">
-        {{ isLoading ? 'Inscription...' : 'Créer mon compte' }}
+        {{ isLoading ? 'Envoi en cours...' : 'Envoyer ma demande' }}
       </button>
 
     </form>
 
     <p class="text-center mt-6 font-poppins text-sm" style="color: var(--c-gray-dark);">
       Déjà un compte ?
-      <a [routerLink]="['/login']"
-         class="font-semibold hover:underline"
-         style="color: var(--c-green-teal);">
-        Se connecter
-      </a>
+      <a [routerLink]="['/login']" class="font-semibold hover:underline"
+         style="color: var(--c-green-teal);">Se connecter</a>
     </p>
+
+  </div>
+</div>
+
+<!-- ═══ POPUP CONFIRMATION ═══ -->
+<div *ngIf="showPopup"
+     class="fixed inset-0 flex items-center justify-center z-50 px-4"
+     style="background-color: rgba(0,0,0,0.6); backdrop-filter: blur(4px);">
+
+  <div class="w-full max-w-sm rounded-3xl p-8 text-center shadow-2xl"
+       style="background-color: var(--c-white);">
+
+    <!-- Icône animée -->
+    <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
+         style="background-color: #dcfce7;">
+      <svg class="w-10 h-10" style="color: #16a34a;" fill="none"
+           stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+              d="M5 13l4 4L19 7"/>
+      </svg>
+    </div>
+
+    <!-- Titre -->
+    <h2 class="font-dosis text-2xl font-bold mb-2"
+        style="color: var(--c-green-dark);">
+      Demande envoyée !
+    </h2>
+
+    <!-- Sous-titre -->
+    <p class="font-poppins text-sm mb-4"
+       style="color: var(--c-gray-dark); line-height: 1.7;">
+      Votre demande d'accès à <strong>GreenDesk Pro</strong> a bien été reçue.
+    </p>
+
+    <!-- Info délai -->
+    <div class="rounded-2xl px-4 py-3 mb-6"
+         style="background-color: var(--c-beige);">
+      <p class="font-poppins text-xs" style="color: var(--c-gray-dark);">
+        ⏱ Notre équipe traitera votre demande sous <strong>24 à 48h</strong>.<br>
+        Vous recevrez un email dès validation de votre compte.
+      </p>
+    </div>
+
+    <!-- Bouton -->
+    <button (click)="fermerPopup()"
+            class="w-full py-3 rounded-xl font-poppins font-semibold text-sm transition-all hover:opacity-90"
+            style="background-color: var(--c-green-teal); color: white;">
+      OK, compris !
+    </button>
 
   </div>
 </div>

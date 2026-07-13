@@ -1,0 +1,124 @@
+<div class="p-8" style="background-color: var(--c-beige); min-height: 100vh;">
+
+  <div class="max-w-4xl mx-auto">
+
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="font-dosis text-3xl font-bold" style="color: var(--c-green-dark);">
+        Comptes en attente de validation
+      </h1>
+      <p class="font-poppins text-sm mt-1" style="color: var(--c-gray-dark);">
+        Validez ou refusez les demandes d'accès à GreenDesk Pro
+      </p>
+    </div>
+
+    <!-- Success -->
+    <div *ngIf="successMessage"
+         class="mb-4 px-4 py-3 rounded-xl font-poppins text-sm"
+         style="background-color: #dcfce7; color: #15803d;">
+      ✅ {{ successMessage }}
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="errorMessage"
+         class="mb-4 px-4 py-3 rounded-xl font-poppins text-sm"
+         style="background-color: #fee2e2; color: #dc2626;">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="text-center py-12 font-poppins text-sm"
+         style="color: var(--c-gray-dark);">
+      Chargement...
+    </div>
+
+    <!-- Empty -->
+    <div *ngIf="!loading && comptes.length === 0"
+         class="text-center py-12 rounded-2xl"
+         style="background-color: var(--c-white);">
+      <div class="text-4xl mb-3">✅</div>
+      <p class="font-poppins text-sm" style="color: var(--c-gray-dark);">
+        Aucun compte en attente de validation
+      </p>
+    </div>
+
+    <!-- Liste comptes -->
+    <div *ngIf="!loading && comptes.length > 0"
+         class="flex flex-col gap-4">
+
+      <div *ngFor="let compte of comptes"
+           class="rounded-2xl p-6 border-2"
+           style="background-color: var(--c-white); border-color: var(--c-beige);">
+
+        <!-- Infos compte -->
+        <div class="flex items-start justify-between mb-4">
+          <div>
+            <div class="font-dosis text-xl font-bold mb-1"
+                 style="color: var(--c-green-dark);">
+              {{ compte.prenom }} {{ compte.nom }}
+            </div>
+            <div class="font-poppins text-sm mb-1"
+                 style="color: var(--c-gray-dark);">
+              📧 {{ compte.email }}
+            </div>
+            <div class="font-poppins text-sm mb-1"
+                 style="color: var(--c-gray-dark);">
+              🏢 {{ compte.societe }}
+            </div>
+            <div class="font-poppins text-sm"
+                 style="color: var(--c-gray-dark);">
+              🔢 SIRET : {{ compte.siret }}
+            </div>
+          </div>
+
+          <!-- Boutons action -->
+          <div class="flex gap-3" *ngIf="showMotifFor !== compte.id">
+            <button (click)="valider(compte.id)"
+                    [disabled]="actionLoading === compte.id"
+                    class="px-5 py-2 rounded-xl font-poppins font-semibold text-sm transition-opacity"
+                    style="background-color: var(--c-green-teal); color: white;"
+                    [style.opacity]="actionLoading === compte.id ? '0.6' : '1'">
+              ✅ Valider
+            </button>
+            <button (click)="ouvrirRefus(compte.id)"
+                    [disabled]="actionLoading === compte.id"
+                    class="px-5 py-2 rounded-xl font-poppins font-semibold text-sm"
+                    style="background-color: #fee2e2; color: #dc2626;">
+              ✕ Refuser
+            </button>
+          </div>
+        </div>
+
+        <!-- Formulaire refus -->
+        <div *ngIf="showMotifFor === compte.id"
+             class="mt-4 p-4 rounded-xl"
+             style="background-color: #fef2f2; border: 1px solid #fecaca;">
+          <label class="block font-poppins text-sm font-medium mb-2"
+                 style="color: #dc2626;">
+            Motif du refus *
+          </label>
+          <textarea [(ngModel)]="motifRefus[compte.id]"
+                    rows="3"
+                    placeholder="Expliquez la raison du refus..."
+                    class="w-full px-4 py-3 rounded-xl border-2 font-poppins text-sm outline-none resize-none"
+                    style="border-color: #fecaca; color: var(--c-green-dark);">
+          </textarea>
+          <div class="flex gap-3 mt-3">
+            <button (click)="refuser(compte.id)"
+                    [disabled]="actionLoading === compte.id"
+                    class="px-5 py-2 rounded-xl font-poppins font-semibold text-sm"
+                    style="background-color: #dc2626; color: white;">
+              Confirmer le refus
+            </button>
+            <button (click)="showMotifFor = null"
+                    class="px-5 py-2 rounded-xl font-poppins font-semibold text-sm"
+                    style="background-color: var(--c-beige); color: var(--c-gray-dark);">
+              Annuler
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
