@@ -184,7 +184,8 @@
               <!-- Header -->
               <!-- Vignette logo principal -->
               <div class="w-full h-32 rounded-xl mb-4 flex items-center justify-center overflow-hidden"
-                   style="background-color: var(--c-beige);">
+                   [class.transparency-checker]="getPrincipalLogo(project)"
+                   [style.background-color]="getPrincipalLogo(project) ? null : 'var(--c-beige)'">
                 <ng-container *ngIf="getPrincipalLogo(project) as logo; else noLogo">
                   <img [src]="getLogoUrl(logo.publicPath)"
                        [alt]="logo.nomOriginal"

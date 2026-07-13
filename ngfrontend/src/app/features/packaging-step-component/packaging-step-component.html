@@ -1,0 +1,44 @@
+<div class="packaging-step">
+
+  <div *ngIf="loading" class="loading">Chargement de l'emballage...</div>
+
+  <!-- Sélecteur de template si le produit en a plusieurs -->
+  <div *ngIf="templates.length > 1" class="template-selector">
+    <label>Type d'emballage</label>
+    <select [ngModel]="selectedTemplate?.id" (ngModelChange)="selectTemplate($event)">
+      <option *ngFor="let t of templates" [value]="t.id">{{ t.name }}</option>
+    </select>
+  </div>
+
+  <div class="packaging-editor" *ngIf="selectedTemplate">
+
+    <!-- Aperçu SVG à plat, manipulé en direct par le composant -->
+    <div class="svg-preview" #svgContainer [innerHTML]="safeSvg"></div>
+
+    <div class="controls">
+
+      <div class="color-groups" *ngIf="selectedTemplate.colorGroups.length">
+        <h4>Couleurs</h4>
+        <div class="color-row" *ngFor="let cg of selectedTemplate.colorGroups">
+          <label>{{ cg.label }}</label>
+          <input
+            type="color"
+            [value]="colors[cg.svgGroupId]"
+            (input)="onColorChange(cg.svgGroupId, $any($event.target).value)" />
+        </div>
+      </div>
+
+      <div class="logo-zones" *ngIf="selectedTemplate.logoZones.length">
+        <h4>Logo</h4>
+        <div class="logo-row" *ngFor="let lz of selectedTemplate.logoZones">
+          <label>{{ lz.label }}</label>
+          <input
+            type="file"
+            accept="image/png,image/svg+xml"
+            (change)="onLogoUpload(lz.svgGroupId, $any($event.target).files[0])" />
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

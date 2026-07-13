@@ -17,6 +17,8 @@ interface AuthResponse {
   nom: string;
   prenom: string;
   role: string;
+  message: string;
+  statutCompte: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -40,18 +42,15 @@ export class AuthService {
     return this.authReadySubject.pipe(filter(ready => ready), take(1));
   }
 
-  register(email: string, password: string, nom: string, prenom: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, { email, password, nom, prenom }).pipe(
-      tap(res => {
-        localStorage.setItem(this.TOKEN_KEY, res.token);
-        this.currentUserSubject.next({
-          email: res.email,
-          nom: res.nom,
-          prenom: res.prenom,
-          role: res.role as 'ADMIN' | 'CLIENT'
-        });
-      })
+  register(
+    email: string, password: string, nom: string, prenom: string,
+    societe: string, siret: string
+  ): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(
+      `${this.apiUrl}/auth/register`,
+      { email, password, nom, prenom, societe, siret }
     );
+    // PAS de tap() — pas de token stocké, compte en attente
   }
 
   login(email: string, password: string): Observable<AuthResponse> {
@@ -79,7 +78,19 @@ export class AuthService {
   }
 
   isAdmin(): boolean {
-    return this.currentUserSubject.value?.role === 'ADMIN';
+    // Vérifie d'abord le subject en mémoire
+    if (this.currentUserSubject.value?.role === 'ADMIN') return true;
+
+    // Sinon parse le token JWT pour obtenir le rôle
+    const token = this.getToken();
+    if (!token) return false;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.role === 'ADMIN' || payload.authorities?.includes('ROLE_ADMIN');
+    } catch {
+      return false;
+    }
   }
 
   getToken(): string | null {

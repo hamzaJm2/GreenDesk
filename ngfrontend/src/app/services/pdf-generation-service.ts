@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import jsPDF from 'jspdf';
 import { environment } from '../environments/environment';
+import { composeCustomColorRaster } from './custom-color-compositor';
 import { MockupProjectDTO } from '../models/mockup';
 import { Product } from '../models/product';
 import {
@@ -298,9 +299,8 @@ export class PdfGenerationService {
     let imgB64 = await this.tryLoadUrl(srcUrl);
 
     if (imgB64 && cc.selectedColor) {
-      const mode = product.name.toLowerCase().includes('moka') ? 'full' : 'keep-white';
       const maskUrl = cc.colorisMaskPath ? `${environment.apiUrl}/${cc.colorisMaskPath}` : null;
-      imgB64 = await this.recolorImageForPdf(imgB64, cc.selectedColor, mode, maskUrl);
+      imgB64 = await this.recolorImageForPdf(imgB64, cc.selectedColor, maskUrl);
     }
 
     if (imgB64) {
@@ -543,70 +543,49 @@ export class PdfGenerationService {
   //  CHARGEMENT D'IMAGES
   // ═══════════════════════════════════════════════════════════════════════════
 
+  private loadImageElement(src: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('Chargement image impossible.'));
+      img.src = src;
+    });
+  }
+
   private async recolorImageForPdf(
     base64: string,
     targetHex: string,
-    mode: 'full' | 'keep-white' = 'full',
     maskUrl: string | null = null
   ): Promise<string> {
-    const maskB64 = maskUrl ? await this.tryLoadUrl(maskUrl) : null;
+    if (!maskUrl) return base64;
+    const maskB64 = await this.tryLoadUrl(maskUrl);
+    if (!maskB64) return base64;
 
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width  = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        const ctx = canvas.getContext('2d')!;
-        ctx.drawImage(img, 0, 0);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    try {
+      const baseImg = await this.loadImageElement(base64);
+      const width = baseImg.naturalWidth;
+      const height = baseImg.naturalHeight;
 
-        const applyRecolor = (maskData: Uint8ClampedArray | null) => {
-          const data = imageData.data;
-          const target = this.hexToRgb(targetHex);
-          const [tH, tS] = this.rgbToHsl(target.r, target.g, target.b);
-          for (let i = 0; i < data.length; i += 4) {
-            if (data[i + 3] < 10) continue;
-            let blendFactor = 1.0;
-            if (maskData) {
-              blendFactor = maskData[i + 3] / 255;
-              if (blendFactor < 0.01) continue;
-            }
-            const r = data[i], g = data[i + 1], b = data[i + 2];
-            const [, , origL] = this.rgbToHsl(r, g, b);
-            if (mode === 'keep-white' && origL > 0.92) continue;
-            const satScale = origL < 0.8 ? 1.0 : Math.max(0, (1.0 - origL) / 0.2);
-            const [newR, newG, newB] = this.hslToRgb(tH, tS * satScale, origL);
-            if (blendFactor >= 0.99) {
-              data[i] = newR; data[i + 1] = newG; data[i + 2] = newB;
-            } else {
-              data[i]     = Math.round(r * (1 - blendFactor) + newR * blendFactor);
-              data[i + 1] = Math.round(g * (1 - blendFactor) + newG * blendFactor);
-              data[i + 2] = Math.round(b * (1 - blendFactor) + newB * blendFactor);
-            }
-          }
-          ctx.putImageData(imageData, 0, 0);
-          resolve(canvas.toDataURL('image/png'));
-        };
+      const overlayUrl = await composeCustomColorRaster({
+        maskUrl: maskB64,
+        colorHex: targetHex,
+        sourceImageUrl: base64,
+        width,
+        height
+      });
+      if (!overlayUrl) return base64;
 
-        if (maskB64) {
-          const maskImg = new Image();
-          maskImg.onload = () => {
-            const mc = document.createElement('canvas');
-            mc.width  = img.naturalWidth;
-            mc.height = img.naturalHeight;
-            mc.getContext('2d')!.drawImage(maskImg, 0, 0, img.naturalWidth, img.naturalHeight);
-            applyRecolor(mc.getContext('2d')!.getImageData(0, 0, mc.width, mc.height).data);
-          };
-          maskImg.onerror = () => applyRecolor(null);
-          maskImg.src = maskB64;
-        } else {
-          applyRecolor(null);
-        }
-      };
-      img.onerror = () => resolve(base64);
-      img.src = base64;
-    });
+      const overlayImg = await this.loadImageElement(overlayUrl);
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(baseImg, 0, 0, width, height);
+      ctx.drawImage(overlayImg, 0, 0, width, height);
+      return canvas.toDataURL('image/png');
+    } catch {
+      return base64;
+    }
   }
 
   private async applyMaskToLogo(

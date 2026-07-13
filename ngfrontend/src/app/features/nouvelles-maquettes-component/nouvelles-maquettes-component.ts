@@ -17,8 +17,13 @@ import {
   ProductLogoPreviewComponent
 } from '../product-logo-preview/product-logo-preview';
 import { ColorDetectionService } from '../../services/color-detection-service';
+import { BackgroundRemovalService } from '../../services/background-removal-service';
 import { PdfGenerationProgress, PdfGenerationService } from '../../services/pdf-generation-service';
 import { PdfPreviewService } from '../../services/pdf-preview-service';
+import {
+  DraftProductCustomization,
+  MaquetteDraftStateService
+} from '../../services/maquette-draft-state.service';
 
 export interface ZoneElement {
   elementId: string;
@@ -145,8 +150,10 @@ export class NouvellesMaquettesComponent implements OnInit, OnDestroy {
     private mockupService: MockupService,
     private productService: ProductService,
     private colorDetectionService: ColorDetectionService,
+    private backgroundRemovalService: BackgroundRemovalService,
     private pdfGenerationService: PdfGenerationService,
     private pdfPreviewService: PdfPreviewService,
+    private draftState: MaquetteDraftStateService,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) {}
@@ -161,6 +168,10 @@ export class NouvellesMaquettesComponent implements OnInit, OnDestroy {
     this.productService.getAllProducts().subscribe({
       next: (products) => {
         this.allProducts = products;
+        // Le brouillon peut avoir été réhydraté avant que la liste des produits n'arrive.
+        this.customizations.forEach(c => {
+          if (!c.productName) c.productName = products.find(p => p.id === c.productId)?.name ?? '';
+        });
         this.cdr.detectChanges();
       }
     });
@@ -174,6 +185,10 @@ export class NouvellesMaquettesComponent implements OnInit, OnDestroy {
           this.nomProjet = project.nomProjet;
           this.isLoading = false;
           this.loadProjectColors();
+          this.restoreDraftIfAny();
+          if (Object.keys(this.selectedColoris).length === 0) {
+            this.restoreSelectionFromProject(project);
+          }
           this.cdr.detectChanges();
         },
         error: () => this.createNewProject()
@@ -207,14 +222,17 @@ export class NouvellesMaquettesComponent implements OnInit, OnDestroy {
   // ── Navigation ───────────────────────────────────────────────
   goToStep(step: number): void {
     if (step < this.currentStep) this.currentStep = step;
+    this.persistDraft();
   }
 
   nextStep(): void {
     if (this.canGoNext() && this.currentStep < 4) this.currentStep++;
+    this.persistDraft();
   }
 
   prevStep(): void {
     if (this.currentStep > 1) this.currentStep--;
+    this.persistDraft();
   }
 
   canGoNext(): boolean {
@@ -329,7 +347,68 @@ export class NouvellesMaquettesComponent implements OnInit, OnDestroy {
       next: () => this.refreshProject()
     });
   }
+
+  // ── Suppression du fond blanc ──────────────────────────────────
+  bgRemovalLogo: MockupLogoDTO | null = null;
+  bgRemovalThreshold = 25;
+  bgRemovalPreviewUrl: string | null = null;
+  bgRemovalBusy = false;
+  bgRemovalError = '';
+  private bgRemovalImg: HTMLImageElement | null = null;
+
+  async openBackgroundRemoval(logo: MockupLogoDTO): Promise<void> {
+    this.bgRemovalLogo = logo;
+    this.bgRemovalThreshold = 25;
+    this.bgRemovalPreviewUrl = null;
+    this.bgRemovalError = '';
+    this.bgRemovalBusy = true;
+    this.cdr.detectChanges();
+    try {
+      this.bgRemovalImg = await this.backgroundRemovalService.loadImage(this.getLogoUrl(logo.publicPath));
+      this.updateBgRemovalPreview();
+    } catch {
+      this.bgRemovalError = "Impossible de charger l'image pour l'aperçu.";
+    } finally {
+      this.bgRemovalBusy = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  updateBgRemovalPreview(): void {
+    if (!this.bgRemovalImg) return;
+    this.bgRemovalPreviewUrl = this.backgroundRemovalService.removeWhiteBackground(
+      this.bgRemovalImg, this.bgRemovalThreshold
+    );
+    this.cdr.detectChanges();
+  }
+
+  cancelBackgroundRemoval(): void {
+    this.bgRemovalLogo = null;
+    this.bgRemovalImg = null;
+    this.bgRemovalPreviewUrl = null;
+    this.bgRemovalError = '';
+  }
+
+  async confirmBackgroundRemoval(): Promise<void> {
+    if (!this.bgRemovalLogo || !this.bgRemovalPreviewUrl || !this.projectId) return;
+    this.bgRemovalBusy = true;
+    this.cdr.detectChanges();
+    try {
+      const baseName = this.bgRemovalLogo.nomOriginal.replace(/\.[^.]+$/, '');
+      const res = await fetch(this.bgRemovalPreviewUrl);
+      const blob = await res.blob();
+      const file = new File([blob], `${baseName}_sans_fond.png`, { type: 'image/png' });
+      await this.uploadLogoAndRefresh(this.mockupService.uploadLogo(this.projectId, file));
+      this.cancelBackgroundRemoval();
+    } catch {
+      this.bgRemovalError = "Erreur lors de l'enregistrement du logo sans fond.";
+    } finally {
+      this.bgRemovalBusy = false;
+      this.cdr.detectChanges();
+    }
+  }
   autoSave(): void {
+    this.persistDraft();
     if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
     this.autoSaveTimer = setTimeout(() => {
       this.saveDraft();
@@ -482,6 +561,7 @@ export class NouvellesMaquettesComponent implements OnInit, OnDestroy {
     if (index === -1) this.selectedColoris[productId].push(colorisId);
     else this.selectedColoris[productId].splice(index, 1);
     if (this.selectedColoris[productId].length === 0) delete this.selectedColoris[productId];
+    this.persistDraft();
   }
 
   isColorisSelected(productId: number, colorisId: number): boolean {
@@ -509,22 +589,34 @@ export class NouvellesMaquettesComponent implements OnInit, OnDestroy {
         const coloris = this.colorisByProduct[product.id] ?? [];
         if (coloris.length > 0) this.selectedColoris[product.id] = coloris.map(c => c.id);
       });
+      this.persistDraft();
       this.cdr.detectChanges();
     }, 600);
   }
 
   resetProducts(): void {
     this.selectedColoris = {};
+    this.persistDraft();
     this.cdr.detectChanges();
   }
 
   validateSelection(): void {
     this.buildCustomizations();
     this.currentStep = 3;
+    this.persistDraft();
   }
 
+  /**
+   * Reconstruit `customizations` à partir de `selectedColoris`, en réutilisant tel quel
+   * chaque ColorisCustomization déjà paramétré (variantes, placements, logos, validation).
+   * Seuls les coloris nouvellement sélectionnés reçoivent une variante par défaut ; les
+   * coloris désélectionnés disparaissent naturellement du tableau reconstruit.
+   */
   private buildCustomizations(): void {
-    // Preserve selectedColor before rebuild (in-memory + backend draft)
+    const existingByProduct = new Map(this.customizations.map(c => [c.productId, c]));
+
+    // Filet de sécurité pour une couleur personnalisée déjà choisie mais dont le
+    // ColorisCustomization aurait été recréé (ex. coloris retiré puis re-ajouté).
     const savedColors = new Map<number, string>();
     this.customizations.forEach(c =>
       c.colorisCustomizations.forEach(cc => {
@@ -541,8 +633,6 @@ export class NouvellesMaquettesComponent implements OnInit, OnDestroy {
       });
     } catch {}
 
-    const principalLogoId = this.project?.logos?.[0]?.id ?? null;
-
     this.customizations = Object.entries(this.selectedColoris).map(([productIdStr, colorisIds]) => {
       const productId = +productIdStr;
       const product = this.allProducts.find(p => p.id === productId);
@@ -554,53 +644,243 @@ export class NouvellesMaquettesComponent implements OnInit, OnDestroy {
       const zones = this.markingZonesByProduct[productId] ?? [];
       const firstZone = zones[0] ?? null;
 
+      const existingProduct = existingByProduct.get(productId);
+      const existingColorisById = new Map((existingProduct?.colorisCustomizations ?? []).map(cc => [cc.colorisId, cc]));
+
       const colorisCustomizations: ColorisCustomization[] = selectedColorisObjects.map(coloris => {
-        const variantId = `v-${coloris.id}-1`;
-        const variant: ColorisVariant = {
-          variantId,
-          label: 'Variante 1',
-          zonePlacements: firstZone ? [{
-            zoneId: firstZone.id,
-            zoneNom: firstZone.nom,
-            elements: [{ elementId: 'el-1', logoId: principalLogoId, placement: { xPercent: 50, yPercent: 50, scalePercent: 25, rotationDeg: 0 }, touched: false, label: 'Élément 1' }],
-            activeElementId: 'el-1',
-            touched: false
-          }] : [],
-          activeZoneId: firstZone?.id ?? null
-        };
-        return {
-          colorisId: coloris.id,
-          colorisNom: coloris.nom,
-          colorisImageProduit: coloris.imageProduit,
-          colorisCodeHex: coloris.codeHex,
-          colorisMaskPath: coloris.couleurMasquePng,
-          imageBaseBlanc: coloris.imageBaseBlanc,
-          couleurPersonnalisable: coloris.couleurPersonnalisable ?? false,
-          activeVariantId: variantId,
-          variants: [variant]
-        };
+        const existingCc = existingColorisById.get(coloris.id);
+        if (existingCc) return existingCc;
+
+        const hex = savedColors.get(coloris.id);
+        return this.buildColorisCustomization(coloris, firstZone, hex
+          ? { variants: [this.buildDefaultVariant(coloris, firstZone)], activeVariantId: `v-${coloris.id}-1`, selectedColor: hex }
+          : undefined);
       });
+
+      const activeColorisId = existingProduct && colorisCustomizations.some(cc => cc.colorisId === existingProduct.activeColorisId)
+        ? existingProduct.activeColorisId
+        : colorisCustomizations[0]?.colorisId ?? null;
 
       return {
         productId,
         productName: product?.name ?? '',
         colorisCustomizations,
-        activeColorisId: colorisCustomizations[0]?.colorisId ?? null,
-        validated: false
+        activeColorisId,
+        validated: existingProduct?.validated ?? false
       };
     });
 
-    this.activeProductId = this.customizations[0]?.productId ?? null;
+    this.activeProductId = this.customizations.some(c => c.productId === this.activeProductId)
+      ? this.activeProductId
+      : this.customizations[0]?.productId ?? null;
+  }
 
-    // Restore selected custom colors
-    if (savedColors.size > 0) {
-      this.customizations.forEach(c =>
-        c.colorisCustomizations.forEach(cc => {
-          const hex = savedColors.get(cc.colorisId);
-          if (hex) cc.selectedColor = hex;
-        })
-      );
+  /** Construit un ColorisCustomization à partir des métadonnées référentiel + une variante par défaut,
+   *  ou d'un seed (variantes/couleur déjà connues) quand on restaure un état existant. */
+  private buildColorisCustomization(
+    coloris: ProductColorisDTO,
+    firstZone: any,
+    seed?: { variants: ColorisVariant[]; activeVariantId: string; selectedColor?: string }
+  ): ColorisCustomization {
+    const variant = seed ? null : this.buildDefaultVariant(coloris, firstZone);
+    return {
+      colorisId: coloris.id,
+      colorisNom: coloris.nom,
+      colorisImageProduit: coloris.imageProduit,
+      colorisCodeHex: coloris.codeHex,
+      colorisMaskPath: coloris.couleurMasquePng,
+      imageBaseBlanc: coloris.imageBaseBlanc,
+      couleurPersonnalisable: coloris.couleurPersonnalisable ?? false,
+      activeVariantId: seed?.activeVariantId ?? variant!.variantId,
+      variants: seed?.variants ?? [variant!],
+      selectedColor: seed?.selectedColor
+    };
+  }
+
+  private buildDefaultVariant(coloris: ProductColorisDTO, firstZone: any): ColorisVariant {
+    const principalLogoId = this.project?.logos?.[0]?.id ?? null;
+    return {
+      variantId: `v-${coloris.id}-1`,
+      label: 'Variante 1',
+      zonePlacements: firstZone ? [{
+        zoneId: firstZone.id,
+        zoneNom: firstZone.nom,
+        elements: [{ elementId: 'el-1', logoId: principalLogoId, placement: { xPercent: 50, yPercent: 50, scalePercent: 25, rotationDeg: 0 }, touched: false, label: 'Élément 1' }],
+        activeElementId: 'el-1',
+        touched: false
+      }] : [],
+      activeZoneId: firstZone?.id ?? null
+    };
+  }
+
+  // ── Persistance locale (sessionStorage) ─────────────────────────
+  private persistDraft(): void {
+    if (!this.projectId) return;
+    const customizations: DraftProductCustomization[] = this.customizations.map(c => ({
+      productId: c.productId,
+      activeColorisId: c.activeColorisId,
+      validated: c.validated,
+      colorisCustomizations: c.colorisCustomizations.map(cc => ({
+        colorisId: cc.colorisId,
+        activeVariantId: cc.activeVariantId,
+        selectedColor: cc.selectedColor,
+        variants: cc.variants.map(v => ({
+          variantId: v.variantId,
+          label: v.label,
+          activeZoneId: v.activeZoneId,
+          zonePlacements: v.zonePlacements.map(zp => ({
+            zoneId: zp.zoneId,
+            activeElementId: zp.activeElementId,
+            touched: zp.touched,
+            elements: zp.elements
+          }))
+        }))
+      }))
+    }));
+
+    this.draftState.save({
+      projectId: this.projectId,
+      currentStep: this.currentStep,
+      selectedColoris: this.selectedColoris,
+      activeProductId: this.activeProductId,
+      customizations
+    });
+  }
+
+  /**
+   * Filet de secours quand aucun brouillon local n'existe pour ce projet (nouvelle session,
+   * sessionStorage vidée…) : reconstruit `selectedColoris` depuis les champs persistés côté
+   * backend (`produitsSelectionnes` / `colorisSelectionnes`). Ce dernier est un tableau plat de
+   * coloris toutes catégories confondues : il faut charger le catalogue de coloris de chaque
+   * produit pour retrouver quel coloris appartient à quel produit.
+   * Ne restaure pas les placements de logo (jamais persistés côté backend) — seulement la
+   * sélection et la couleur personnalisée (déjà lue depuis `brouillonMaquette` par buildCustomizations).
+   */
+  private restoreSelectionFromProject(project: MockupProjectDTO): void {
+    const productIds = project.produitsSelectionnes ?? [];
+    if (productIds.length === 0) return;
+    const selectedColorisIds = new Set(project.colorisSelectionnes ?? []);
+
+    const restored: Record<number, number[]> = {};
+    let pending = productIds.length;
+    const finalize = () => {
+      pending--;
+      if (pending > 0) return;
+      this.selectedColoris = restored;
+      this.cdr.detectChanges();
+    };
+
+    productIds.forEach(productId => {
+      const applyColoris = (coloris: ProductColorisDTO[]) => {
+        this.colorisByProduct[productId] = coloris;
+        const ids = coloris.filter(c => selectedColorisIds.has(c.id)).map(c => c.id);
+        if (ids.length > 0) restored[productId] = ids;
+      };
+
+      if (this.colorisByProduct[productId]) {
+        applyColoris(this.colorisByProduct[productId]);
+        finalize();
+      } else {
+        this.mockupService.getColorisByProduct(productId).subscribe({
+          next: (coloris) => { applyColoris(coloris); finalize(); },
+          error: () => finalize()
+        });
+      }
+    });
+  }
+
+  /**
+   * Restaure la sélection produits/coloris et les paramétrages (logos, zones, placements,
+   * couleurs) sauvegardés localement pour ce projet. Les métadonnées référentiel (nom du
+   * coloris, image, masque…) ne sont pas stockées dans le brouillon : elles sont recherchées
+   * dans colorisByProduct / markingZonesByProduct une fois ces caches chargés, ce qui rend la
+   * restauration robuste même si le référentiel produit a changé depuis la sauvegarde.
+   */
+  private restoreDraftIfAny(): void {
+    if (!this.projectId) return;
+    const draft = this.draftState.load(this.projectId);
+    if (!draft || Object.keys(draft.selectedColoris).length === 0) return;
+
+    this.selectedColoris = draft.selectedColoris;
+
+    if (draft.customizations.length === 0) {
+      this.currentStep = draft.currentStep;
+      this.cdr.detectChanges();
+      return;
     }
+
+    const productIds = Object.keys(draft.selectedColoris).map(Number);
+    let pending = productIds.length;
+    const finalize = () => {
+      pending--;
+      if (pending > 0) return;
+      this.customizations = draft.customizations.map(dc => this.hydrateProductCustomization(dc));
+      this.activeProductId = draft.activeProductId ?? this.customizations[0]?.productId ?? null;
+      this.currentStep = draft.currentStep;
+      this.cdr.detectChanges();
+    };
+
+    productIds.forEach(productId => {
+      const needsColoris = !this.colorisByProduct[productId];
+      const needsZones = !this.markingZonesByProduct[productId];
+      if (!needsColoris && !needsZones) { finalize(); return; }
+
+      let waiting = (needsColoris ? 1 : 0) + (needsZones ? 1 : 0);
+      const done = () => { waiting--; if (waiting === 0) finalize(); };
+
+      if (needsColoris) {
+        this.mockupService.getColorisByProduct(productId).subscribe({
+          next: (coloris) => { this.colorisByProduct[productId] = coloris; done(); },
+          error: () => done()
+        });
+      }
+      if (needsZones) {
+        this.productService.getProductById(productId).subscribe({
+          next: (p) => { this.markingZonesByProduct[productId] = p.markingZones ?? []; done(); },
+          error: () => done()
+        });
+      }
+    });
+  }
+
+  private hydrateProductCustomization(dc: DraftProductCustomization): ProductCustomization {
+    const product = this.allProducts.find(p => p.id === dc.productId);
+    const allColoris = this.colorisByProduct[dc.productId] ?? [];
+    const zones = this.markingZonesByProduct[dc.productId] ?? [];
+
+    const colorisCustomizations: ColorisCustomization[] = dc.colorisCustomizations
+      .map(dcc => {
+        const coloris = allColoris.find(c => c.id === dcc.colorisId);
+        if (!coloris) return null; // coloris disparu du référentiel depuis la sauvegarde
+
+        const variants: ColorisVariant[] = dcc.variants.map(dv => ({
+          variantId: dv.variantId,
+          label: dv.label,
+          activeZoneId: dv.activeZoneId,
+          zonePlacements: dv.zonePlacements.map(dzp => ({
+            zoneId: dzp.zoneId,
+            zoneNom: zones.find(z => z.id === dzp.zoneId)?.nom ?? '',
+            activeElementId: dzp.activeElementId,
+            touched: dzp.touched,
+            elements: dzp.elements
+          }))
+        }));
+
+        return this.buildColorisCustomization(coloris, null, {
+          variants,
+          activeVariantId: dcc.activeVariantId,
+          selectedColor: dcc.selectedColor
+        });
+      })
+      .filter((cc): cc is ColorisCustomization => cc !== null);
+
+    return {
+      productId: dc.productId,
+      productName: product?.name ?? '',
+      colorisCustomizations,
+      activeColorisId: dc.activeColorisId,
+      validated: dc.validated
+    };
   }
 
   private loadMarkingZones(productId: number): void {
@@ -671,6 +951,7 @@ export class NouvellesMaquettesComponent implements OnInit, OnDestroy {
         this.showGreenDeskLogo,
         (progress: any) => { this.pdfProgress = progress; this.cdr.detectChanges(); }
       );
+      if (this.projectId) this.draftState.clear(this.projectId);
     } finally {
       this.isGeneratingPdf = false;
       this.cdr.detectChanges();
@@ -1022,9 +1303,7 @@ export class NouvellesMaquettesComponent implements OnInit, OnDestroy {
       : cc.colorisImageProduit;
     const imageUrl = this.getFullImageUrl(baseImage);
     const maskUrl = cc.colorisMaskPath ? this.getFullImageUrl(cc.colorisMaskPath) : undefined;
-    const productName = this.activeCustomization?.productName?.toLowerCase() ?? '';
-    const mode = productName.includes('moka') ? 'full' : 'keep-white';
-    this.recoloredImageUrl = await this.colorDetectionService.recolorImage(imageUrl, hex, mode, maskUrl);
+    this.recoloredImageUrl = await this.colorDetectionService.recolorImage(imageUrl, hex, maskUrl);
     this.isRecoloring = false;
     this.cdr.detectChanges();
     this.autoSave();

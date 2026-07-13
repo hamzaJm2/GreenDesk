@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { composeCustomColorRaster } from './custom-color-compositor';
 
 export interface DetectedColor {
   hex: string;
@@ -31,68 +32,29 @@ export class ColorDetectionService {
     }
   }
 
-  async recolorImage(imageUrl: string, targetHex: string, mode: 'full' | 'keep-white' = 'full', maskUrl?: string): Promise<string> {
+  async recolorImage(imageUrl: string, targetHex: string, maskUrl?: string): Promise<string> {
+    if (!maskUrl) return imageUrl;
     try {
-      const img = await this.loadImage(imageUrl);
+      const baseImg = await this.loadImage(imageUrl);
+      const width = baseImg.width;
+      const height = baseImg.height;
+
+      const overlayUrl = await composeCustomColorRaster({
+        maskUrl,
+        colorHex: targetHex,
+        sourceImageUrl: imageUrl,
+        width,
+        height
+      });
+      if (!overlayUrl) return imageUrl;
+
+      const overlayImg = await this.loadImage(overlayUrl);
       const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
+      canvas.width = width;
+      canvas.height = height;
       const ctx = canvas.getContext('2d')!;
-      ctx.drawImage(img, 0, 0);
-
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imageData.data;
-      const target = this.hexToRgb(targetHex);
-      const [tH, tS] = this.rgbToHsl(target.r, target.g, target.b);
-
-      let maskData: Uint8ClampedArray | null = null;
-      if (maskUrl) {
-        try {
-          const maskImg = await this.loadImage(maskUrl);
-          const maskCanvas = document.createElement('canvas');
-          maskCanvas.width = img.width;
-          maskCanvas.height = img.height;
-          maskCanvas.getContext('2d')!.drawImage(maskImg, 0, 0, img.width, img.height);
-          maskData = maskCanvas.getContext('2d')!.getImageData(0, 0, img.width, img.height).data;
-        } catch {
-          maskData = null;
-        }
-      }
-
-      for (let i = 0; i < data.length; i += 4) {
-        if (data[i + 3] < 10) continue;
-
-        // Soft mask blend: use mask alpha as blend weight for clean edges
-        let blendFactor = 1.0;
-        if (maskData) {
-          blendFactor = maskData[i + 3] / 255;
-          if (blendFactor < 0.01) continue;
-        }
-
-        const r = data[i], g = data[i + 1], b = data[i + 2];
-        const [, , origL] = this.rgbToHsl(r, g, b);
-
-        // Preserve bright highlights in keep-white mode
-        if (mode === 'keep-white') {
-          const [, origS] = this.rgbToHsl(r, g, b);
-          if (origL > 0.92 && origS < 0.12) continue;
-        }
-
-        // HSL hue substitution: keep original lightness (shadows/highlights/texture),
-        // apply target hue and saturation. Highlights fade to white naturally (high L → low perceived S).
-        const satScale = origL < 0.8 ? 1.0 : Math.max(0, (1.0 - origL) / 0.2);
-        const [newR, newG, newB] = this.hslToRgb(tH, tS * satScale, origL);
-
-        if (blendFactor >= 0.99) {
-          data[i] = newR; data[i + 1] = newG; data[i + 2] = newB;
-        } else {
-          data[i]     = Math.round(r * (1 - blendFactor) + newR * blendFactor);
-          data[i + 1] = Math.round(g * (1 - blendFactor) + newG * blendFactor);
-          data[i + 2] = Math.round(b * (1 - blendFactor) + newB * blendFactor);
-        }
-      }
-
-      ctx.putImageData(imageData, 0, 0);
+      ctx.drawImage(baseImg, 0, 0, width, height);
+      ctx.drawImage(overlayImg, 0, 0, width, height);
       return canvas.toDataURL('image/png');
     } catch {
       return imageUrl;
